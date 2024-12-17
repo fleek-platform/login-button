@@ -1,8 +1,8 @@
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 
-// import { useLoginWithDynamicMutation } from '@/generated/graphqlClient';
 import { useCookies } from '@/providers/CookiesProvider';
 import { config } from '@/config';
+import { GraphqlClient } from '@/graphql/graphqlClient';
 
 export type AuthProviders = 'dynamic';
 
@@ -25,8 +25,6 @@ export const useAuthProviders = (): Record<AuthProviders, AuthWith> => {
 const useAuthWithDynamic = (): AuthWith => {
   const dynamic = useDynamicContext();
 
-  // const [, loginWithDynamic] = useLoginWithDynamicMutation();
-
   const handleLogin = () => dynamic.setShowAuthFlow(true);
 
   const handleLogout = () => dynamic.handleLogOut();
@@ -36,15 +34,10 @@ const useAuthWithDynamic = (): AuthWith => {
       return '';
     }
 
-    // const { data, error } = await loginWithDynamic({ data: { authToken: dynamic.authToken, projectId } });
+    const graphqlClient = new GraphqlClient({});
+    const token = await graphqlClient.loginWithDynamic({ authToken: dynamic.authToken, projectId });
 
-    // if (data && data.loginWithDynamic) {
-    //   return data.loginWithDynamic;
-    // }
-
-    // throw error;
-
-    return '';
+    return token;
   };
 
   return {

@@ -3,13 +3,18 @@ lockfileVersion: 5.4
 specifiers:
   '@dynamic-labs/ethereum': 3.9.2
   '@dynamic-labs/sdk-react-core': 3.9.2
+  '@fleek-platform/errors': ^2.7.0
+  '@fleek-platform/utils-genql-client': ^0.2.2
   '@types/node': ^20
   '@types/react': ^18
   '@types/react-dom': ^18
+  '@web-std/file': ^3.0.3
+  '@web-std/form-data': ^3.1.0
   cookies-next: ^2.1.1
   eslint: ^8
   eslint-config-next: 14.2.7
   next: 14.2.7
+  object-traversal: ^1.0.1
   postcss: ^8
   prettier: ^2.8.8
   react: ^18
@@ -20,12 +25,17 @@ specifiers:
 dependencies:
   '@dynamic-labs/ethereum': 3.9.2_nnap6w5kaqz5gc6hzcqaq4ymyy
   '@dynamic-labs/sdk-react-core': 3.9.2_nnap6w5kaqz5gc6hzcqaq4ymyy
+  '@fleek-platform/errors': 2.7.0
+  '@web-std/file': 3.0.3
+  '@web-std/form-data': 3.1.0
   cookies-next: 2.1.2
   next: 14.2.7_nnrd3gsncyragczmpvfhocinkq
+  object-traversal: 1.0.1
   react: 18.3.1
   react-dom: 18.3.1_react@18.3.1
 
 devDependencies:
+  '@fleek-platform/utils-genql-client': 0.2.2
   '@types/node': 20.17.10
   '@types/react': 18.3.16
   '@types/react-dom': 18.3.5_@types+react@18.3.16
@@ -1286,6 +1296,16 @@ packages:
   /@eslint/js/8.57.1:
     resolution: {integrity: sha512-d9zaMRSTIKDLhctzH12MtXvJKSSUhaHcjV+2Z+GK+EEY7XKpP5yR4x+N3TAcHTcu963nIr+TMcCb4DBCYX1z6Q==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    dev: true
+
+  /@fleek-platform/errors/2.7.0:
+    resolution: {integrity: sha512-56moPR+V6bW6l+8KopmK4vfx0XU3i2s9UHNgAXXgGn/tBvgFN5bjHe4uT/K6i9Q/S3f5kAOgul6KseV1sucDKQ==}
+    dependencies:
+      nanoid: 3.3.8
+    dev: false
+
+  /@fleek-platform/utils-genql-client/0.2.2:
+    resolution: {integrity: sha512-Pvfhp85I/cJy6rFd0qGWNwFWqcj+pB7DhFAkLwOJhuBjMpqTetOixqQNVfsOKh9Ho33eLphTEdFFGXoQlVVDUg==}
     dev: true
 
   /@hapi/hoek/9.3.0:
@@ -3276,6 +3296,37 @@ packages:
       '@walletconnect/window-getters': 1.0.1
       tslib: 1.14.1
     dev: false
+
+  /@web-std/blob/3.0.5:
+    resolution: {integrity: sha512-Lm03qr0eT3PoLBuhkvFBLf0EFkAsNz/G/AYCzpOdi483aFaVX86b4iQs0OHhzHJfN5C15q17UtDbyABjlzM96A==}
+    dependencies:
+      '@web-std/stream': 1.0.0
+      web-encoding: 1.1.5
+    dev: false
+
+  /@web-std/file/3.0.3:
+    resolution: {integrity: sha512-X7YYyvEERBbaDfJeC9lBKC5Q5lIEWYCP1SNftJNwNH/VbFhdHm+3neKOQP+kWEYJmosbDFq+NEUG7+XIvet/Jw==}
+    dependencies:
+      '@web-std/blob': 3.0.5
+    dev: false
+
+  /@web-std/form-data/3.1.0:
+    resolution: {integrity: sha512-WkOrB8rnc2hEK2iVhDl9TFiPMptmxJA1HaIzSdc2/qk3XS4Ny4cCt6/V36U3XmoYKz0Md2YyK2uOZecoZWPAcA==}
+    dependencies:
+      web-encoding: 1.1.5
+    dev: false
+
+  /@web-std/stream/1.0.0:
+    resolution: {integrity: sha512-jyIbdVl+0ZJyKGTV0Ohb9E6UnxP+t7ZzX4Do3AHjZKxUXKMs9EmqnBDQgHF7bEw0EzbQygOjtt/7gvtmi//iCQ==}
+    dependencies:
+      web-streams-polyfill: 3.3.3
+    dev: false
+
+  /@zxing/text-encoding/0.9.0:
+    resolution: {integrity: sha512-U/4aVJ2mxI0aDNI8Uq0wEhMgY+u4CNtEb0om3+y3+niDAsoTCOB33UF0sxpzqzdqXLqmvc+vZyAt4O8pPdfkwA==}
+    requiresBuild: true
+    dev: false
+    optional: true
 
   /abort-controller/3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -6726,6 +6777,11 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
+  /object-traversal/1.0.1:
+    resolution: {integrity: sha512-aLXtM9kbcG/ePyZfB45B0FrIdu1yy3udQjIVmp2IVl2np52dBK5ZZBhdyUKFT6neCutwDhCW/kQ+e/0K5n/Jhw==}
+    engines: {node: '>=10'}
+    dev: false
+
   /object.assign/4.1.5:
     resolution: {integrity: sha512-byy+U7gp+FVwmyzKPYhW2h5l3crpmGsxl7X2s8y43IgxvG4g3QZ6CffDtsNQy1WsmZpQbO+ybo0AlW7TY6DcBQ==}
     engines: {node: '>= 0.4'}
@@ -8710,6 +8766,19 @@ packages:
     resolution: {integrity: sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg==}
     dependencies:
       defaults: 1.0.4
+    dev: false
+
+  /web-encoding/1.1.5:
+    resolution: {integrity: sha512-HYLeVCdJ0+lBYV2FvNZmv3HJ2Nt0QYXqZojk3d9FJOLkwnuhzM9tmamh8d7HPM8QqjKH8DeHkFTx+CFlWpZZDA==}
+    dependencies:
+      util: 0.12.5
+    optionalDependencies:
+      '@zxing/text-encoding': 0.9.0
+    dev: false
+
+  /web-streams-polyfill/3.3.3:
+    resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
+    engines: {node: '>= 8'}
     dev: false
 
   /webidl-conversions/3.0.1:
