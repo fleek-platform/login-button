@@ -1,8 +1,8 @@
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 
 import { useCookies } from '@/providers/CookiesProvider';
-import { config } from '@/config';
 import { GraphqlClient } from '@/graphql/graphqlClient';
+import { getDefined } from '@/utils/defined';
 
 export type AuthProviders = 'dynamic';
 
@@ -16,9 +16,11 @@ export type AuthWith = {
 export const useAuthProviders = (): Record<AuthProviders, AuthWith> => {
   const dynamic = useAuthWithDynamic();
 
+  const isTestMode = getDefined('LB__TEST_MODE') === 'true';
+
   return {
     dynamic,
-    ...(config.TEST_MODE ? { mocked: getMockedProvider() } : {}),
+    ...(isTestMode ? { mocked: getMockedProvider() } : {}),
   };
 };
 

@@ -1,6 +1,6 @@
 import { Client, createClient, LoginWithDynamicDataInput } from '@fleek-platform/utils-genql-client';
 import { graphqlFetcher } from '@/graphql/graphqlFetcher';
-import { config } from '@/config';
+import { getDefined } from '@/utils/defined';
 
 type GraphqlClientOptions = {
   graphqlServiceApiUrl?: string;
@@ -10,7 +10,7 @@ export class GraphqlClient {
   private graphqlClient: Client;
   private graphqlServiceApiUrl: string;
 
-  constructor({ graphqlServiceApiUrl = config.SDK__GRAPHQL_API_URL! }: GraphqlClientOptions) {
+  constructor({ graphqlServiceApiUrl = getDefined('LB__GRAPHQL_API_URL') }: GraphqlClientOptions) {
     this.graphqlClient = createClient({
       fetcher: async (operation) =>
         graphqlFetcher({
