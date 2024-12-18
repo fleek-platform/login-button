@@ -2,11 +2,13 @@
 
 export type Defined = {
   LB__GRAPHQL_API_URL?: string;
+  LB__DYNAMIC_ENVIRONMENT_ID?: string;
   LB__TEST_MODE?: string;
 };
 
 export const defined: Defined = {
   LB__GRAPHQL_API_URL: process.env.LB__GRAPHQL_API_URL as string,
+  LB__DYNAMIC_ENVIRONMENT_ID: process.env.LB__DYNAMIC_ENVIRONMENT_ID as string,
   LB__TEST_MODE: process.env.LB__TEST_MODE as string,
 };
 

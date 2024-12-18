@@ -13,10 +13,10 @@ export type AuthWith = {
   token: string | undefined;
 };
 
+const isTestMode = getDefined('LB__TEST_MODE') === 'true';
+
 export const useAuthProviders = (): Record<AuthProviders, AuthWith> => {
   const dynamic = useAuthWithDynamic();
-
-  const isTestMode = getDefined('LB__TEST_MODE') === 'true';
 
   return {
     dynamic,

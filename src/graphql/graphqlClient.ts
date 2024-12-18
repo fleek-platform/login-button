@@ -6,11 +6,13 @@ type GraphqlClientOptions = {
   graphqlServiceApiUrl?: string;
 };
 
+const graphqlApiUrl = getDefined('LB__GRAPHQL_API_URL');
+
 export class GraphqlClient {
   private graphqlClient: Client;
   private graphqlServiceApiUrl: string;
 
-  constructor({ graphqlServiceApiUrl = getDefined('LB__GRAPHQL_API_URL') }: GraphqlClientOptions) {
+  constructor({ graphqlServiceApiUrl = graphqlApiUrl }: GraphqlClientOptions) {
     this.graphqlClient = createClient({
       fetcher: async (operation) =>
         graphqlFetcher({
