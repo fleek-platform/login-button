@@ -1,10 +1,6 @@
-import {
-  Client,
-  createClient,
-  GenerateUserSessionDetailsDataInput,
-  LoginWithDynamicDataInput,
-  SessionDetails,
-} from '@fleek-platform/utils-genql-client';
+// ! this import breaks
+import { Client, createClient, GenerateUserSessionDetailsDataInput, SessionDetails } from '@fleek-platform/utils-genql-client';
+
 import { graphqlFetcher } from '@/graphql/graphqlFetcher';
 import { getDefined } from '@/utils/defined';
 
@@ -12,9 +8,7 @@ type GraphqlClientOptions = {
   graphqlServiceApiUrl?: string;
 };
 
-const graphqlApiUrl = getDefined('LB__GRAPHQL_API_URL');
-
-// ! '@fleek-platform/utils-genql-client' from here can not be imported in client components
+const graphqlApiUrl = getDefined('NEXT_PUBLIC_LB__GRAPHQL_API_URL');
 
 export class GraphqlClient {
   private graphqlClient: Client;
@@ -45,19 +39,5 @@ export class GraphqlClient {
     });
 
     return response.generateUserSessionDetails;
-  };
-
-  // todo: remove this mutation
-  public loginWithDynamic = async (data: LoginWithDynamicDataInput): Promise<string> => {
-    const response = await this.graphqlClient.mutation({
-      __name: 'LoginWithDynamic',
-      loginWithDynamic: {
-        __args: {
-          data,
-        },
-      },
-    });
-
-    return response.loginWithDynamic;
   };
 }

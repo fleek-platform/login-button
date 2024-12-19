@@ -20,7 +20,7 @@ export const graphqlFetcher = async ({ endpoint, headers, operation }: GraphqlFe
   const map: string[] = [];
   const files: (typeof File)['prototype'][] = [];
 
-  // todo: remove probably
+  // todo: remove file support
   traverse(operation, ({ parent, key, value, meta }) => {
     if (parent && key && meta.nodePath && Object.prototype.toString.call(value) === '[object File]') {
       map.push(meta.nodePath);

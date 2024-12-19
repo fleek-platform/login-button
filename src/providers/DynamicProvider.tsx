@@ -9,7 +9,7 @@ import { useCookies } from '@/providers/CookiesProvider';
 import { getDefined } from '@/utils/defined';
 import { GraphqlClient } from '@/graphql/graphqlClient';
 import { FC, useState } from 'react';
-import { AuthComponent, AuthComponentProps } from '@/providers/AuthComponent';
+import { AuthComponent, AuthComponentProps } from '@/components/AuthComponent';
 
 export type DynamicProviderProps = Pick<AuthComponentProps, 'children'>;
 
@@ -19,7 +19,7 @@ export type AccessTokenResult = {
   error: unknown;
 };
 
-const environmentId = getDefined('LB__DYNAMIC_ENVIRONMENT_ID');
+const environmentId = getDefined('NEXT_PUBLIC_LB__DYNAMIC_ENVIRONMENT_ID');
 
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
   const cookies = useCookies();

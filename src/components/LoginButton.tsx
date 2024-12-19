@@ -1,4 +1,4 @@
-// 'use client';
+'use client';
 
 import { FC } from 'react';
 
@@ -14,6 +14,8 @@ const LoginButton: FC<Props> = ({ requestCookies }) => {
   return (
     <Providers requestCookies={requestCookies}>
       {({ login, logout, accessToken, isLoading, error }) => {
+        // console.log('accessToken', accessToken);
+
         const handleClick = () => {
           if (accessToken) logout();
           else login();

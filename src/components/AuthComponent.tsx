@@ -13,7 +13,7 @@ export type AuthComponentProps = {
   children: (props: ChildrenProps) => ReactNode;
 };
 
-// todo: move it to components folder, rename it maybe
+// todo: rename it maybe
 export const AuthComponent: FC<AuthComponentProps> = ({ children, accessTokenResult }) => {
   const dynamic = useDynamicContext();
 
