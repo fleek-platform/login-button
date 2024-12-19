@@ -1,4 +1,10 @@
-import { Client, createClient, LoginWithDynamicDataInput } from '@fleek-platform/utils-genql-client';
+import {
+  Client,
+  createClient,
+  GenerateUserSessionDetailsDataInput,
+  LoginWithDynamicDataInput,
+  SessionDetails,
+} from '@fleek-platform/utils-genql-client';
 import { graphqlFetcher } from '@/graphql/graphqlFetcher';
 import { getDefined } from '@/utils/defined';
 
@@ -27,6 +33,21 @@ export class GraphqlClient {
     this.graphqlServiceApiUrl = graphqlServiceApiUrl;
   }
 
+  public generateUserSessionDetails = async (data: GenerateUserSessionDetailsDataInput): Promise<SessionDetails> => {
+    const response = await this.graphqlClient.mutation({
+      __name: 'GenerateUserSessionDetails',
+      generateUserSessionDetails: {
+        __args: {
+          data,
+        },
+        __scalar: true,
+      },
+    });
+
+    return response.generateUserSessionDetails;
+  };
+
+  // todo: remove this mutation
   public loginWithDynamic = async (data: LoginWithDynamicDataInput): Promise<string> => {
     const response = await this.graphqlClient.mutation({
       __name: 'LoginWithDynamic',

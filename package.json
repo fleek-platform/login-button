@@ -25,7 +25,7 @@
     "viem": "^2.21.55"
   },
   "devDependencies": {
-    "@fleek-platform/utils-genql-client": "^0.2.2",
+    "@fleek-platform/utils-genql-client": "^0.4.0",
     "@types/luxon": "^3.4.2",
     "@types/node": "^20",
     "@types/react": "^18",

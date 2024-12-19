@@ -39,15 +39,14 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
     const authToken = getAuthToken();
     if (!authToken) return '';
 
-    // todo: set this
-    const projectId = '123';
-
     try {
       setIsLoading(true);
       setError(undefined);
 
       const graphqlClient = new GraphqlClient({});
-      const accessToken = await graphqlClient.loginWithDynamic({ authToken, projectId });
+      const sessionDetails = await graphqlClient.generateUserSessionDetails({ authToken });
+      const { accessToken } = sessionDetails;
+
       setAccessToken(accessToken);
     } catch (requestError) {
       setError(requestError);
