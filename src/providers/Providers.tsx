@@ -1,18 +1,14 @@
-import { FC, PropsWithChildren } from 'react';
+import { FC } from 'react';
 
 import { CookiesContext, CookiesProvider } from '@/providers/CookiesProvider';
-import { DynamicProvider } from '@/providers/DynamicProvider';
-import { AuthProvider } from '@/providers/AuthProvider';
+import { DynamicProvider, DynamicProviderProps } from '@/providers/DynamicProvider';
 
-type ProvidersProps = PropsWithChildren<{
+export type ProvidersProps = {
   requestCookies?: CookiesContext['values'];
-  forcedTheme?: string;
-}>;
+} & DynamicProviderProps;
 
 export const Providers: FC<ProvidersProps> = ({ children, requestCookies }) => (
   <CookiesProvider requestCookies={requestCookies}>
-    <DynamicProvider>
-      <AuthProvider>{children}</AuthProvider>
-    </DynamicProvider>
+    <DynamicProvider>{children}</DynamicProvider>
   </CookiesProvider>
 );

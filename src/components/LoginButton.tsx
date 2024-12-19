@@ -4,19 +4,26 @@ import { FC } from 'react';
 
 import Button from '@/components/Button';
 import { CookiesContext } from '@/providers/CookiesProvider';
-// import { Providers } from '@/providers/Providers';
+import { Providers } from '@/providers/Providers';
 
 type Props = {
   requestCookies?: CookiesContext['values'];
 };
 
-// todo: something from Providers fails with "use client"
-
 const LoginButton: FC<Props> = ({ requestCookies }) => {
   return (
-    // <Providers requestCookies={requestCookies}>
-    <Button>Login with Dynamic</Button>
-    // </Providers>
+    <Providers requestCookies={requestCookies}>
+      {({ login, logout, accessToken, isLoading, error }) => {
+        const handleClick = () => {
+          if (accessToken) logout();
+          else login();
+        };
+
+        const buttonText = error ? 'Login failed' : isLoading ? 'Loading...' : 'Login with Dynamic';
+
+        return <Button onClick={handleClick}>{buttonText}</Button>;
+      }}
+    </Providers>
   );
 };
 

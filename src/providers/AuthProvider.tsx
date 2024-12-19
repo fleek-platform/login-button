@@ -24,6 +24,8 @@ const [Provider, useContext] = createContext<AuthContext>({
   providerName: 'AuthProvider',
 });
 
+// todo: delete file
+
 export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const [accessToken, setAccessToken, clearAccessToken] = useAuthCookie();
   const [redirectUrl, setRedirectUrl] = useState<string | null>(null);

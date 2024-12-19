@@ -1,3 +1,5 @@
+'use client';
+
 import { deleteCookie, getCookies, setCookie } from 'cookies-next';
 import { OptionsType } from 'cookies-next/lib/types';
 import { useEffect, useState } from 'react';

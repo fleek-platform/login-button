@@ -8,6 +8,8 @@ type GraphqlClientOptions = {
 
 const graphqlApiUrl = getDefined('LB__GRAPHQL_API_URL');
 
+// ! '@fleek-platform/utils-genql-client' from here can not be imported in client components
+
 export class GraphqlClient {
   private graphqlClient: Client;
   private graphqlServiceApiUrl: string;
