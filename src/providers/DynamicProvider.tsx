@@ -26,7 +26,7 @@ const environmentId = getDefined('NEXT_PUBLIC_LB__DYNAMIC_ENVIRONMENT_ID');
 
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
   const cookies = useCookies();
-  const [, , clearAccessToken] = useAuthCookie();
+  const [, setAccessTokenAsCookie, clearAccessToken] = useAuthCookie();
   // const [, generateUserSessionDetails] = useGenerateUserSessionDetailsMutation();
 
   const [accessToken, setAccessToken] = useState('');
@@ -60,6 +60,9 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
       const sessionDetails = await generateUserSessionDetails(authToken);
       const { accessToken } = sessionDetails;
 
+      // set cookie
+      setAccessTokenAsCookie(accessToken);
+      // pass to login button
       setAccessToken(accessToken);
     } catch (requestError) {
       setError(requestError);

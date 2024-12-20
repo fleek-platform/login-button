@@ -3,11 +3,11 @@ import { FC } from 'react';
 import { CookiesContext, CookiesProvider } from '@/providers/CookiesProvider';
 import { DynamicProvider, DynamicProviderProps } from '@/providers/DynamicProvider';
 
-export type ProvidersProps = {
+export type LoginProviderProps = {
   requestCookies?: CookiesContext['values'];
 } & DynamicProviderProps;
 
-export const Providers: FC<ProvidersProps> = ({ children, requestCookies }) => (
+export const LoginProvider: FC<LoginProviderProps> = ({ children, requestCookies }) => (
   <CookiesProvider requestCookies={requestCookies}>
     <DynamicProvider>{children}</DynamicProvider>
   </CookiesProvider>

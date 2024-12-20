@@ -2,33 +2,50 @@
 
 import { FC } from 'react';
 
-import Button from '@/components/Button';
+import Button from '@/components/ui/Button';
 import { CookiesContext } from '@/providers/CookiesProvider';
-import { Providers } from '@/providers/Providers';
+import { LoginProvider } from '@/providers/LoginProvider';
 
 type Props = {
   requestCookies?: CookiesContext['values'];
 };
 
+// example usage
 const LoginButton: FC<Props> = ({ requestCookies }) => {
   return (
-    <Providers requestCookies={requestCookies}>
+    <LoginProvider requestCookies={requestCookies}>
       {({ login, logout, accessToken, isLoading, error }) => {
+        //
         const handleClick = () => {
-          if (accessToken) logout();
-          else login();
+          if (Boolean(accessToken)) {
+            logout();
+          } else {
+            login();
+          }
         };
 
-        const buttonText = error ? 'Login failed' : isLoading ? 'Loading...' : 'Login with Dynamic';
+        let buttonText = 'Login with Dynamic';
+
+        switch (true) {
+          case Boolean(error):
+            buttonText = 'Login failed';
+            break;
+          case isLoading:
+            buttonText = 'Loading...';
+            break;
+          case Boolean(accessToken):
+            buttonText = 'Log out';
+            break;
+        }
 
         return (
           <>
             <Button onClick={handleClick}>{buttonText}</Button>
-            {accessToken && <p className="max-w-64 break-words">accessToken: {accessToken}</p>}
+            {accessToken && <p className="max-w-64 break-words mt-4">accessToken: {accessToken}</p>}
           </>
         );
       }}
-    </Providers>
+    </LoginProvider>
   );
 };
 
