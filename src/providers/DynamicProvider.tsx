@@ -5,9 +5,11 @@ import { DynamicContextProvider } from '@dynamic-labs/sdk-react-core';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
 import { useAuthCookie } from '@/hooks/useAuthCookie';
 
+// import { GraphqlClient } from '@/graphql/graphqlClient';
+import { useGenerateUserSessionDetailsMutation } from '@/generated/graphqlClient';
+
 import { useCookies } from '@/providers/CookiesProvider';
 import { getDefined } from '@/utils/defined';
-import { GraphqlClient } from '@/graphql/graphqlClient';
 import { FC, useState } from 'react';
 import { AuthComponent, AuthComponentProps } from '@/components/AuthComponent';
 
@@ -24,6 +26,7 @@ const environmentId = getDefined('NEXT_PUBLIC_LB__DYNAMIC_ENVIRONMENT_ID');
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
   const cookies = useCookies();
   const [, , clearAccessToken] = useAuthCookie();
+  const [, generateUserSessionDetails] = useGenerateUserSessionDetailsMutation();
 
   const [accessToken, setAccessToken] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -43,11 +46,21 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
       setIsLoading(true);
       setError(undefined);
 
-      const graphqlClient = new GraphqlClient({});
-      const sessionDetails = await graphqlClient.generateUserSessionDetails({ authToken });
-      const { accessToken } = sessionDetails;
+      // const graphqlClient = new GraphqlClient({});
+      // const sessionDetails = await graphqlClient.generateUserSessionDetails({ authToken });
 
-      setAccessToken(accessToken);
+      const { data, error } = await generateUserSessionDetails({
+        data: { authToken },
+      });
+
+      const sessionDetails = data?.generateUserSessionDetails;
+
+      if (sessionDetails) {
+        const { accessToken } = sessionDetails;
+        return setAccessToken(accessToken);
+      }
+
+      throw error;
     } catch (requestError) {
       setError(requestError);
     } finally {
