@@ -10,6 +10,8 @@ export interface SessionDetails {
   __typename: 'SessionDetails';
 }
 
+// Note: replace this with @fleek-platform/utils-genql-client when that package gets fixed (currently it breaks the build)
+
 export const generateUserSessionDetails = async (authToken: string): Promise<SessionDetails> => {
   const response = await fetch(graphqlApiUrl, {
     method: 'POST',

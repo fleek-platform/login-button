@@ -1,6 +1,5 @@
 import { FC, ReactNode } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
-
 import { AccessTokenResult } from '@/providers/DynamicProvider';
 
 export type ChildrenProps = {
@@ -13,7 +12,6 @@ export type AuthComponentProps = {
   children: (props: ChildrenProps) => ReactNode;
 };
 
-// todo: rename it maybe
 export const AuthComponent: FC<AuthComponentProps> = ({ children, accessTokenResult }) => {
   const dynamic = useDynamicContext();
 

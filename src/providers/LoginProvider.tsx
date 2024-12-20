@@ -7,6 +7,7 @@ export type LoginProviderProps = {
   requestCookies?: CookiesContext['values'];
 } & DynamicProviderProps;
 
+// main component to publish
 export const LoginProvider: FC<LoginProviderProps> = ({ children, requestCookies }) => (
   <CookiesProvider requestCookies={requestCookies}>
     <DynamicProvider>{children}</DynamicProvider>

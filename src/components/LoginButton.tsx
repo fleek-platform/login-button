@@ -34,6 +34,7 @@ const LoginButton: FC<Props> = ({ requestCookies }) => {
           case isLoading:
             buttonText = 'Loading...';
             break;
+          // not real session, session is in the cookie, just for demo
           case Boolean(accessToken):
             buttonText = 'Log out';
             break;
