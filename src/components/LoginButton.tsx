@@ -14,8 +14,6 @@ const LoginButton: FC<Props> = ({ requestCookies }) => {
   return (
     <Providers requestCookies={requestCookies}>
       {({ login, logout, accessToken, isLoading, error }) => {
-        // console.log('accessToken', accessToken);
-
         const handleClick = () => {
           if (accessToken) logout();
           else login();
@@ -23,7 +21,12 @@ const LoginButton: FC<Props> = ({ requestCookies }) => {
 
         const buttonText = error ? 'Login failed' : isLoading ? 'Loading...' : 'Login with Dynamic';
 
-        return <Button onClick={handleClick}>{buttonText}</Button>;
+        return (
+          <>
+            <Button onClick={handleClick}>{buttonText}</Button>
+            {accessToken && <p className="max-w-64 break-words">accessToken: {accessToken}</p>}
+          </>
+        );
       }}
     </Providers>
   );
