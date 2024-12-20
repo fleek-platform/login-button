@@ -14,8 +14,9 @@ type Props = {
 const LoginButton: FC<Props> = ({ requestCookies }) => {
   return (
     <LoginProvider requestCookies={requestCookies}>
-      {({ login, logout, accessToken, isLoading, error }) => {
-        //
+      {(props) => {
+        const { login, logout, accessToken, isLoading, error } = props;
+
         const handleClick = () => {
           if (Boolean(accessToken)) {
             logout();

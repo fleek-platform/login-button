@@ -1,3 +1,5 @@
+import { UnauthorizedError, UnknownError } from '@fleek-platform/errors';
+import * as errors from '@fleek-platform/errors';
 import { getDefined } from '@/utils/defined';
 
 const graphqlApiUrl = getDefined('NEXT_PUBLIC_LB__GRAPHQL_API_URL');
@@ -30,11 +32,28 @@ export const generateUserSessionDetails = async (authToken: string): Promise<Ses
   });
 
   if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status}`);
+    if (response.status === 401) {
+      throw new UnauthorizedError({});
+    }
+
+    throw new UnknownError();
   }
 
   const jsonResponse = await response.json();
-  const sessionDetails: SessionDetails = jsonResponse.data.generateUserSessionDetails;
+  const error = jsonResponse?.errors?.[0];
 
-  return sessionDetails;
+  if (!error) {
+    const sessionDetails: SessionDetails = jsonResponse.data.generateUserSessionDetails;
+    return sessionDetails;
+  }
+
+  if ('extensions' in error) {
+    const errorClass: typeof Error = (errors as any)?.[error.extensions.name];
+
+    if (errorClass) {
+      throw new errorClass(error.extensions.data);
+    }
+  }
+
+  throw new UnknownError();
 };
