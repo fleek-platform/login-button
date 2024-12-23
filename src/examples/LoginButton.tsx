@@ -4,7 +4,7 @@ import { FC } from 'react';
 
 import Button from '@/components/ui/Button';
 import { CookiesContext } from '@/providers/CookiesProvider';
-import { LoginProvider } from '@/providers/LoginProvider';
+import LoginProvider from '@/providers/LoginProvider';
 
 type Props = {
   requestCookies?: CookiesContext['values'];

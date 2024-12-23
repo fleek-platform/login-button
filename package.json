@@ -1,13 +1,13 @@
 {
   "name": "login-button",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "A standalone login component with an embedded Dynamic modal that functions independently of host application.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "PORT=3007 next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "clean": "rm -rf node_modules pnpm-lock.yaml"
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "clean:nm": "rm -rf node_modules pnpm-lock.yaml"
   },
   "dependencies": {
     "@dynamic-labs/ethereum": "3.9.2",
@@ -16,7 +16,6 @@
     "@fleek-platform/utils-token": "^0.2.2",
     "cookies-next": "^2.1.1",
     "luxon": "^3.5.0",
-    "next": "14.2.7",
     "react": "^18",
     "react-dom": "^18",
     "viem": "^2.21.55"
@@ -33,5 +32,10 @@
     "prettier": "^2.8.8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fleek-platform/login-button"
+  },
+  "license": "MIT"
 }
