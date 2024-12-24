@@ -4,8 +4,8 @@ import { deleteCookie, getCookies, setCookie } from 'cookies-next';
 import { OptionsType } from 'cookies-next/lib/types';
 import { useEffect, useState } from 'react';
 
-import { createContext } from '@/utils/createContext';
-import { isServerSide } from '@/utils/isServerSide';
+import { createContext } from '../utils/createContext';
+import { isServerSide } from '../utils/isServerSide';
 
 class CookiesError extends Error {
   constructor(message: string) {

@@ -2,9 +2,9 @@
 
 import { FC } from 'react';
 
-import Button from '@/examples/components/Button';
-import { CookiesContext } from '@/providers/CookiesProvider';
-import LoginProvider from '@/providers/LoginProvider';
+import Button from './components/Button';
+import { CookiesContext } from '../providers/CookiesProvider';
+import LoginProvider from '../providers/LoginProvider';
 
 type Props = {
   requestCookies?: CookiesContext['values'];

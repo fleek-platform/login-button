@@ -1,1 +1,1 @@
-export { default } from '@/providers/LoginProvider';
+export { default } from './providers/LoginProvider';

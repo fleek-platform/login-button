@@ -1,6 +1,6 @@
 import { UnauthorizedError, UnknownError } from '@fleek-platform/errors';
 import * as errors from '@fleek-platform/errors';
-import { getDefined } from '@/utils/defined';
+import { getDefined } from '../utils/defined';
 
 const graphqlApiUrl = getDefined('NEXT_PUBLIC_LB__GRAPHQL_API_URL');
 

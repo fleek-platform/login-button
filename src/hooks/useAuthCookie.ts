@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { decodeAccessToken } from '@fleek-platform/utils-token';
-import { useCookies } from '@/providers/CookiesProvider';
-import { Log } from '@/utils/log';
+import { useCookies } from '../providers/CookiesProvider';
+import { Log } from '../utils/log';
 
 const key = 'accessToken';
 

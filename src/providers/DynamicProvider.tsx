@@ -3,12 +3,12 @@
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
 import { DynamicContextProvider } from '@dynamic-labs/sdk-react-core';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
-import { useAuthCookie } from '@/hooks/useAuthCookie';
-import { useCookies } from '@/providers/CookiesProvider';
-import { getDefined } from '@/utils/defined';
+import { useAuthCookie } from '../hooks/useAuthCookie';
+import { useCookies } from '../providers/CookiesProvider';
+import { getDefined } from '../utils/defined';
 import { FC, useState } from 'react';
-import { AuthComponent, AuthComponentProps } from '@/components/AuthComponent';
-import { generateUserSessionDetails } from '@/graphql/fetchGenerateUserSessionDetails';
+import { AuthComponent, AuthComponentProps } from '../components/AuthComponent';
+import { generateUserSessionDetails } from '../graphql/fetchGenerateUserSessionDetails';
 
 export type DynamicProviderProps = Pick<AuthComponentProps, 'children'>;
 
