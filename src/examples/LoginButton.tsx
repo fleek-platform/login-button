@@ -2,7 +2,7 @@
 
 import { FC } from 'react';
 
-import Button from '@/components/ui/Button';
+import Button from '@/examples/components/Button';
 import { CookiesContext } from '@/providers/CookiesProvider';
 import LoginProvider from '@/providers/LoginProvider';
 
@@ -12,6 +12,12 @@ type Props = {
 
 // example usage
 const LoginButton: FC<Props> = ({ requestCookies }) => {
+  const paragraphStyles = {
+    maxWidth: '16rem',
+    wordBreak: 'break-word',
+    marginTop: '1rem',
+  } as const;
+
   return (
     <LoginProvider requestCookies={requestCookies}>
       {(props) => {
@@ -43,7 +49,7 @@ const LoginButton: FC<Props> = ({ requestCookies }) => {
         return (
           <>
             <Button onClick={handleClick}>{buttonText}</Button>
-            {accessToken && <p className="max-w-64 break-words mt-4">accessToken: {accessToken}</p>}
+            {accessToken && <p style={paragraphStyles}>accessToken: {accessToken}</p>}
           </>
         );
       }}
