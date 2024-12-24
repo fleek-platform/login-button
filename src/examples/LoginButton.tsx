@@ -19,7 +19,7 @@ const LoginButton: FC<Props> = ({ requestCookies }) => {
   } as const;
 
   return (
-    <LoginProvider requestCookies={requestCookies}>
+    <LoginProvider requestCookies={requestCookies} graphqlApiUrl="https://example.com/graphql" environmentId="my-env-id">
       {(props) => {
         const { login, logout, accessToken, isLoading, error } = props;
 

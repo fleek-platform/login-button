@@ -8,9 +8,11 @@ export type LoginProviderProps = {
 } & DynamicProviderProps;
 
 // main component to publish
-const LoginProvider: FC<LoginProviderProps> = ({ children, requestCookies }) => (
+const LoginProvider: FC<LoginProviderProps> = ({ children, requestCookies, graphqlApiUrl, environmentId }) => (
   <CookiesProvider requestCookies={requestCookies}>
-    <DynamicProvider>{children}</DynamicProvider>
+    <DynamicProvider graphqlApiUrl={graphqlApiUrl} environmentId={environmentId}>
+      {children}
+    </DynamicProvider>
   </CookiesProvider>
 );
 

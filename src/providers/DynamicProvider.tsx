@@ -10,7 +10,11 @@ import { FC, useState } from 'react';
 import { AuthComponent, AuthComponentProps } from '../components/AuthComponent';
 import { generateUserSessionDetails } from '../graphql/fetchGenerateUserSessionDetails';
 
-export type DynamicProviderProps = Pick<AuthComponentProps, 'children'>;
+export type DynamicProviderProps = Pick<AuthComponentProps, 'children'> &
+  Partial<{
+    graphqlApiUrl: string;
+    environmentId: string;
+  }>;
 
 export type AccessTokenResult = {
   accessToken: string;
@@ -18,9 +22,11 @@ export type AccessTokenResult = {
   error: unknown;
 };
 
-const environmentId = getDefined('NEXT_PUBLIC_LB__DYNAMIC_ENVIRONMENT_ID');
-
-export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
+export const DynamicProvider: FC<DynamicProviderProps> = ({
+  children,
+  graphqlApiUrl,
+  environmentId = getDefined('NEXT_PUBLIC_LB__DYNAMIC_ENVIRONMENT_ID'),
+}) => {
   const cookies = useCookies();
   const [, setAccessTokenAsCookie, clearAccessToken] = useAuthCookie();
 
@@ -42,7 +48,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
       setIsLoading(true);
       setError(undefined);
 
-      const sessionDetails = await generateUserSessionDetails(authToken);
+      const sessionDetails = await generateUserSessionDetails(authToken, graphqlApiUrl);
       const { accessToken } = sessionDetails;
 
       // set cookie
