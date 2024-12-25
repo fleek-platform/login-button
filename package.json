@@ -13,7 +13,7 @@
     "transpile": "pnpm exec tsc -p tsconfig.json",
     "format": "pnpm exec biome format --write ./src",
     "format:check": "pnpm exec biome format ./src",
-    "lint": "pnpm exec biome lint --write --changed --no-errors-on-unmatched ./src",
+    "lint": "pnpm exec biome lint --write --no-errors-on-unmatched ./src",
     "lint:check": "pnpm exec biome lint ./src",
     "clean:nm": "rm -rf node_modules pnpm-lock.yaml",
     "clean": "pnpm \"/^clean:.*/\"",

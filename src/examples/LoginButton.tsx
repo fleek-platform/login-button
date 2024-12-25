@@ -1,9 +1,9 @@
 'use client';
 
-import React, { FC } from 'react';
+import React, { type FC } from 'react';
 
 import Button from './components/Button';
-import { CookiesContext } from '../providers/CookiesProvider';
+import type { CookiesContext } from '../providers/CookiesProvider';
 import LoginProvider from '../providers/LoginProvider';
 
 type Props = {
@@ -24,7 +24,7 @@ const LoginButton: FC<Props> = ({ requestCookies }) => {
         const { login, logout, accessToken, isLoading, error } = props;
 
         const handleClick = () => {
-          if (Boolean(accessToken)) {
+          if (accessToken) {
             logout();
           } else {
             login();

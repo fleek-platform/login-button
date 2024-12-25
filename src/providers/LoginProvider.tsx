@@ -1,7 +1,7 @@
-import { FC } from 'react';
+import type { FC } from 'react';
 
-import { CookiesContext, CookiesProvider } from '../providers/CookiesProvider';
-import { DynamicProvider, DynamicProviderProps } from '../providers/DynamicProvider';
+import { type CookiesContext, CookiesProvider } from '../providers/CookiesProvider';
+import { DynamicProvider, type DynamicProviderProps } from '../providers/DynamicProvider';
 
 export type LoginProviderProps = {
   requestCookies?: CookiesContext['values'];

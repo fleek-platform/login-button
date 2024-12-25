@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react';
+import React, { type FC, type ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -21,7 +21,7 @@ const Button: FC<Props> = ({ children, onClick, className = '', disabled = false
   };
 
   return (
-    <button onClick={onClick} disabled={disabled} style={buttonStyles} className={className}>
+    <button type="button" onClick={onClick} disabled={disabled} style={buttonStyles} className={className}>
       {children}
     </button>
   );

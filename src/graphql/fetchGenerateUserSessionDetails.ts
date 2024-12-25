@@ -12,7 +12,7 @@ export interface SessionDetails {
 
 export const generateUserSessionDetails = async (
   authToken: string,
-  graphqlApiUrl = getDefined('NEXT_PUBLIC_LB__GRAPHQL_API_URL')
+  graphqlApiUrl = getDefined('NEXT_PUBLIC_LB__GRAPHQL_API_URL'),
 ): Promise<SessionDetails> => {
   const response = await fetch(graphqlApiUrl, {
     method: 'POST',
@@ -51,7 +51,7 @@ export const generateUserSessionDetails = async (
   }
 
   if ('extensions' in error) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // biome-ignore lint: Enable any for error handling
     const errorClass: typeof Error = (errors as any)?.[error.extensions.name];
 
     if (errorClass) {

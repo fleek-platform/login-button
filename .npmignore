@@ -1,9 +1,7 @@
 src/
 tsconfig.json
-eslintrc.js
+biome.json
 commintlint.config.js
-.prettierrc
-.prettierignore
 node_modules/
 .vscode
 .env*
