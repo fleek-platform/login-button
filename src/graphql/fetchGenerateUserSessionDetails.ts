@@ -51,6 +51,7 @@ export const generateUserSessionDetails = async (
   }
 
   if ('extensions' in error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const errorClass: typeof Error = (errors as any)?.[error.extensions.name];
 
     if (errorClass) {

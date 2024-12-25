@@ -1,6 +1,6 @@
 'use client';
 
-import { FC } from 'react';
+import React, { FC } from 'react';
 
 import Button from './components/Button';
 import { CookiesContext } from '../providers/CookiesProvider';
