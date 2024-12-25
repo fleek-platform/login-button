@@ -4,20 +4,17 @@
   "description": "A standalone login component with an embedded Dynamic modal that functions independently of host application.",
   "repository": "https://github.com/fleek-platform/login-button",
   "homepage": "https://github.com/fleek-platform/login-button",
-  "keywords": [
-    "fleek",
-    "auth",
-    "dynamic"
-  ],
+  "keywords": ["fleek", "auth", "dynamic"],
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "pnpm clean:dist && pnpm transpile",
     "transpile": "pnpm exec tsc -p tsconfig.json",
-    "lint": "eslint 'src/**/*.{js,ts}'",
-    "format": "prettier . --write",
-    "format:check": "prettier . --check",
+    "format": "pnpm exec biome format --write ./src",
+    "format:check": "pnpm exec biome format ./src",
+    "lint": "pnpm exec biome lint --write --changed --no-errors-on-unmatched ./src",
+    "lint:check": "pnpm exec biome lint ./src",
     "clean:nm": "rm -rf node_modules pnpm-lock.yaml",
     "clean": "pnpm \"/^clean:.*/\"",
     "clean:dist": "rm -rf dist",
@@ -35,15 +32,12 @@
     "viem": "^2.21.55"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
     "@types/luxon": "^3.4.2",
     "@types/node": "^20",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.9",
-    "eslint": "^9.2.0",
-    "@eslint/js": "^9.2.0",
-    "typescript-eslint": "^7.8.0",
     "pino-pretty": "^13.0.0",
-    "prettier": "^2.8.8",
-    "typescript": "5.5.4"
+    "typescript": "5.6.2"
   }
 }
