@@ -11,11 +11,13 @@
   "scripts": {
     "build": "pnpm clean:dist && pnpm transpile",
     "transpile": "pnpm exec tsc -p tsconfig.json",
+    "changeset:add": "pnpm exec changeset",
+    "changeset:status": "pnpm exec changeset status",
+    "changeset:version": "pnpm exec changeset version",
     "format": "pnpm exec biome format --write ./src",
     "format:check": "pnpm exec biome format ./src",
     "lint": "pnpm exec biome lint --write --no-errors-on-unmatched ./src",
     "lint:check": "pnpm exec biome lint ./src",
-    "clean:nm": "rm -rf node_modules pnpm-lock.yaml",
     "clean": "pnpm \"/^clean:.*/\"",
     "clean:dist": "rm -rf dist",
     "clean:node": "rm -rf node_modules"
@@ -33,6 +35,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
+    "@changesets/cli": "^2.27.9",
     "@types/luxon": "^3.4.2",
     "@types/node": "^20",
     "@types/react": "^18.0.9",
