@@ -53,16 +53,15 @@ For developers looking to contribute to the `@fleek-platform/login-button`, [clo
 
 For runtime we utilize [Nodejs](https://nodejs.org/en/download) and [PNPM](https://pnpm.io/installation) as the package manager.
 
-Create a new file named .env in the root directory of your project. This file will store environment variables needed for local development.
+The package leaves the environment variables undefined and it's responsibility of your project to define them. Create a new file named `.env` in the root directory of your project. This file will store environment variables needed for local development.
 
 ```sh
 touch .env.production
 ```
 
-Open the .env.production file in a text editor and add the following:
+Open the `.env.production` file in a text editor and add the following:
 
 ```sh
-# todo: update these
 NEXT_PUBLIC_LB__GRAPHQL_API_URL=https://graphql.service.fleek.xyz/graphql
 NEXT_PUBLIC_LB__DYNAMIC_ENVIRONMENT_ID=your-dynamic-environment-id
 ```
