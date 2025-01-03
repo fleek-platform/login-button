@@ -1,18 +1,17 @@
 export const Log = {
   IDENTIFIER: '[flk]',
-
+  // biome-ignore lint: Enable any for logging function
   error(...args: any[]): void {
-    // eslint-disable-next-line no-console
     console.error(this.IDENTIFIER, ...args);
   },
 
+  // biome-ignore lint: Enable any for logging function
   warn(...args: any[]): void {
-    // eslint-disable-next-line no-console
     console.warn(this.IDENTIFIER, ...args);
   },
 
+  // biome-ignore lint: Enable any for logging function
   info(...args: any[]): void {
-    // eslint-disable-next-line no-console
     console.info(this.IDENTIFIER, ...args);
   },
 };

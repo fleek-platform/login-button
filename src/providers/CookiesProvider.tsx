@@ -1,11 +1,11 @@
 'use client';
 
 import { deleteCookie, getCookies, setCookie } from 'cookies-next';
-import { OptionsType } from 'cookies-next/lib/types';
+import type { OptionsType } from 'cookies-next/lib/types';
 import { useEffect, useState } from 'react';
 
-import { createContext } from '@/utils/createContext';
-import { isServerSide } from '@/utils/isServerSide';
+import { createContext } from '../utils/createContext';
+import { isServerSide } from '../utils/isServerSide';
 
 class CookiesError extends Error {
   constructor(message: string) {
@@ -33,7 +33,7 @@ export const CookiesProvider: React.FC<React.PropsWithChildren<{ requestCookies?
   children,
 }) => {
   const [cookies, setCookies] = useState<CookiesContext['values']>(
-    isServerSide() ? requestCookies : (getCookies() as CookiesContext['values'])
+    isServerSide() ? requestCookies : (getCookies() as CookiesContext['values']),
   );
 
   useEffect(() => {
@@ -48,7 +48,6 @@ export const CookiesProvider: React.FC<React.PropsWithChildren<{ requestCookies?
     }, 3000);
 
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cookies]);
 
   const set: CookiesContext['set'] = (key, value, options = {}) => {

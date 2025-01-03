@@ -1,6 +1,6 @@
-import { FC, ReactNode } from 'react';
+import type { FC, ReactNode } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
-import { AccessTokenResult } from '@/providers/DynamicProvider';
+import type { AccessTokenResult } from '../providers/DynamicProvider';
 
 export type ChildrenProps = {
   login: () => void;

@@ -47,22 +47,6 @@ For developers looking to contribute to the `@fleek-platform/login-button`, [clo
 
 For runtime we utilize [Nodejs](https://nodejs.org/en/download) and [PNPM](https://pnpm.io/installation) as the package manager.
 
-Create a new file named .env in the root directory of your project. This file will store environment variables needed for local development.
-
-```sh
-touch .env.production
-```
-
-Open the .env.production file in a text editor and add the following:
-
-```sh
-# todo: update these
-NEXT_PUBLIC_LB__GRAPHQL_API_URL=https://graphql.service.fleek.xyz/graphql
-NEXT_PUBLIC_LB__DYNAMIC_ENVIRONMENT_ID=your-dynamic-environment-id
-```
-
-💡 The variables above point to our production environment, the same you interact with as an end-user.
-
 Next, install the project dependencies:
 
 ```sh
@@ -83,12 +67,27 @@ pnpm changeset:add
 
 Make use of the exported `LoginProvider` component. Exposed props are: `login`, `logout`, `accessToken`, `isLoading` and `error`.
 
+You need to set the following required props:
+
+```tsx
+<LoginProvider
+  graphqlApiUrl="..."
+  environmentId="..."
+  //...
+/>
+```
+
 Example usage:
 
 ```tsx
 import { LoginProvider } from '@fleek-platform/login-button';
 
-<LoginProvider requestCookies={requestCookies}>
+<LoginProvider
+  graphqlApiUrl="https://example.com/graphql"
+  environmentId="my-env-id"
+  requestCookies={requestCookies}
+  //
+>
   {(props) => {
     const { login, logout, accessToken, isLoading, error } = props;
 

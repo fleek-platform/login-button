@@ -1,8 +1,5 @@
 import { UnauthorizedError, UnknownError } from '@fleek-platform/errors';
 import * as errors from '@fleek-platform/errors';
-import { getDefined } from '@/utils/defined';
-
-const graphqlApiUrl = getDefined('NEXT_PUBLIC_LB__GRAPHQL_API_URL');
 
 export interface SessionDetails {
   accessToken: string;
@@ -12,7 +9,7 @@ export interface SessionDetails {
 
 // Note: replace this with @fleek-platform/utils-genql-client when that package gets fixed (currently it breaks the build)
 
-export const generateUserSessionDetails = async (authToken: string): Promise<SessionDetails> => {
+export const generateUserSessionDetails = async (graphqlApiUrl: string, authToken: string): Promise<SessionDetails> => {
   const response = await fetch(graphqlApiUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -50,6 +47,7 @@ export const generateUserSessionDetails = async (authToken: string): Promise<Ses
   }
 
   if ('extensions' in error) {
+    // biome-ignore lint: Enable any for error handling
     const errorClass: typeof Error = (errors as any)?.[error.extensions.name];
 
     if (errorClass) {

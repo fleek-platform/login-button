@@ -1,10 +1,10 @@
 'use client';
 
-import { FC } from 'react';
+import React, { type FC } from 'react';
 
-import Button from '@/components/ui/Button';
-import { CookiesContext } from '@/providers/CookiesProvider';
-import { LoginProvider } from '@/providers/LoginProvider';
+import Button from './components/Button';
+import type { CookiesContext } from '../providers/CookiesProvider';
+import LoginProvider from '../providers/LoginProvider';
 
 type Props = {
   requestCookies?: CookiesContext['values'];
@@ -12,13 +12,19 @@ type Props = {
 
 // example usage
 const LoginButton: FC<Props> = ({ requestCookies }) => {
+  const paragraphStyles = {
+    maxWidth: '16rem',
+    wordBreak: 'break-word',
+    marginTop: '1rem',
+  } as const;
+
   return (
-    <LoginProvider requestCookies={requestCookies}>
+    <LoginProvider requestCookies={requestCookies} graphqlApiUrl="https://example.com/graphql" environmentId="my-env-id">
       {(props) => {
         const { login, logout, accessToken, isLoading, error } = props;
 
         const handleClick = () => {
-          if (Boolean(accessToken)) {
+          if (accessToken) {
             logout();
           } else {
             login();
@@ -43,7 +49,7 @@ const LoginButton: FC<Props> = ({ requestCookies }) => {
         return (
           <>
             <Button onClick={handleClick}>{buttonText}</Button>
-            {accessToken && <p className="max-w-64 break-words mt-4">accessToken: {accessToken}</p>}
+            {accessToken && <p style={paragraphStyles}>accessToken: {accessToken}</p>}
           </>
         );
       }}

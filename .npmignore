@@ -1,0 +1,7 @@
+src/
+tsconfig.json
+biome.json
+commintlint.config.js
+node_modules/
+.vscode
+.env*
