@@ -1,6 +1,5 @@
 import { UnauthorizedError, UnknownError } from '@fleek-platform/errors';
 import * as errors from '@fleek-platform/errors';
-import { getDefined } from '../utils/defined';
 
 export interface SessionDetails {
   accessToken: string;
@@ -10,10 +9,7 @@ export interface SessionDetails {
 
 // Note: replace this with @fleek-platform/utils-genql-client when that package gets fixed (currently it breaks the build)
 
-export const generateUserSessionDetails = async (
-  authToken: string,
-  graphqlApiUrl = getDefined('NEXT_PUBLIC_LB__GRAPHQL_API_URL'),
-): Promise<SessionDetails> => {
+export const generateUserSessionDetails = async (graphqlApiUrl: string, authToken: string): Promise<SessionDetails> => {
   const response = await fetch(graphqlApiUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

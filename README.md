@@ -45,28 +45,7 @@ For a quick start, learn the [basic usage](#basic-usage).
 
 For developers looking to contribute to the `@fleek-platform/login-button`, [clone](https://github.com/fleekxyz/login-button) the repository and follow the [contribution guide](#contributing).
 
-💡 Note: These environment variables are optional, set them only if you aren't passing props to the `LoginProvider`component.
-
-```tsx
-<LoginProvider {...otherProps} graphqlApiUrl="https://example.com/graphql" environmentId="my-env-id">
-```
-
 For runtime we utilize [Nodejs](https://nodejs.org/en/download) and [PNPM](https://pnpm.io/installation) as the package manager.
-
-The package leaves the environment variables undefined and it's responsibility of your project to define them. Create a new file named `.env` in the root directory of your project. This file will store environment variables needed for local development.
-
-```sh
-touch .env.production
-```
-
-Open the `.env.production` file in a text editor and add the following:
-
-```sh
-NEXT_PUBLIC_LB__GRAPHQL_API_URL=https://graphql.service.fleek.xyz/graphql
-NEXT_PUBLIC_LB__DYNAMIC_ENVIRONMENT_ID=your-dynamic-environment-id
-```
-
-💡 The variables above point to our production environment, the same you interact with as an end-user.
 
 Next, install the project dependencies:
 
@@ -88,7 +67,7 @@ pnpm changeset:add
 
 Make use of the exported `LoginProvider` component. Exposed props are: `login`, `logout`, `accessToken`, `isLoading` and `error`.
 
-If these optional props aren't supplied:
+You need to set the following required props:
 
 ```tsx
 <LoginProvider
@@ -96,13 +75,6 @@ If these optional props aren't supplied:
   environmentId="..."
   //...
 />
-```
-
-these environment variables will be used as a fallback:
-
-```sh
-NEXT_PUBLIC_LB__GRAPHQL_API_URL
-NEXT_PUBLIC_LB__DYNAMIC_ENVIRONMENT_ID
 ```
 
 Example usage:
