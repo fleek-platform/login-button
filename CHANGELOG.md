@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 1.0.1
+
+### Patch Changes
+
+- Change from commonjs to esm to fix loading in Next.js app
+
 ## 1.0.0
 
 ### Major Changes
