@@ -3,10 +3,8 @@
     "target": "es2020",
     "module": "es2020",
     "lib": ["es2020", "dom"],
-    // only way to build @dynamic-labs/sdk-react-core
-    // https://github.com/reown-com/appkit/issues/1211
     "skipLibCheck": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "declaration": true,
     "outDir": "dist",
     "strict": true,
