@@ -1,6 +1,6 @@
 {
   "name": "@fleek-platform/login-button",
-  "version": "1.0.1",
+  "version": "1.0.9",
   "description": "A standalone login component with an embedded Dynamic modal that functions independently of host application.",
   "repository": "https://github.com/fleek-platform/login-button",
   "homepage": "https://github.com/fleek-platform/login-button",
@@ -10,8 +10,16 @@
     "dynamic"
   ],
   "license": "MIT",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    }
+  },
   "scripts": {
     "build": "pnpm clean:dist && pnpm transpile",
     "transpile": "pnpm exec tsc -p tsconfig.json",

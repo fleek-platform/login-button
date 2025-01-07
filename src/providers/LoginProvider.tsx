@@ -8,12 +8,16 @@ export type LoginProviderProps = {
 } & DynamicProviderProps;
 
 // main component to publish
-const LoginProvider: FC<LoginProviderProps> = ({ children, requestCookies, graphqlApiUrl, environmentId }) => (
-  <CookiesProvider requestCookies={requestCookies}>
-    <DynamicProvider graphqlApiUrl={graphqlApiUrl} environmentId={environmentId}>
-      {children}
-    </DynamicProvider>
-  </CookiesProvider>
-);
+export const LoginProvider: FC<LoginProviderProps> = ({ children, requestCookies, graphqlApiUrl, environmentId }) => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
 
-export default LoginProvider;
+  return (
+    <CookiesProvider requestCookies={requestCookies}>
+      <DynamicProvider graphqlApiUrl={graphqlApiUrl} environmentId={environmentId}>
+        {children}
+      </DynamicProvider>
+    </CookiesProvider>
+  );
+}
