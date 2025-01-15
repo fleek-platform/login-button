@@ -1,10 +1,10 @@
 import {  getCookies } from 'cookies-next';
-import { isServerSide } from './isServerSide';
-import type { CookiesContext } from '../providers/CookiesProvider';
+
+type AuthCookieType = { accessToken?: string }
 
 /** Util method independent of cookie provider. */
-export const getAuthCookie = (requestCookies?: CookiesContext['values'] ): string | undefined => {
-  const cookies = isServerSide() ? requestCookies : (getCookies() as CookiesContext['values']);
+export const getAuthCookie = (): string | undefined => {
+  const cookies = getCookies() as AuthCookieType;
   const authCookie = cookies?.accessToken
 
   return authCookie;

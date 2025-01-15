@@ -16,6 +16,7 @@ The Fleek Login Button provides standalone authentication button component with 
   - [Code format](#code-format)
   - [Changeset](#changeset)
 - [🧸 Basic Usage](#basic-usage)
+  - [Reading auth cookie](#reading-auth-cookie)
 - [📋 Additional Notes](#additional-notes)
 - [📖 Docs](https://fleek.xyz/docs/sdk)
 - [🙏 Contributing](#contributing)
@@ -122,6 +123,16 @@ import { LoginProvider } from '@fleek-platform/login-button';
     );
   }}
 </LoginProvider>;
+```
+
+### Reading auth cookie
+
+To read auth cookie value at any point `getAuthCookie()` utility is exposed. Auth cookie uses `accessToken` key.
+
+```ts
+import { getAuthCookie } from '@fleek-platform/login-button';
+
+const accessToken: string | undefined = getAuthCookie();
 ```
 
 ## Additional notes
