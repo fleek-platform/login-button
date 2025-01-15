@@ -1,6 +1,6 @@
 'use client';
 
-import { type FC, useState } from 'react';
+import { type FC, useEffect, useState } from 'react';
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
 import { DynamicContextProvider } from '@dynamic-labs/sdk-react-core';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
@@ -22,11 +22,23 @@ export type AccessTokenResult = {
 
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, environmentId }) => {
   const cookies = useCookies();
-  const [, setAccessTokenAsCookie, clearAccessToken] = useAuthCookie();
+  const [accessTokenAsCookie, setAccessTokenAsCookie, clearAccessToken] = useAuthCookie();
 
   const [accessToken, setAccessToken] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
+
+  // sync accessToken state with externally updated cookie
+  useEffect(() => {
+    if (accessTokenAsCookie === undefined) {
+      setAccessToken('');
+      return;
+    }
+
+    if (accessTokenAsCookie !== accessToken) {
+      setAccessToken(accessTokenAsCookie);
+    }
+  }, [accessTokenAsCookie, accessToken]);
 
   const handleLogout = () => {
     cookies.remove('authProviderToken');

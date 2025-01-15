@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { createContext } from '../utils/createContext';
 import { isServerSide } from '../utils/isServerSide';
 
-class CookiesError extends Error {
+export class CookiesError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'CookiesError';
