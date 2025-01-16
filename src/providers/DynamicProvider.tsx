@@ -1,6 +1,6 @@
 'use client';
 
-import { type FC, useEffect, useState } from 'react';
+import type { FC } from 'react';
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
 import { DynamicContextProvider } from '@dynamic-labs/sdk-react-core';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
@@ -8,6 +8,7 @@ import { useAuthCookie } from '../hooks/useAuthCookie';
 import { useCookies } from '../providers/CookiesProvider';
 import { AuthComponent, type AuthComponentProps } from '../components/AuthComponent';
 import { generateUserSessionDetails } from '../graphql/fetchGenerateUserSessionDetails';
+import { type AuthStore, useAuthStore } from '../store/authStore';
 
 export type DynamicProviderProps = Pick<AuthComponentProps, 'children'> & {
   graphqlApiUrl: string;
@@ -15,35 +16,19 @@ export type DynamicProviderProps = Pick<AuthComponentProps, 'children'> & {
 };
 
 export type AccessTokenResult = {
-  accessToken: string;
-  isLoading: boolean;
-  error: unknown;
+  accessTokenState: AuthStore['accessToken'];
 };
 
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, environmentId }) => {
   const cookies = useCookies();
-  const [accessTokenAsCookie, setAccessTokenAsCookie, clearAccessToken] = useAuthCookie();
+  const [, setAccessTokenAsCookie, clearAccessToken] = useAuthCookie();
 
-  const [accessToken, setAccessToken] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<unknown>();
-
-  // sync accessToken state with externally updated cookie
-  useEffect(() => {
-    if (accessTokenAsCookie === undefined) {
-      setAccessToken('');
-      return;
-    }
-
-    if (accessTokenAsCookie !== accessToken) {
-      setAccessToken(accessTokenAsCookie);
-    }
-  }, [accessTokenAsCookie, accessToken]);
+  const { accessToken, setAccessTokenValue, setAccessTokenLoading, setAccessTokenError, resetAccessToken } = useAuthStore();
 
   const handleLogout = () => {
     cookies.remove('authProviderToken');
-    cookies.remove('accessToken');
     clearAccessToken();
+    resetAccessToken();
   };
 
   const handleAuthSuccess = async () => {
@@ -51,24 +36,20 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     if (!authToken) return '';
 
     try {
-      setIsLoading(true);
-      setError(undefined);
+      setAccessTokenLoading(true);
+      setAccessTokenError(undefined);
 
       const sessionDetails = await generateUserSessionDetails(graphqlApiUrl, authToken);
       const { accessToken } = sessionDetails;
 
-      // set cookie
       setAccessTokenAsCookie(accessToken);
-      // pass to login button
-      setAccessToken(accessToken);
+      setAccessTokenValue(accessToken);
     } catch (requestError) {
-      setError(requestError);
+      setAccessTokenError(requestError);
     } finally {
-      setIsLoading(false);
+      setAccessTokenLoading(false);
     }
   };
-
-  const accessTokenResult = { accessToken, isLoading, error };
 
   return (
     <DynamicContextProvider
@@ -79,7 +60,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         eventsCallbacks: { onLogout: handleLogout, onAuthSuccess: handleAuthSuccess },
       }}
     >
-      <AuthComponent accessTokenResult={accessTokenResult}>{children}</AuthComponent>
+      <AuthComponent accessTokenResult={{ accessTokenState: accessToken }}>{children}</AuthComponent>
     </DynamicContextProvider>
   );
 };

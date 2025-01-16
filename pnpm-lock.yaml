@@ -18,6 +18,7 @@ specifiers:
   react-dom: ^18.3.1
   typescript: 5.6.2
   viem: ^2.21.55
+  zustand: ^5.0.3
 
 dependencies:
   '@dynamic-labs/ethereum': 3.9.2_h3nmt6az2lifkmxo6hr6jhus5y
@@ -29,6 +30,7 @@ dependencies:
   react: 18.3.1
   react-dom: 18.3.1_react@18.3.1
   viem: 2.22.8_typescript@5.6.2
+  zustand: 5.0.3_x25zuu6u7xhdvbznsywf7wxevq
 
 devDependencies:
   '@biomejs/biome': 1.9.4
@@ -7383,4 +7385,26 @@ packages:
 
   /zod/3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
+    dev: false
+
+  /zustand/5.0.3_x25zuu6u7xhdvbznsywf7wxevq:
+    resolution: {integrity: sha512-14fwWQtU3pH4dE0dOpdMiWjddcH+QzKIgk1cl8epwSE7yag43k/AD/m4L6+K7DytAOr9gGBe3/EXj9g7cdostg==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
+    dependencies:
+      '@types/react': 18.3.18
+      react: 18.3.1
     dev: false
