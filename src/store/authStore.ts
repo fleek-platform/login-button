@@ -2,21 +2,21 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 export interface AuthStore {
-  accessToken: {
-    value: string;
-    isLoading: boolean;
-    error: unknown;
-  };
-  setAccessTokenValue: (value: string) => void;
-  setAccessTokenLoading: (isLoading: boolean) => void;
-  setAccessTokenError: (error: unknown) => void;
-  resetAccessToken: () => void;
+  accessToken: string;
+  loading: boolean;
+  error: unknown;
+  setAccessToken: (value: string) => void;
+  setLoading: (loading: boolean) => void;
+  setError: (error: unknown) => void;
+  resetAuthState: () => void;
 }
 
-export const initialAccessTokenState: AuthStore['accessToken'] = {
-  value: '',
+export interface AuthState extends Pick<AuthStore, 'accessToken' | 'loading' | 'error'> {}
+
+export const initialAuthState: AuthState = {
+  accessToken: '',
+  loading: false,
   error: undefined,
-  isLoading: false,
 };
 
 // Store name
@@ -25,11 +25,11 @@ const name = 'fleek-xyz-login-button-store';
 export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
-      accessToken: { ...initialAccessTokenState },
-      setAccessTokenValue: (value: string) => set((state) => ({ accessToken: { ...state.accessToken, value } })),
-      setAccessTokenLoading: (isLoading: boolean) => set((state) => ({ accessToken: { ...state.accessToken, isLoading } })),
-      setAccessTokenError: (error: unknown) => set((state) => ({ accessToken: { ...state.accessToken, error } })),
-      resetAccessToken: () => set({ accessToken: { ...initialAccessTokenState } }),
+      ...initialAuthState,
+      setAccessToken: (accessToken: string) => set({ accessToken }),
+      setLoading: (loading: boolean) => set({ loading }),
+      setError: (error: unknown) => set({ error }),
+      resetAuthState: () => set({ ...initialAuthState }),
     }),
     {
       name,

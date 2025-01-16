@@ -8,27 +8,25 @@ import { useAuthCookie } from '../hooks/useAuthCookie';
 import { useCookies } from '../providers/CookiesProvider';
 import { AuthComponent, type AuthComponentProps } from '../components/AuthComponent';
 import { generateUserSessionDetails } from '../graphql/fetchGenerateUserSessionDetails';
-import { type AuthStore, useAuthStore } from '../store/authStore';
+import { type AuthState, useAuthStore } from '../store/authStore';
 
 export type DynamicProviderProps = Pick<AuthComponentProps, 'children'> & {
   graphqlApiUrl: string;
   environmentId: string;
 };
 
-export type AccessTokenResult = {
-  accessTokenState: AuthStore['accessToken'];
-};
+export type AccessTokenResult = AuthState;
 
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, environmentId }) => {
   const cookies = useCookies();
   const [, setAccessTokenAsCookie, clearAccessToken] = useAuthCookie();
 
-  const { accessToken, setAccessTokenValue, setAccessTokenLoading, setAccessTokenError, resetAccessToken } = useAuthStore();
+  const { accessToken, loading, error, setAccessToken, setLoading, setError, resetAuthState } = useAuthStore();
 
   const handleLogout = () => {
     cookies.remove('authProviderToken');
     clearAccessToken();
-    resetAccessToken();
+    resetAuthState();
   };
 
   const handleAuthSuccess = async () => {
@@ -36,20 +34,22 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     if (!authToken) return '';
 
     try {
-      setAccessTokenLoading(true);
-      setAccessTokenError(undefined);
+      setLoading(true);
+      setError(undefined);
 
       const sessionDetails = await generateUserSessionDetails(graphqlApiUrl, authToken);
       const { accessToken } = sessionDetails;
 
       setAccessTokenAsCookie(accessToken);
-      setAccessTokenValue(accessToken);
+      setAccessToken(accessToken);
     } catch (requestError) {
-      setAccessTokenError(requestError);
+      setError(requestError);
     } finally {
-      setAccessTokenLoading(false);
+      setLoading(false);
     }
   };
+
+  const accessTokenResult = { accessToken, loading, error };
 
   return (
     <DynamicContextProvider
@@ -60,7 +60,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         eventsCallbacks: { onLogout: handleLogout, onAuthSuccess: handleAuthSuccess },
       }}
     >
-      <AuthComponent accessTokenResult={{ accessTokenState: accessToken }}>{children}</AuthComponent>
+      <AuthComponent accessTokenResult={accessTokenResult}>{children}</AuthComponent>
     </DynamicContextProvider>
   );
 };
