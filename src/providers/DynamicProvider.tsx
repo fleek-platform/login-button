@@ -7,19 +7,12 @@ import { getAuthToken } from '@dynamic-labs/sdk-react-core';
 import { generateUserSessionDetails } from '../graphql/fetchGenerateUserSessionDetails';
 import { useAuthStore } from '../store/authStore';
 import { cookies } from '../utils/cookies';
-
-interface ChildrenProps {
-  accessToken: string;
-  isLoading: boolean;
-  error: unknown;
-  login: () => void;
-  logout: () => void;
-}
+import { type LoginProviderChildrenProps } from './LoginProvider';
 
 export type DynamicProviderProps = {
   graphqlApiUrl: string;
   environmentId: string;
-  children: (props: ChildrenProps) => FC;
+  children: (props: LoginProviderChildrenProps) => React.JSX.Element;
 };
 
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, environmentId }) => {

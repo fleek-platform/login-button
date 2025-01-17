@@ -3,15 +3,10 @@
 import React, { type FC } from 'react';
 
 import Button from './components/Button';
-import type { CookiesContext } from '../providers/CookiesProvider';
-import LoginProvider from '../providers/LoginProvider';
-
-type Props = {
-  requestCookies?: CookiesContext['values'];
-};
+import { LoginProvider } from '../providers/LoginProvider';
 
 // example usage
-const LoginButton: FC<Props> = ({ requestCookies }) => {
+const LoginButton = () => {
   const paragraphStyles = {
     maxWidth: '16rem',
     wordBreak: 'break-word',
@@ -19,7 +14,10 @@ const LoginButton: FC<Props> = ({ requestCookies }) => {
   } as const;
 
   return (
-    <LoginProvider requestCookies={requestCookies} graphqlApiUrl="https://example.com/graphql" environmentId="my-env-id">
+    <LoginProvider
+      graphqlApiUrl="https://example.com/graphql"
+      environmentId="my-env-id"
+    >
       {(props) => {
         const { login, logout, accessToken, isLoading, error } = props;
 
