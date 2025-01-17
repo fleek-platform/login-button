@@ -1,6 +1,3 @@
-import { UnauthorizedError, UnknownError } from '@fleek-platform/errors';
-import * as errors from '@fleek-platform/errors';
-
 export interface SessionDetails {
   accessToken: string;
   projectId: string | null;
@@ -32,10 +29,10 @@ export const generateUserSessionDetails = async (graphqlApiUrl: string, authToke
 
   if (!response.ok) {
     if (response.status === 401) {
-      throw new UnauthorizedError({});
+      throw new Error('You are not authorized to access this resource.');
     }
 
-    throw new UnknownError();
+    throw new Error('Unexpected error. Repeat the action or contact support.');
   }
 
   const jsonResponse = await response.json();
@@ -46,14 +43,5 @@ export const generateUserSessionDetails = async (graphqlApiUrl: string, authToke
     return sessionDetails;
   }
 
-  if ('extensions' in error) {
-    // biome-ignore lint: Enable any for error handling
-    const errorClass: typeof Error = (errors as any)?.[error.extensions.name];
-
-    if (errorClass) {
-      throw new errorClass(error.extensions.data);
-    }
-  }
-
-  throw new UnknownError();
+  throw new Error('Unexpected error. Repeat the action or contact support.');
 };

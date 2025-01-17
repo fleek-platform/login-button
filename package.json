@@ -37,7 +37,6 @@
   "dependencies": {
     "@dynamic-labs/ethereum": "3.9.2",
     "@dynamic-labs/sdk-react-core": "3.9.2",
-    "@fleek-platform/errors": "^2.7.0",
     "@fleek-platform/utils-token": "^0.2.2",
     "cookies-next": "^2.1.1",
     "luxon": "^3.5.0",
