@@ -5,6 +5,10 @@ import React, { type FC } from 'react';
 import Button from './components/Button';
 import { LoginProvider } from '../providers/LoginProvider';
 
+// Staging
+const graphqlApiUrl = 'https://graphql.service.staging.fleeksandbox.xyz/graphql';
+const dynamicEnvironmentId = 'c4d4ccad-9460-419c-9ca3-494488f8c892';
+
 // example usage
 const LoginButton = () => {
   const paragraphStyles = {
@@ -15,8 +19,8 @@ const LoginButton = () => {
 
   return (
     <LoginProvider
-      graphqlApiUrl="https://example.com/graphql"
-      environmentId="my-env-id"
+      graphqlApiUrl={graphqlApiUrl}
+      dynamicEnvironmentId={dynamicEnvironmentId}
     >
       {(props) => {
         const { login, logout, accessToken, isLoading, error } = props;

@@ -11,11 +11,11 @@ import { type LoginProviderChildrenProps } from './LoginProvider';
 
 export type DynamicProviderProps = {
   graphqlApiUrl: string;
-  environmentId: string;
+  dynamicEnvironmentId: string;
   children: (props: LoginProviderChildrenProps) => React.JSX.Element;
 };
 
-export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, environmentId }) => {
+export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId }) => {
   const dynamic = useDynamicContext();
   const { accessToken, setAccessToken, setAuthToken, reset: resetStore } = useAuthStore();
 
@@ -65,7 +65,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
   return (
     <DynamicContextProvider
       settings={{
-        environmentId,
+        environmentId: dynamicEnvironmentId,
         // @ts-ignore
         walletConnectors: [EthereumWalletConnectors],
         eventsCallbacks: { onLogout, onAuthSuccess },

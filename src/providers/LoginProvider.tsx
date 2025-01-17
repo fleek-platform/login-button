@@ -10,7 +10,7 @@ export interface LoginProviderChildrenProps {
   logout: () => void;
 }
 
-export const LoginProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, environmentId }) => {
+export const LoginProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId }) => {
   if (typeof window === 'undefined') {
     return null;
   }
@@ -18,7 +18,7 @@ export const LoginProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUr
   return (
     <DynamicProvider
       graphqlApiUrl={graphqlApiUrl}
-      environmentId={environmentId}
+      dynamicEnvironmentId={dynamicEnvironmentId}
     >
       {children}
     </DynamicProvider>
