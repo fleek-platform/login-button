@@ -96,16 +96,41 @@ You need to set the following required props:
 />
 ```
 
-Example usage:
+### Example
+
+You can import the `LoginProvider` and `useAuthStore`. The provider allows you to customize the CTA buttons, e.g. log in.
+
+```ts
+import { LoginProvider, useAuthStore } from '@fleek-platform/login-button';
+```
+
+While the `useAuthStore` has actions and state, e.g. accessToken and setShowLogin.
+
+```ts
+// Use authentication store
+const {
+  // Toggle login modal
+  setShowLogin,
+  // Trigger logout
+  setTriggerLogout,
+  // Update accessToken by Project ID
+  updateAccessTokenByProjectId,
+  // Check if newUser
+  isNewUser,
+} = useAuthStore();
+```
+
+The `graphqlApiUrl` and `dynamicEnvironmentId` can be overriden. Otherwise, it'll default to the environment the distribution is built to target, e.g. staging or production.
 
 ```tsx
-import { LoginProvider } from '@fleek-platform/login-button';
+// Staging
+const graphqlApiUrl = 'https://graphql.service.staging.fleeksandbox.xyz/graphql';
+const dynamicEnvironmentId = 'c4d4ccad-9460-419c-9ca3-494488f8c892';
 
+// Use Login provider
 <LoginProvider
-  graphqlApiUrl="https://example.com/graphql"
-  environmentId="my-env-id"
-  requestCookies={requestCookies}
-  //
+  graphqlApiUrl={graphqlApiUrl}
+  dynamicEnvironmentId={dynamicEnvironmentId}
 >
   {(props) => {
     const { login, logout, accessToken, isLoading, error } = props;
