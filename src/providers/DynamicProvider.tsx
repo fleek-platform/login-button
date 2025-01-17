@@ -49,7 +49,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
 
       const sessionDetails = await generateUserSessionDetails(graphqlApiUrl, authToken);
       const { accessToken } = sessionDetails;
-      
+            
       setAccessToken(accessToken);
     } catch (requestError) {
       setError(requestError);
