@@ -1,4 +1,4 @@
-// TODO: We don't need client-side, neither "next" libraries
+// TODO: We don't need server-side, neither "next" libraries
 // Replace by vanilla version or other light option
 import { deleteCookie, setCookie, getCookie } from 'cookies-next';
 import type { OptionsType } from 'cookies-next/lib/types';
