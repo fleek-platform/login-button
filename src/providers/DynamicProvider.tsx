@@ -21,6 +21,10 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
 
+  console.log(`[debug] DynamicProvider: state ${JSON.stringify({
+    showLogin,
+  })}`)
+
   useEffect(() => {
     console.log(`[debug] DynamicProvider: ${JSON.stringify({
       dynamicEnvironmentId,
