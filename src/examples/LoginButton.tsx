@@ -4,6 +4,7 @@ import React, { type FC } from 'react';
 
 import Button from './components/Button';
 import { LoginProvider } from '../providers/LoginProvider';
+import { useAuthStore } from '../store/authStore';
 
 // Staging
 const graphqlApiUrl = 'https://graphql.service.staging.fleeksandbox.xyz/graphql';
@@ -17,19 +18,21 @@ const LoginButton = () => {
     marginTop: '1rem',
   } as const;
 
+  const { setTriggerLogout, setShowLogin } = useAuthStore();
+
   return (
     <LoginProvider
       graphqlApiUrl={graphqlApiUrl}
       dynamicEnvironmentId={dynamicEnvironmentId}
     >
       {(props) => {
-        const { login, logout, accessToken, isLoading, error } = props;
+        const { accessToken, isLoading, error } = props;
 
         const handleClick = () => {
           if (accessToken) {
-            logout();
+            setTriggerLogout(true);
           } else {
-            login();
+            setShowLogin(true);
           }
         };
 

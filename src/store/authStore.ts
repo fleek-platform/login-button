@@ -7,18 +7,24 @@ export interface AuthStore {
   authToken: string;
   projectId: string;
   loading: boolean;
+  showLogin: boolean;
+  triggerLogout: boolean;
   setAccessToken: (value: string) => void;
   setAuthToken: (value: string) => void;
   setLoading: (loading: boolean) => void;
+  setShowLogin: (value: boolean) => void;
+  setTriggerLogout: (value: boolean) => void;
   reset: () => void;
 }
 
-export interface AuthState extends Pick<AuthStore, 'accessToken'| 'authToken' | 'projectId' | 'loading'> {}
+export interface AuthState extends Pick<AuthStore, 'accessToken'| 'authToken' | 'projectId' | 'loading' | 'showLogin' | 'triggerLogout'> {}
 
 export const initialState: AuthState = {
   accessToken: '',
   authToken: '',
   projectId: '',
+  showLogin: false,
+  triggerLogout: false,
   loading: false,
 };
 
@@ -28,6 +34,8 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
       ...initialState,
+      setShowLogin: (showLogin: boolean) => set({ showLogin }),
+      setTriggerLogout: (triggerLogout: boolean) => set({ triggerLogout }),
       setAccessToken: (accessToken: string) => {
         // TODO: Ask user to get project id from host app
         // instead of providing here?

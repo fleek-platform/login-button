@@ -8,6 +8,7 @@ const requiredAuthKeys: AppCookies[] = ['accessToken', 'authToken', 'projectId']
 export const cookies = {
   get: (key: AppCookies) => getCookie(key),
   // TODO: Add expiration
+  // TODO: Add domain for cross domain use
   set: (key: AppCookies, value: string, options?: OptionsType) => 
     setCookie(key, value, options),
   reset: () => requiredAuthKeys.forEach(k => deleteCookie(k)),

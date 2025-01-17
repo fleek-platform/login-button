@@ -15,17 +15,10 @@ export type DynamicProviderProps = {
   children: (props: LoginProviderChildrenProps) => React.JSX.Element;
 };
 
-type DynamicAuthCallback = () => void;
-
-const defaultDynamicCallback = () => console.warn('Dynamic is not ready yet!')
-
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId }) => {
-  const { accessToken, authToken, setAccessToken, setAuthToken, reset: resetStore } = useAuthStore();
+  const { accessToken, authToken, triggerLogout, setAccessToken, setAuthToken, reset: resetStore, showLogin, setShowLogin, setTriggerLogout } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
-  
-  const loginRef = useRef<DynamicAuthCallback>(defaultDynamicCallback);
-  const logoutRef = useRef<DynamicAuthCallback>(defaultDynamicCallback);
 
   const onLogout = useCallback(() => {
     cookies.reset();
@@ -69,16 +62,16 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     const dynamic = useDynamicContext();
 
     useEffect(() => {
-      loginRef.current = () => dynamic.setShowAuthFlow(true);
-      logoutRef.current = () => {
-        dynamic.handleLogOut();
+      if (!showLogin) return;
 
-        // TODO: Check the side-effects of dynamic handleLogout
-        // as we need to provide a callback to reset app state
-        // e.g. onLogout
-        onLogout();
-      };
-    }, [dynamic]);
+      dynamic.setShowAuthFlow(true);
+    }, [showLogin]);
+
+    useEffect(() => {
+      if (!triggerLogout) return;
+
+      dynamic.handleLogOut();
+    }, [triggerLogout])
 
     return null;
   };
@@ -96,8 +89,8 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         accessToken,
         isLoading,
         error,
-        login: () => loginRef.current(),
-        logout: () => logoutRef.current(),
+        login: () => setShowLogin(true),
+        logout: () => setTriggerLogout(true),
       })}
     </DynamicContextProvider>
   );
