@@ -1,3 +1,5 @@
+// TODO: This method body seems very similar
+// to fetchLoginWithDynamic. Seems we can have a fabric
 export interface SessionDetails {
   accessToken: string;
   projectId: string | null;

@@ -16,7 +16,7 @@ export type DynamicProviderProps = {
 };
 
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId }) => {
-  const { accessToken, authToken, triggerLogout, setAccessToken, setAuthToken, reset: resetStore, showLogin, setShowLogin, setTriggerLogout } = useAuthStore();
+  const { accessToken, authToken, triggerLogout, setAccessToken, setAuthToken, reset: resetStore, showLogin, setShowLogin, setTriggerLogout, setGraphqlApiUrl } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
 
@@ -57,6 +57,12 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     
     cookies.set('authToken', authToken);    
   }, [accessToken]);
+
+  useEffect(() => {
+    if (!graphqlApiUrl) return;
+    
+    setGraphqlApiUrl(graphqlApiUrl);
+  }, [graphqlApiUrl])
 
   const DynamicUtils = () => {
     const dynamic = useDynamicContext();
