@@ -1,6 +1,6 @@
 'use client';
 
-import { type FC, useState, useEffect } from 'react';
+import { type FC, useCallback, useState, useEffect, useRef } from 'react';
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
 import { DynamicContextProvider, useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
@@ -15,29 +15,24 @@ export type DynamicProviderProps = {
   children: (props: LoginProviderChildrenProps) => React.JSX.Element;
 };
 
-export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId }) => {
-  const dynamic = useDynamicContext();
-  const { accessToken, setAccessToken, setAuthToken, reset: resetStore } = useAuthStore();
+type DynamicAuthCallback = () => void;
 
+const defaultDynamicCallback = () => console.warn('Dynamic is not ready yet!')
+
+export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId }) => {
+  const { accessToken, setAccessToken, setAuthToken, reset: resetStore } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
+  
+  const loginRef = useRef<DynamicAuthCallback>(defaultDynamicCallback);
+  const logoutRef = useRef<DynamicAuthCallback>(defaultDynamicCallback);
 
-  const login = () => dynamic.setShowAuthFlow(true);
-  const logout = () => {
-    dynamic.handleLogOut();
-
-    // TODO: Check dynamic.handleLogout side-effects
-    // to decide where to call onLogout handler instructions
-    // e.g. on dynamic logout we should reset state somewhere
-    onLogout();
-  }
-
-  const onLogout = () => {
+  const onLogout = useCallback(() => {
     cookies.reset();
     resetStore();
-  };
+  }, [resetStore]);
 
-  const onAuthSuccess = async () => {
+  const onAuthSuccess = useCallback(async () => {
     try {
       const authToken = getAuthToken();
 
@@ -56,32 +51,50 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [graphqlApiUrl, setAuthToken, setAccessToken]);
 
   useEffect(() => {
+    if (!accessToken) {
+      // TODO: Shall the app reset state when faulty?
+      return;
+    }
     cookies.set('accessToken', accessToken);    
   }, [accessToken]);
 
+  const DynamicUtils = () => {
+    const dynamic = useDynamicContext();
+
+    useEffect(() => {
+      loginRef.current = () => dynamic.setShowAuthFlow(true);
+      logoutRef.current = () => {
+        dynamic.handleLogOut();
+
+        // TODO: Check the side-effects of dynamic handleLogout
+        // as we need to provide a callback to reset app state
+        // e.g. onLogout
+        onLogout();
+      };
+    }, [dynamic]);
+
+    return null;
+  };
+
+  const settings = {
+    environmentId: dynamicEnvironmentId,
+    walletConnectors: [EthereumWalletConnectors],
+    eventsCallbacks: { onLogout, onAuthSuccess },
+  };
+
   return (
-    <DynamicContextProvider
-      settings={{
-        environmentId: dynamicEnvironmentId,
-        // @ts-ignore
-        walletConnectors: [EthereumWalletConnectors],
-        eventsCallbacks: { onLogout, onAuthSuccess },
-      }}
-    >
-      <>
-        {
-          children({
-            accessToken,
-            isLoading,
-            error,
-            login,
-            logout,
-          })
-        }
-      </>
+    <DynamicContextProvider settings={settings}>
+      <DynamicUtils />
+      {children({
+        accessToken,
+        isLoading,
+        error,
+        login: () => loginRef.current(),
+        logout: () => logoutRef.current(),
+      })}
     </DynamicContextProvider>
   );
 };
