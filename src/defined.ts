@@ -4,11 +4,8 @@ export type Defined = {
 };
 
 export const defined: Defined = {
-  // TODO: Enable once dist build is setup
-  // PUBLIC_GRAPHQL_ENDPOINT: process.env.PUBLIC_GRAPHQL_ENDPOINT,
-  // PUBLIC_DYNAMIC_ENVIRONMENT_ID: process.env.PUBLIC_DYNAMIC_ENVIRONMENT_ID,
-  PUBLIC_GRAPHQL_ENDPOINT: '',
-  PUBLIC_DYNAMIC_ENVIRONMENT_ID: '',
+  PUBLIC_GRAPHQL_ENDPOINT: process.env.PUBLIC_GRAPHQL_ENDPOINT,
+  PUBLIC_DYNAMIC_ENVIRONMENT_ID: process.env.PUBLIC_DYNAMIC_ENVIRONMENT_ID,
 };
 
 export const getDefined = (key: keyof typeof defined): string => {

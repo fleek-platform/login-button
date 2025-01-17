@@ -1,18 +1,18 @@
 {
   "compilerOptions": {
-    "target": "es2020",
-    "module": "es2020",
-    "lib": ["es2020", "dom"],
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["esnext", "dom"],
     "skipLibCheck": true,
     "jsx": "react-jsx",
     "declaration": true,
+    "emitDeclarationOnly": true,
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "moduleResolution": "node",
-    "sourceMap": true,
-    "importHelpers": true
+    "resolveJsonModule": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "src/examples/**/*"]

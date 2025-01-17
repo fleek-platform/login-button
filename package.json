@@ -17,11 +17,12 @@
   ],
   "exports": {
     ".": {
-      "import": "./src/index.ts"
+      "import": "./dist/bundle.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
-    "build": "pnpm clean:dist && pnpm transpile",
+    "build": "pnpm clean:dist && bun build.ts && pnpm run transpile",
     "transpile": "pnpm exec tsc -p tsconfig.json",
     "changeset:add": "pnpm exec changeset",
     "changeset:status": "pnpm exec changeset status",
@@ -52,6 +53,8 @@
     "@types/node": "^20",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.9",
+    "bun": "^1.1.45",
+    "esbuild": "^0.24.2",
     "pino-pretty": "^13.0.0",
     "typescript": "5.6.2"
   }
