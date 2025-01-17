@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { decodeAccessToken } from '@fleek-platform/utils-token';
 import { loginWithDynamic } from '../graphql/fetchLoginWithDynamic';
+import { useConfigStore } from './configStore';
 
 export interface AuthStore {
   accessToken: string;
@@ -18,21 +19,15 @@ export interface AuthStore {
   setTriggerLogout: (value: boolean) => void;
   updateAccessTokenByProjectId: (projectId: string) => Promise<void>;
   reset: () => void;
-  // TODO: Make the api url env var and overridable
-  // shouldn't be in the store. Notice that the `reset`
-  // would clear the api url from store...
-  graphqlApiUrl: string;
-  setGraphqlApiUrl: (value: string) => void;
   setIsNewUser: (isNewUser: boolean) => void;
 }
 
-export interface AuthState extends Pick<AuthStore, 'accessToken'| 'authToken' | 'projectId' | 'loading' | 'showLogin' | 'triggerLogout' | 'graphqlApiUrl' | 'isNewUser'> {}
+export interface AuthState extends Pick<AuthStore, 'accessToken'| 'authToken' | 'projectId' | 'loading' | 'showLogin' | 'triggerLogout' | 'isNewUser'> {}
 
 export const initialState: AuthState = {
   accessToken: '',
   authToken: '',
   projectId: '',
-  graphqlApiUrl: '',
   showLogin: false,
   triggerLogout: false,
   loading: false,
@@ -72,8 +67,10 @@ export const useAuthStore = create<AuthStore>()(
         try {
           set({ loading: true });
           
-          const { authToken, graphqlApiUrl, accessToken: initAccessToken } = get();
+          const { authToken, accessToken: initAccessToken } = get();
 
+          const { graphqlApiUrl } = useConfigStore.getState();
+          
           console.log(`[debug] authStore: initAccessToken = ${initAccessToken}`)
           
           if (!authToken) {
@@ -109,7 +106,6 @@ export const useAuthStore = create<AuthStore>()(
           throw err;
         }
       },
-      setGraphqlApiUrl: (graphqlApiUrl: string) => set({ graphqlApiUrl}),
       setIsNewUser: (isNewUser: boolean) => set({ isNewUser }),
     }),
     {
