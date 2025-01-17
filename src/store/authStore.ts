@@ -6,6 +6,7 @@ import { loginWithDynamic } from '../graphql/fetchLoginWithDynamic';
 export interface AuthStore {
   accessToken: string;
   authToken: string;
+  isNewUser: boolean;
   projectId: string;
   loading: boolean;
   showLogin: boolean;
@@ -22,9 +23,10 @@ export interface AuthStore {
   // would clear the api url from store...
   graphqlApiUrl: string;
   setGraphqlApiUrl: (value: string) => void;
+  setIsNewUser: (isNewUser: boolean) => void;
 }
 
-export interface AuthState extends Pick<AuthStore, 'accessToken'| 'authToken' | 'projectId' | 'loading' | 'showLogin' | 'triggerLogout' | 'graphqlApiUrl'> {}
+export interface AuthState extends Pick<AuthStore, 'accessToken'| 'authToken' | 'projectId' | 'loading' | 'showLogin' | 'triggerLogout' | 'graphqlApiUrl' | 'isNewUser'> {}
 
 export const initialState: AuthState = {
   accessToken: '',
@@ -34,6 +36,7 @@ export const initialState: AuthState = {
   showLogin: false,
   triggerLogout: false,
   loading: false,
+  isNewUser: false,
 };
 
 const name = 'fleek-xyz-login-button-store';
@@ -107,6 +110,7 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
       setGraphqlApiUrl: (graphqlApiUrl: string) => set({ graphqlApiUrl}),
+      setIsNewUser: (isNewUser: boolean) => set({ isNewUser }),
     }),
     {
       name,

@@ -2,7 +2,7 @@
 
 import { type FC, useCallback, useState, useEffect, useRef } from 'react';
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
-import { DynamicContextProvider, useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import { DynamicContextProvider, useDynamicContext, type UserProfile } from '@dynamic-labs/sdk-react-core';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
 import { generateUserSessionDetails } from '../graphql/fetchGenerateUserSessionDetails';
 import { useAuthStore } from '../store/authStore';
@@ -16,7 +16,7 @@ export type DynamicProviderProps = {
 };
 
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId }) => {
-  const { accessToken, authToken, triggerLogout, setAccessToken, setAuthToken, reset: resetStore, showLogin, setShowLogin, setTriggerLogout, setGraphqlApiUrl } = useAuthStore();
+  const { accessToken, authToken, triggerLogout, setAccessToken, setAuthToken, reset: resetStore, showLogin, setShowLogin, setTriggerLogout, setGraphqlApiUrl, setIsNewUser } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
 
@@ -25,7 +25,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     resetStore();
   }, [resetStore]);
 
-  const onAuthSuccess = useCallback(async () => {
+  const onAuthSuccess = useCallback(async ({ user }: { user:UserProfile }) => {
     try {
       const authToken = getAuthToken();
 
@@ -34,6 +34,9 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
       setIsLoading(true);
       setAuthToken(authToken);
       setError(undefined);
+      setIsNewUser(!!user?.newUser);
+
+      console.log(`[debug] DynamicProvider: !!user?.newUser = ${!!user?.newUser}`)
 
       const sessionDetails = await generateUserSessionDetails(graphqlApiUrl, authToken);
       const { accessToken } = sessionDetails;
