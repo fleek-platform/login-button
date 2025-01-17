@@ -1,48 +1,62 @@
 'use client';
 
-import { type FC, useState } from 'react';
+import { type FC, useState, useEffect } from 'react';
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
 import { DynamicContextProvider, useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
-import { type AuthComponentProps } from '../components/AuthComponent';
 import { generateUserSessionDetails } from '../graphql/fetchGenerateUserSessionDetails';
 import { useAuthStore } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 
-export type DynamicProviderProps = Pick<AuthComponentProps, 'children'> & {
+interface ChildrenProps {
+  accessToken: string;
+  isLoading: boolean;
+  error: unknown;
+  login: () => void;
+  logout: () => void;
+}
+
+export type DynamicProviderProps = {
   graphqlApiUrl: string;
   environmentId: string;
+  children: (props: ChildrenProps) => FC;
 };
 
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, environmentId }) => {
   const dynamic = useDynamicContext();
-  const { accessToken, setAccessToken, setAuthToken } = useAuthStore();
+  const { accessToken, setAccessToken, setAuthToken, reset: resetStore } = useAuthStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
 
   const login = () => dynamic.setShowAuthFlow(true);
-  const logout = () => dynamic.handleLogOut();
+  const logout = () => {
+    dynamic.handleLogOut();
 
-  const handleLogout = () => {
+    // TODO: Check dynamic.handleLogout side-effects
+    // to decide where to call onLogout handler instructions
+    // e.g. on dynamic logout we should reset state somewhere
+    onLogout();
+  }
+
+  const onLogout = () => {
     cookies.reset();
+    resetStore();
   };
 
-  const handleAuthSuccess = async () => {
-    const authToken = getAuthToken();
-
-    if (!authToken) return '';
-
+  const onAuthSuccess = async () => {
     try {
+      const authToken = getAuthToken();
+
+      if (!authToken) throw Error(`Expected an authToken but got ${typeof authToken}`);
+      
       setIsLoading(true);
       setAuthToken(authToken);
       setError(undefined);
 
       const sessionDetails = await generateUserSessionDetails(graphqlApiUrl, authToken);
       const { accessToken } = sessionDetails;
-
-      cookies.set('accessToken', accessToken);
-
+      
       setAccessToken(accessToken);
     } catch (requestError) {
       setError(requestError);
@@ -51,6 +65,9 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     }
   };
 
+  useEffect(() => {
+    cookies.set('accessToken', accessToken);    
+  }, [accessToken]);
 
   return (
     <DynamicContextProvider
@@ -58,7 +75,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         environmentId,
         // @ts-ignore
         walletConnectors: [EthereumWalletConnectors],
-        eventsCallbacks: { onLogout: handleLogout, onAuthSuccess: handleAuthSuccess },
+        eventsCallbacks: { onLogout, onAuthSuccess },
       }}
     >
       <>
