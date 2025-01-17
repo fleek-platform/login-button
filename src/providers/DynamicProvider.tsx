@@ -20,7 +20,7 @@ type DynamicAuthCallback = () => void;
 const defaultDynamicCallback = () => console.warn('Dynamic is not ready yet!')
 
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId }) => {
-  const { accessToken, setAccessToken, setAuthToken, reset: resetStore } = useAuthStore();
+  const { accessToken, authToken, setAccessToken, setAuthToken, reset: resetStore } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
   
@@ -54,11 +54,15 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
   }, [graphqlApiUrl, setAuthToken, setAccessToken]);
 
   useEffect(() => {
-    if (!accessToken) {
-      // TODO: Shall the app reset state when faulty?
-      return;
-    }
+    if (!accessToken) return;
+    
     cookies.set('accessToken', accessToken);    
+  }, [accessToken]);
+
+  useEffect(() => {
+    if (!authToken) return;
+    
+    cookies.set('authToken', authToken);    
   }, [accessToken]);
 
   const DynamicUtils = () => {
