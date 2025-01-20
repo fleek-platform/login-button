@@ -40,7 +40,15 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
       ...initialState,
-      setShowLogin: (showLogin: boolean) => set({ showLogin }),
+      // TODO: Rename to trigger login
+      setShowLogin: (showLogin: boolean) => {
+        set({ showLogin });
+
+        // Reset
+        setTimeout(() => {
+          set({ showLogin: false });
+        }, 0);
+      },
       setTriggerLogout: (triggerLogout: boolean) => set({ triggerLogout }),
       setAccessToken: (accessToken: string) => {
         // TODO: Ask user to get project id from host app
