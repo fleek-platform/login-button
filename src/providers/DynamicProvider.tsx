@@ -4,7 +4,7 @@ import { type FC, useCallback, useState, useEffect } from 'react';
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
 import { DynamicContextProvider, useDynamicContext, type UserProfile } from '@dynamic-labs/sdk-react-core';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
-import { generateUserSessionDetails } from '../graphql/fetchGenerateUserSessionDetails';
+import { generateUserSessionDetails } from '../api/graphql-client';
 import { useAuthStore } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 import { type LoginProviderChildrenProps } from './LoginProvider';
@@ -51,12 +51,17 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
         setError(undefined);
         setIsNewUser(!!user?.newUser);
 
-        const sessionDetails = await generateUserSessionDetails(graphqlApiUrl, authToken);
-        const { accessToken } = sessionDetails;
+        const result = await generateUserSessionDetails(graphqlApiUrl, authToken);
 
-        setAccessToken(accessToken);
-      } catch (requestError) {
-        setError(requestError);
+        if (!result.success) throw Error(result.error.message);
+
+        if (!result.data.accessToken) throw Error(`Expected a valid access token but got ${typeof result.data.accessToken}`);
+
+        setAccessToken(result.data.accessToken);
+      } catch (err) {
+        console.error(err)
+        // TODO: Is this really required?
+        setError(err);
       } finally {
         setIsLoading(false);
       }

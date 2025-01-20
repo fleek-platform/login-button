@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { decodeAccessToken } from '@fleek-platform/utils-token';
-import { loginWithDynamic } from '../graphql/fetchLoginWithDynamic';
+import { loginWithDynamic } from '../api/graphql-client';
 import { useConfigStore } from './configStore';
 
 type TriggerLoginModal = (open: boolean) => void;
@@ -79,14 +79,18 @@ export const useAuthStore = create<AuthStore>()(
             throw new Error('GraphQL API URL is required to update access token');
           }
 
-          const accessToken = await loginWithDynamic(graphqlApiUrl, authToken, projectId);
+          const res = await loginWithDynamic(graphqlApiUrl, authToken, projectId);
 
-          if (!accessToken) {
+          if (!res.success) {
+            throw new Error(res.error.message);
+          }
+
+          if (!res.data) {
             throw new Error('Failed to get access token');
           }
 
           set({
-            accessToken,
+            accessToken: res.data,
             projectId,
             loading: false,
           });
