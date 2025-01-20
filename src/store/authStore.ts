@@ -3,9 +3,12 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { decodeAccessToken } from '@fleek-platform/utils-token';
 import { loginWithDynamic } from '../api/graphql-client';
 import { useConfigStore } from './configStore';
+import { getStoreName } from '../utils/store';
 
 type TriggerLoginModal = (open: boolean) => void;
 type TriggerLogout = () => void;
+
+const name = getStoreName('config');
 
 export interface AuthStore {
   accessToken: string;
@@ -35,8 +38,6 @@ export const initialState: AuthState = {
   loading: false,
   isNewUser: false,
 };
-
-const name = 'fleek-xyz-login-button-store';
 
 export const useAuthStore = create<AuthStore>()(
   persist(

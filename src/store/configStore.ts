@@ -1,11 +1,14 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { getDefined } from '../defined';
+import { getStoreName } from '../utils/store';
 
 interface Config {
   graphqlApiUrl: string;
   dynamicEnvironmentId: string;
 }
+
+const name = getStoreName('login-button');
 
 const defaultConfig: Config = {
   graphqlApiUrl: getDefined('PUBLIC_GRAPHQL_ENDPOINT'),
@@ -34,7 +37,7 @@ export const useConfigStore = create<StoreInterface>()(
       },
     }),
     {
-      name: 'config-store',
+      name,
       storage: createJSONStorage(() => localStorage),
     },
   ),
