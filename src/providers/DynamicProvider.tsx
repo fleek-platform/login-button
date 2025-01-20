@@ -15,20 +15,11 @@ export type DynamicProviderProps = {
 };
 
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
-  const { accessToken, authToken, setAccessToken, setAuthToken, reset: resetStore, setIsNewUser, triggerLoginModal, setTriggerLoginModal } = useAuthStore();
+  const { accessToken, authToken, setAccessToken, setAuthToken, reset: resetStore, setIsNewUser, triggerLoginModal, setTriggerLoginModal, setTriggerLogout, triggerLogout } = useAuthStore();
   const { graphqlApiUrl, dynamicEnvironmentId } = useConfigStore();
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
-
-  console.log(`[debug] DynamicProvider: typeof triggerLoginModal = ${typeof triggerLoginModal}`)
-
-  useEffect(() => {
-    console.log(`[debug] DynamicProvider: ${JSON.stringify({
-      dynamicEnvironmentId,
-      graphqlApiUrl,
-    })}`)
-  }, [graphqlApiUrl, dynamicEnvironmentId]);
 
   const onLogout = useCallback(() => {
     cookies.reset();
@@ -42,15 +33,11 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
       if (!graphqlApiUrl) throw Error(`Expected Graphql API Url but got ${typeof graphqlApiUrl} `)
 
       if (!authToken) throw Error(`Expected an authToken but got ${typeof authToken}`);
-
-      console.log(`[debug] DynamicProvider: onAuthSuccess: graphqlApiUrl = ${graphqlApiUrl}`)
       
       setIsLoading(true);
       setAuthToken(authToken);
       setError(undefined);
       setIsNewUser(!!user?.newUser);
-
-      console.log(`[debug] DynamicProvider: !!user?.newUser = ${!!user?.newUser}`)
 
       const sessionDetails = await generateUserSessionDetails(graphqlApiUrl, authToken);
       const { accessToken } = sessionDetails;
@@ -78,28 +65,18 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
   const DynamicUtils = () => {
     const dynamic = useDynamicContext();
 
-    // useEffect(() => {
-    //   if (!showLogin) return;
-
-    //   dynamic.setShowAuthFlow(true);
-    // }, [showLogin]);
-    
     useEffect(() => {
       if (triggerLoginModal) return;
-      const cb = () => {
-        console.log(`[debug] DynamicProvider.tsx: cb: 1`);
-        dynamic.setShowAuthFlow(true);
-      }
-      setTriggerLoginModal(cb);
+      setTriggerLoginModal(dynamic.setShowAuthFlow);
     }, [setTriggerLoginModal]);
 
-    // useEffect(() => {
-    //   if (!triggerLogout) return;
+    useEffect(() => {
+      if (triggerLogout) return;
 
-    //   dynamic.handleLogOut();
-    // }, [triggerLogout])
+      setTriggerLogout(dynamic.handleLogOut);
+    }, [setTriggerLogout]);
 
-    return null;
+    return <></>;
   };
 
   const settings = {
@@ -132,9 +109,8 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
         accessToken,
         isLoading,
         error,
-        // TODO: add fn
-        login: () => typeof triggerLoginModal === 'function' && triggerLoginModal(),
-        logout: () => null,
+        login: () => typeof triggerLoginModal === 'function' && triggerLoginModal(true),
+        logout: () => typeof triggerLogout === 'function' && triggerLogout(),
       })}
     </DynamicContextProvider>
   );

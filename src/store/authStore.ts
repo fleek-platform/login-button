@@ -4,7 +4,8 @@ import { decodeAccessToken } from '@fleek-platform/utils-token';
 import { loginWithDynamic } from '../graphql/fetchLoginWithDynamic';
 import { useConfigStore } from './configStore';
 
-type TriggerLoginModal = () => void;
+type TriggerLoginModal = (open: boolean) => void;
+type TriggerLogout = () => void;
 
 export interface AuthStore {
   accessToken: string;
@@ -12,21 +13,19 @@ export interface AuthStore {
   isNewUser: boolean;
   projectId: string;
   loading: boolean;
-  // showLogin: boolean;
   triggerLoginModal?: TriggerLoginModal;
-  // triggerLogout: boolean;
+  triggerLogout?: TriggerLogout;
   setAccessToken: (value: string) => void;
   setAuthToken: (value: string) => void;
   setLoading: (loading: boolean) => void;
-  // setShowLogin: (value: boolean) => void;
-  // setTriggerLogout: (value: boolean) => void;
+  setTriggerLogout: (triggerLogout: TriggerLogout) => void;
   setTriggerLoginModal: (callback: TriggerLoginModal) => void;
   updateAccessTokenByProjectId: (projectId: string) => Promise<void>;
   reset: () => void;
   setIsNewUser: (isNewUser: boolean) => void;
 }
 
-export interface AuthState extends Pick<AuthStore, 'accessToken'| 'authToken' | 'projectId' | 'loading' | 'isNewUser' | 'triggerLoginModal'> {}
+export interface AuthState extends Pick<AuthStore, 'accessToken'| 'authToken' | 'projectId' | 'loading' | 'isNewUser' | 'triggerLoginModal' | 'triggerLogout'> {}
 
 export const initialState: AuthState = {
   accessToken: '',
@@ -108,6 +107,7 @@ export const useAuthStore = create<AuthStore>()(
       },
       setIsNewUser: (isNewUser: boolean) => set({ isNewUser }),
       setTriggerLoginModal: (triggerLoginModal: TriggerLoginModal) => set({ triggerLoginModal }),
+      setTriggerLogout: (triggerLogout: TriggerLogout) => set({ triggerLogout }),
     }),
     {
       name,
