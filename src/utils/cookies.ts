@@ -3,11 +3,14 @@
 import { deleteCookie, setCookie, getCookie } from 'cookies-next';
 import type { OptionsType } from 'cookies-next/lib/types';
 import { getTopLevelDomain } from '../utils/hostname';
+import { isClient } from '../utils/browser';
 
 // Refers to the application hostname
 // during runtime
 // TODO: Might want to get this as a prop instead
-const domain = getTopLevelDomain(window.location.href);
+const domain = isClient
+  ? getTopLevelDomain(window.location.href)
+  : '';
 
 export type AppCookies = 'authToken' | 'accessToken' | 'projectId';
 
