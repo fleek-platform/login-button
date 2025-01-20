@@ -99,6 +99,23 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
     environmentId: dynamicEnvironmentId,
     walletConnectors: [EthereumWalletConnectors],
     eventsCallbacks: { onLogout, onAuthSuccess },
+    // TODO: Use the correct override
+    // using scale might not be appropriate
+    // https://docs.dynamic.xyz/design-customizations/css/css-variables#css-variables
+    shadowDOMEnabled: false,
+    cssOverrides: '.modal__items { scale: 1.5 }',
+    // cssOverrides: `
+    //   .dynamic-shadow-dom {
+    //     --dynamic-modal-width: 42rem;
+    //     --dynamic-modal-padding: 4rem;
+    //     --dynamic-wallet-list-tile-gap: 4rem;
+    //     --dynamic-text-size-body-normal: 18px;
+    //     --dynamic-text-size-body-small: 16px;
+    //     --dynamic-text-size-button-primary: 18px;
+    //     --dynamic-text-size-button-secondary: 18px;
+    //     --dynamic-text-size-title: 18px;
+    //   }
+    // `
   };
 
   return (
