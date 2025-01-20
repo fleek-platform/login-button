@@ -3,11 +3,8 @@ name: Changeset (Version Management)
 on:
   push:
     branches:
-      - disabled-develop
-      - disabled-test
-
-  # remove after test
-  workflow_dispatch:
+      - develop
+      - test
 
 jobs:
   changeset_handler:
