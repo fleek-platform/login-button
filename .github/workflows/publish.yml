@@ -22,7 +22,7 @@ jobs:
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 7.32.4
+          version: 9.15.4
 
       - name: Install dependencies
         run: pnpm i --frozen-lockfile
@@ -42,7 +42,7 @@ jobs:
 
       - name: Switch NPM registry to GHCR
         if: ${{ env.environment == 'staging' }}
-      - uses: ./.github/actions/npm-set-scope-registry
+        uses: ./.github/actions/npm-switch-registry
         with:
           org_scope: '@fleek-platform'
           registry_host: 'npm.pkg.github.com'
@@ -52,13 +52,18 @@ jobs:
       - name: Publish to GitHub Packages
         if: ${{ env.environment == 'staging' }}
         run: pnpm publish --access=restricted --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
         # NPM - production
+
+      - name: Switch NPM registry to npmjs.org
+        if: ${{ env.environment == 'production' }}
+        uses: ./.github/actions/npm-switch-registry
+        with:
+          org_scope: '@fleek-platform'
+          registry_host: 'registry.npmjs.org'
+          token: ${{ secrets.NPM_TOKEN }}
+          work_dir: .
 
       - name: Publish to NPM
         if: ${{ env.environment == 'production' }}
         run: pnpm publish --access=public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

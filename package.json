@@ -4,17 +4,10 @@
   "description": "A standalone login component with an embedded Dynamic modal that functions independently of host application.",
   "repository": "https://github.com/fleek-platform/login-button",
   "homepage": "https://github.com/fleek-platform/login-button",
-  "keywords": [
-    "fleek",
-    "auth",
-    "dynamic"
-  ],
+  "keywords": ["fleek", "auth", "dynamic"],
   "license": "MIT",
   "type": "module",
-  "files": [
-    "dist",
-    "src"
-  ],
+  "files": ["dist", "src"],
   "exports": {
     ".": {
       "import": "./src/index.ts"
@@ -54,5 +47,8 @@
     "@types/react-dom": "^18.0.9",
     "pino-pretty": "^13.0.0",
     "typescript": "5.6.2"
+  },
+  "engines": {
+    "pnpm": ">=9"
   }
 }

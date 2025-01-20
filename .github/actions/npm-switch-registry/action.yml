@@ -1,0 +1,111 @@
+name: Npm Switch registry
+inputs:
+  registry_host:
+    required: true
+  token:
+    required: true
+  org_scope:
+    required: true
+  work_dir:
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Clear .npmrc
+      shell: bash
+      run: |
+        cd ${{ inputs.work_dir }}
+
+        npmrcPath=.npmrc
+        npmrcBakPath="$npmrcPath.bak"
+
+
+        if [[ -f "$npmrcPath" ]]; then
+          if ! rm -f "$npmrcPath"; then
+            echo "👹 Oops! Failed to remove $npmrcPath for some reason..."
+          fi
+          
+          echo "✅ Removed $npmrcPath"
+        else
+          touch "$npmrcPath"
+          echo "✅ Created $npmrcPath"
+        fi
+
+    - name: Clear registry
+      shell: bash
+      run: |
+        cd ${{ inputs.work_dir }}
+
+        if pnpm config delete @fleek-platform:registry; then
+          echo "✅ Deleted @fleek-platform registry"
+        else
+          echo "⚠️ WARN: Failed to delete @fleek-platfrom registry"
+        fi
+
+
+        if pnpm config delete @fleekhq:registry; then
+          echo "✅ Deleted @fleekhq registry"
+        else
+          echo "⚠️ WARN: Failed to delete @fleekhq registry"
+        fi
+
+    - name: Set registry for fleek-platform scope (npm conf)
+      shell: bash
+      run: |
+        cd ${{ inputs.work_dir }}
+
+        registry_host="${{ inputs.registry_host }}"
+        registry_url="https://${{ inputs.registry_host }}"
+                
+
+        if pnpm config set registry "$registry_url"; then
+          echo "✅ Has set registry to $registry_url"
+        else
+          echo "⚠️ WARN: Failed to set registry to $registry_host"
+        fi
+
+    - name: Set registry for fleek-platform scope (npmrc)
+      shell: bash
+      run: |
+        cd ${{ inputs.work_dir }}
+
+        npmrcPath=.npmrc
+        registry_host="${{ inputs.registry_host }}"
+        registry_url="https://${{ inputs.registry_host }}"
+        orgScope=${{ inputs.org_scope }}
+        token=${{ inputs.token }}
+
+
+        echo "$orgScope:registry=$registry_url" >> "$npmrcPath"
+        echo "//$registry_host/:_authToken=$token" >> "$npmrcPath"
+
+        echo "💡 Config list"
+        pnpm config list
+
+    - name: Check registry
+      shell: bash
+      run: |
+        cd ${{ inputs.work_dir }}
+
+        registry_host="${{ inputs.registry_host }}"
+        registry_url="https://${{ inputs.registry_host }}"
+        registry=$(pnpm config get registry)
+        registry_scope=$(pnpm config get @fleek-platform:registry)
+
+
+        if echo "$registry" | grep -q "$registry_host"; then
+          echo "✅ Has expected registry $registry"
+        else
+          echo "👹 Oops! Expected registry $registry_host but found $registry"
+
+          exit 1
+        fi
+
+        if echo "$registry_scope" | grep -q "$registry_host"; then
+          echo "✅ Has expected scope registry $registry_scope"
+        else
+          echo "👹 Oops! Expected registry scope $registry_host but found $registry_scope"
+
+          exit 1
+        fi
