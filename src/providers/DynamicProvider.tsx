@@ -1,6 +1,6 @@
 'use client';
 
-import { type FC, useCallback, useState, useEffect, useRef } from 'react';
+import { type FC, useCallback, useState, useEffect } from 'react';
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
 import { DynamicContextProvider, useDynamicContext, type UserProfile } from '@dynamic-labs/sdk-react-core';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
@@ -15,15 +15,13 @@ export type DynamicProviderProps = {
 };
 
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
-  const { accessToken, authToken, triggerLogout, setAccessToken, setAuthToken, reset: resetStore, showLogin, setShowLogin, setTriggerLogout, setIsNewUser } = useAuthStore();
+  const { accessToken, authToken, setAccessToken, setAuthToken, reset: resetStore, setIsNewUser, triggerLoginModal, setTriggerLoginModal } = useAuthStore();
   const { graphqlApiUrl, dynamicEnvironmentId } = useConfigStore();
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
 
-  console.log(`[debug] DynamicProvider: state ${JSON.stringify({
-    showLogin,
-  })}`)
+  console.log(`[debug] DynamicProvider: typeof triggerLoginModal = ${typeof triggerLoginModal}`)
 
   useEffect(() => {
     console.log(`[debug] DynamicProvider: ${JSON.stringify({
@@ -80,17 +78,26 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
   const DynamicUtils = () => {
     const dynamic = useDynamicContext();
 
+    // useEffect(() => {
+    //   if (!showLogin) return;
+
+    //   dynamic.setShowAuthFlow(true);
+    // }, [showLogin]);
+    
     useEffect(() => {
-      if (!showLogin) return;
+      if (triggerLoginModal) return;
+      const cb = () => {
+        console.log(`[debug] DynamicProvider.tsx: cb: 1`);
+        dynamic.setShowAuthFlow(true);
+      }
+      setTriggerLoginModal(cb);
+    }, [setTriggerLoginModal]);
 
-      dynamic.setShowAuthFlow(true);
-    }, [showLogin]);
+    // useEffect(() => {
+    //   if (!triggerLogout) return;
 
-    useEffect(() => {
-      if (!triggerLogout) return;
-
-      dynamic.handleLogOut();
-    }, [triggerLogout])
+    //   dynamic.handleLogOut();
+    // }, [triggerLogout])
 
     return null;
   };
@@ -125,8 +132,9 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
         accessToken,
         isLoading,
         error,
-        login: () => setShowLogin(true),
-        logout: () => setTriggerLogout(true),
+        // TODO: add fn
+        login: () => typeof triggerLoginModal === 'function' && triggerLoginModal(),
+        logout: () => null,
       })}
     </DynamicContextProvider>
   );

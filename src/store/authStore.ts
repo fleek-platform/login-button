@@ -4,32 +4,34 @@ import { decodeAccessToken } from '@fleek-platform/utils-token';
 import { loginWithDynamic } from '../graphql/fetchLoginWithDynamic';
 import { useConfigStore } from './configStore';
 
+type TriggerLoginModal = () => void;
+
 export interface AuthStore {
   accessToken: string;
   authToken: string;
   isNewUser: boolean;
   projectId: string;
   loading: boolean;
-  showLogin: boolean;
-  triggerLogout: boolean;
+  // showLogin: boolean;
+  triggerLoginModal?: TriggerLoginModal;
+  // triggerLogout: boolean;
   setAccessToken: (value: string) => void;
   setAuthToken: (value: string) => void;
   setLoading: (loading: boolean) => void;
-  setShowLogin: (value: boolean) => void;
-  setTriggerLogout: (value: boolean) => void;
+  // setShowLogin: (value: boolean) => void;
+  // setTriggerLogout: (value: boolean) => void;
+  setTriggerLoginModal: (callback: TriggerLoginModal) => void;
   updateAccessTokenByProjectId: (projectId: string) => Promise<void>;
   reset: () => void;
   setIsNewUser: (isNewUser: boolean) => void;
 }
 
-export interface AuthState extends Pick<AuthStore, 'accessToken'| 'authToken' | 'projectId' | 'loading' | 'showLogin' | 'triggerLogout' | 'isNewUser'> {}
+export interface AuthState extends Pick<AuthStore, 'accessToken'| 'authToken' | 'projectId' | 'loading' | 'isNewUser' | 'triggerLoginModal'> {}
 
 export const initialState: AuthState = {
   accessToken: '',
   authToken: '',
   projectId: '',
-  showLogin: false,
-  triggerLogout: false,
   loading: false,
   isNewUser: false,
 };
@@ -40,16 +42,6 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
       ...initialState,
-      // TODO: Rename to trigger login
-      setShowLogin: (showLogin: boolean) => {
-        set({ showLogin });
-
-        // Reset
-        setTimeout(() => {
-          set({ showLogin: false });
-        }, 0);
-      },
-      setTriggerLogout: (triggerLogout: boolean) => set({ triggerLogout }),
       setAccessToken: (accessToken: string) => {
         // TODO: Ask user to get project id from host app
         // instead of providing here?
@@ -115,6 +107,7 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
       setIsNewUser: (isNewUser: boolean) => set({ isNewUser }),
+      setTriggerLoginModal: (triggerLoginModal: TriggerLoginModal) => set({ triggerLoginModal }),
     }),
     {
       name,
