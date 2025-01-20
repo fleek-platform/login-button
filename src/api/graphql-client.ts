@@ -95,6 +95,7 @@ const executeGraphQLOperation = async <Variables, Result>(
   }
 };
 
+// TODO: We'd possibly want to use @fleek-platform/utils-genql-client since hard-typed queries will eventually fail on source change. The utils-genql-client is computed/generated.
 export const loginWithDynamic = async (
   graphqlApiUrl: string,
   authToken: string,
@@ -113,6 +114,7 @@ export const loginWithDynamic = async (
     dataField: 'loginWithDynamic',
   });
 
+// TODO: We'd possibly want to use @fleek-platform/utils-genql-client since hard-typed queries will eventually fail on source change. The utils-genql-client is computed/generated.
 export const generateUserSessionDetails = async (
   graphqlApiUrl: string,
   authToken: string
