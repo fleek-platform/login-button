@@ -1,0 +1,57 @@
+name: Npm set scope registry
+inputs:
+  registry_host:
+    required: true
+  token:
+    required: true
+  org_scope:
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Clear .npmrc
+      shell: bash
+      run: |
+        npmrcPath=.npmrc
+        npmrcBakPath="$npmrcPath.bak"
+
+        if [[ ! -f "$npmrcPath" ]]; then
+          touch "$npmrcPath"
+
+          echo "✅ Created $npmrcPath"
+        else
+          cp "$npmrcPath" "$npmrcBakPath"
+
+          grep -v "registry.npmjs.org" "$npmrcBakPath" > "$npmrcPath"
+          grep -v "npm.pkg.github.com" "$npmrcBakPath" > "$npmrcPath"
+
+          echo "✅ Cleared $npmrcPath"
+        fi
+
+    - name: Set registry for fleek-platform scope
+      shell: bash
+      run: |
+        npmrcPath=.npmrc
+        registry_host=${{ inputs.registry_host }}
+        registry_url=https://${{ inputs.registry_host }}
+        orgScope=${{ inputs.org_scope }}
+        token=${{ inputs.token }}
+
+        echo "$orgScope:registry=$registry_url" >> "$npmrcPath"
+        echo "//$registry_host/:_authToken=$token" >> "$npmrcPath"
+
+        echo "💡 Config list"
+        pnpm config list
+
+    - name: Check registry
+      shell: bash
+      run: |
+        registry=$(pnpm config get registry)
+        if echo "$registry" | grep -q "https://registry.npmjs.org"; then
+          echo "✅ Has expected GitHub NPM registry $registry"
+        else
+          echo "👹 Oops! Expected GitHub registry https://registry.npmjs.org but found $registry"
+
+          exit 1
+        fi

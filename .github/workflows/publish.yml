@@ -1,0 +1,64 @@
+name: Publish package
+
+on:
+  push:
+    branches:
+      - disabled-staging
+      - disabled-main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 7.32.4
+
+      - name: Install dependencies
+        run: pnpm i --frozen-lockfile
+
+      - name: Build package
+        run: pnpm build
+
+      - name: Determine environment
+        id: env
+        run: |
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
+            echo "environment=production" >> $GITHUB_ENV
+          else
+            echo "environment=staging" >> $GITHUB_ENV
+
+        # Github - staging
+
+      - name: Switch NPM registry to GHCR
+        if: ${{ env.environment == 'staging' }}
+      - uses: ./.github/actions/npm-set-scope-registry
+        with:
+          org_scope: '@fleek-platform'
+          registry_host: 'npm.pkg.github.com'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          work_dir: .
+
+      - name: Publish to GitHub Packages
+        if: ${{ env.environment == 'staging' }}
+        run: pnpm publish --access=restricted --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+        # NPM - production
+
+      - name: Publish to NPM
+        if: ${{ env.environment == 'production' }}
+        run: pnpm publish --access=public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
