@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { decodeAccessToken } from '@fleek-platform/utils-token';
 import { loginWithDynamic } from '../api/graphql-client';
 import { useConfigStore } from './configStore';
 import { getStoreName } from '../utils/store';
+import { decodeAccessToken } from '../utils/token';
 
 type TriggerLoginModal = (open: boolean) => void;
 type TriggerLogout = () => void;
@@ -26,6 +26,7 @@ export interface AuthStore {
   updateAccessTokenByProjectId: (projectId: string) => Promise<void>;
   reset: () => void;
   setIsNewUser: (isNewUser: boolean) => void;
+  setProjectId: (projectId: string) => void;
 }
 
 export interface AuthState
@@ -44,17 +45,7 @@ export const useAuthStore = create<AuthStore>()(
     (set, get) => ({
       ...initialState,
       setAccessToken: (accessToken: string) => {
-        // TODO: Ask user to get project id from host app
-        // instead of providing here?
-        // For the moment we provide this for free
-        // everytime the token is computed to help
-        const { projectId } = decodeAccessToken({
-          token: accessToken,
-        });
-
-        if (!projectId) {
-          throw Error(`Expected accessToken to include a project ID, but found ${typeof projectId}`);
-        }
+        const projectId = decodeAccessToken(accessToken);
 
         set({
           accessToken,
@@ -68,7 +59,7 @@ export const useAuthStore = create<AuthStore>()(
         try {
           set({ loading: true });
 
-          const { authToken, accessToken: initAccessToken } = get();
+          const { authToken } = get();
 
           const { graphqlApiUrl } = useConfigStore.getState();
 
@@ -110,6 +101,7 @@ export const useAuthStore = create<AuthStore>()(
       setIsNewUser: (isNewUser: boolean) => set({ isNewUser }),
       setTriggerLoginModal: (triggerLoginModal: TriggerLoginModal) => set({ triggerLoginModal }),
       setTriggerLogout: (triggerLogout: TriggerLogout) => set({ triggerLogout }),
+      setProjectId: (projectId: string) => set({ projectId }),
     }),
     {
       name,
