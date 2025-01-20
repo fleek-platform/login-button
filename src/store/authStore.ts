@@ -25,7 +25,8 @@ export interface AuthStore {
   setIsNewUser: (isNewUser: boolean) => void;
 }
 
-export interface AuthState extends Pick<AuthStore, 'accessToken'| 'authToken' | 'projectId' | 'loading' | 'isNewUser' | 'triggerLoginModal' | 'triggerLogout'> {}
+export interface AuthState
+  extends Pick<AuthStore, 'accessToken' | 'authToken' | 'projectId' | 'loading' | 'isNewUser' | 'triggerLoginModal' | 'triggerLogout'> {}
 
 export const initialState: AuthState = {
   accessToken: '',
@@ -65,13 +66,11 @@ export const useAuthStore = create<AuthStore>()(
       updateAccessTokenByProjectId: async (projectId: string) => {
         try {
           set({ loading: true });
-          
+
           const { authToken, accessToken: initAccessToken } = get();
 
           const { graphqlApiUrl } = useConfigStore.getState();
-          
-          console.log(`[debug] authStore: initAccessToken = ${initAccessToken}`)
-          
+
           if (!authToken) {
             throw new Error('Auth token is required to update access token');
           }
@@ -82,8 +81,6 @@ export const useAuthStore = create<AuthStore>()(
 
           const accessToken = await loginWithDynamic(graphqlApiUrl, authToken, projectId);
 
-          console.log(`[debug] authStore: afterAccessToken = ${accessToken}`)
-
           if (!accessToken) {
             throw new Error('Failed to get access token');
           }
@@ -91,7 +88,7 @@ export const useAuthStore = create<AuthStore>()(
           set({
             accessToken,
             projectId,
-            loading: false
+            loading: false,
           });
         } catch (err) {
           console.error('Failed to update access token:', err);
@@ -99,7 +96,7 @@ export const useAuthStore = create<AuthStore>()(
           set({
             loading: false,
             accessToken: '',
-            projectId: ''
+            projectId: '',
           });
 
           throw err;
@@ -117,7 +114,7 @@ export const useAuthStore = create<AuthStore>()(
         accessToken,
         authToken,
         projectId,
-      })
+      }),
     },
   ),
 );

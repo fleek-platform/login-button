@@ -15,13 +15,16 @@ export const parseEnvVarsAsKeyVal = <T extends Record<string, string>>({
     throw new Error('Environment Variable not set.');
   }
 
-  return keys.reduce((define, envName) => {
-    if (!defined[envName as keyof T]) {
-      throw new Error(`Environment Variable ${envName} not set.`);
-    }
+  return keys.reduce(
+    (define, envName) => {
+      if (!defined[envName as keyof T]) {
+        throw new Error(`Environment Variable ${envName} not set.`);
+      }
 
-    define[`${keyPrefix}${envName}`] = JSON.stringify(defined[envName as keyof T]);
+      define[`${keyPrefix}${envName}`] = JSON.stringify(defined[envName as keyof T]);
 
-    return define;
-  }, {} as Record<string, string>);
+      return define;
+    },
+    {} as Record<string, string>,
+  );
 };

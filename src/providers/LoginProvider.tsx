@@ -18,11 +18,7 @@ export type LoginProviderProps = {
   children: (props: LoginProviderChildrenProps) => React.JSX.Element;
 };
 
-export const LoginProvider: FC<LoginProviderProps> = ({
-  children,
-  graphqlApiUrl,
-  dynamicEnvironmentId,
-}) => {
+export const LoginProvider: FC<LoginProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId }) => {
   if (!isClient) {
     return null;
   }
@@ -33,7 +29,7 @@ export const LoginProvider: FC<LoginProviderProps> = ({
   // Override if user provide Graphql API URL
   useEffect(() => {
     if (!graphqlApiUrl) return;
-        
+
     setConfig({
       graphqlApiUrl,
     });
@@ -42,15 +38,11 @@ export const LoginProvider: FC<LoginProviderProps> = ({
   // Override if user provide Dynamic Environment ID
   useEffect(() => {
     if (!dynamicEnvironmentId) return;
-        
+
     setConfig({
       dynamicEnvironmentId,
     });
   }, [dynamicEnvironmentId]);
 
-  return (
-    <DynamicProvider>
-      {children}
-    </DynamicProvider>
-  );
-}
+  return <DynamicProvider>{children}</DynamicProvider>;
+};

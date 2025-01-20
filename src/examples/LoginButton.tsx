@@ -21,10 +21,7 @@ const LoginButton = () => {
   const { setTriggerLogout, setShowLogin } = useAuthStore();
 
   return (
-    <LoginProvider
-      graphqlApiUrl={graphqlApiUrl}
-      dynamicEnvironmentId={dynamicEnvironmentId}
-    >
+    <LoginProvider graphqlApiUrl={graphqlApiUrl} dynamicEnvironmentId={dynamicEnvironmentId}>
       {(props) => {
         const { accessToken, isLoading, error } = props;
 

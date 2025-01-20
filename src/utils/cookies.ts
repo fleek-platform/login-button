@@ -17,11 +17,11 @@ export const cookies = {
   get: (key: AppCookies) => getCookie(key),
   // TODO: Add expiration
   // TODO: Add domain for cross domain use
-  set: (key: AppCookies, value: string, options?: OptionsType) => 
+  set: (key: AppCookies, value: string, options?: OptionsType) =>
     setCookie(key, value, {
       domain,
       ...options,
     }),
-  reset: () => requiredAuthKeys.forEach(k => deleteCookie(k)),
+  reset: () => requiredAuthKeys.forEach((k) => deleteCookie(k)),
   remove: (key: AppCookies) => deleteCookie(key),
 };
