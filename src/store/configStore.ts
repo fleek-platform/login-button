@@ -15,14 +15,14 @@ const defaultConfig: Config = {
   dynamicEnvironmentId: getDefined('PUBLIC_DYNAMIC_ENVIRONMENT_ID'),
 };
 
-export interface StoreInterface {
+export interface ConfigStore {
   graphqlApiUrl: string;
   dynamicEnvironmentId: string;
   setConfig: (newConfig: Partial<Config>) => void;
   getConfigValue: (key: keyof Config) => string;
 }
 
-export const useConfigStore = create<StoreInterface>()(
+export const useConfigStore = create<ConfigStore>()(
   persist(
     (set) => ({
       ...defaultConfig,
