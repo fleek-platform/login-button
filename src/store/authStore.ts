@@ -4,11 +4,12 @@ import { loginWithDynamic } from '../api/graphql-client';
 import { useConfigStore } from './configStore';
 import { getStoreName } from '../utils/store';
 import { decodeAccessToken } from '../utils/token';
+import { useIsLoggedIn } from '@dynamic-labs/sdk-react-core';
 
 type TriggerLoginModal = (open: boolean) => void;
 type TriggerLogout = () => void;
 
-const name = getStoreName('config');
+const name = getStoreName('login-button');
 
 export interface AuthStore {
   accessToken: string;
@@ -112,10 +113,18 @@ export const useAuthStore = create<AuthStore>()(
       name,
       storage: createJSONStorage(() => localStorage),
       // Persist only selected keys
-      partialize: ({ accessToken, authToken, projectId }) => ({
+      partialize: ({
         accessToken,
         authToken,
         projectId,
+        isLoggedIn,
+        isNewUser,
+      }) => ({
+        accessToken,
+        authToken,
+        projectId,
+        isLoggedIn,
+        isNewUser,
       }),
     },
   ),

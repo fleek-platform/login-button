@@ -26,17 +26,23 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
     setTriggerLoginModal,
     setTriggerLogout,
     triggerLogout,
+    setIsLoggedIn,
   } = useAuthStore();
   const { graphqlApiUrl, dynamicEnvironmentId } = useConfigStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
 
+  // TODO: Remove useCallback to inspect re-triggers
   const onLogout = useCallback(() => {
     cookies.reset();
+    // TODO: Make sure the reset is not clearing
+    // the trigger callbacks
     resetStore();
-  }, [resetStore]);
+    setIsLoggedIn(false);
+  }, [cookies, resetStore, setIsLoggedIn]);
 
+  // TODO: Remove useCallback to inspect re-triggers
   const onAuthSuccess = useCallback(
     async ({ user }: { user: UserProfile }) => {
       try {
@@ -58,6 +64,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
         if (!result.data.accessToken) throw Error(`Expected a valid access token but got ${typeof result.data.accessToken}`);
 
         setAccessToken(result.data.accessToken);
+        setIsLoggedIn(true);
       } catch (err) {
         console.error(err)
         // TODO: Is this really required?
@@ -66,7 +73,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
         setIsLoading(false);
       }
     },
-    [graphqlApiUrl, setAuthToken, setAccessToken],
+    [graphqlApiUrl, setAuthToken, setAccessToken, setIsLoggedIn],
   );
 
   useEffect(() => {
@@ -101,7 +108,11 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
   const settings = {
     environmentId: dynamicEnvironmentId,
     walletConnectors: [EthereumWalletConnectors],
-    eventsCallbacks: { onLogout, onAuthSuccess },
+    // eventsCallbacks: { onLogout, onAuthSuccess },
+    events: {
+      onLogout,
+      onAuthSuccess,
+    },
     // TODO: Use the correct override
     // using scale might not be appropriate
     // https://docs.dynamic.xyz/design-customizations/css/css-variables#css-variables

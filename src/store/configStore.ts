@@ -8,7 +8,7 @@ interface Config {
   dynamicEnvironmentId: string;
 }
 
-const name = getStoreName('login-button');
+const name = getStoreName('config');
 
 const defaultConfig: Config = {
   graphqlApiUrl: getDefined('PUBLIC_GRAPHQL_ENDPOINT'),
