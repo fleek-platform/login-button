@@ -82,18 +82,18 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
   }, [accessToken]);
 
   const DynamicUtils = () => {
-    const dynamic = useDynamicContext();
+    const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
 
     useEffect(() => {
-      if (triggerLoginModal) return;
-      setTriggerLoginModal(dynamic.setShowAuthFlow);
-    }, [setTriggerLoginModal]);
+      if (!sdkHasLoaded || triggerLoginModal) return;
+      setTriggerLoginModal(setShowAuthFlow);
+    }, [setTriggerLoginModal,sdkHasLoaded]);
 
     useEffect(() => {
-      if (triggerLogout) return;
+      if (!sdkHasLoaded || triggerLogout) return;
 
-      setTriggerLogout(dynamic.handleLogOut);
-    }, [setTriggerLogout]);
+      setTriggerLogout(handleLogOut);
+    }, [setTriggerLogout,sdkHasLoaded]);
 
     return <></>;
   };
