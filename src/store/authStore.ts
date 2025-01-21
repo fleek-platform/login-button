@@ -15,12 +15,14 @@ export interface AuthStore {
   authToken: string;
   isNewUser: boolean;
   projectId: string;
-  loading: boolean;
+  isLoggedIn: boolean;
+  isLoggingIn: boolean;
   triggerLoginModal?: TriggerLoginModal;
   triggerLogout?: TriggerLogout;
   setAccessToken: (value: string) => void;
   setAuthToken: (value: string) => void;
-  setLoading: (loading: boolean) => void;
+  setIsLoggingIn: (isLoggingIn: boolean) => void;
+  setIsLoggedIn: (isLoggedIn: boolean) => void;
   setTriggerLogout: (triggerLogout: TriggerLogout) => void;
   setTriggerLoginModal: (callback: TriggerLoginModal) => void;
   updateAccessTokenByProjectId: (projectId: string) => Promise<void>;
@@ -30,14 +32,15 @@ export interface AuthStore {
 }
 
 export interface AuthState
-  extends Pick<AuthStore, 'accessToken' | 'authToken' | 'projectId' | 'loading' | 'isNewUser' | 'triggerLoginModal' | 'triggerLogout'> {}
+  extends Pick<AuthStore, 'accessToken' | 'authToken' | 'projectId' | 'isNewUser' | 'triggerLoginModal' | 'triggerLogout' | 'isLoggedIn' | 'isLoggingIn'> {}
 
 export const initialState: AuthState = {
   accessToken: '',
   authToken: '',
   projectId: '',
-  loading: false,
   isNewUser: false,
+  isLoggedIn: false,
+  isLoggingIn: false,
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -53,11 +56,12 @@ export const useAuthStore = create<AuthStore>()(
         });
       },
       setAuthToken: (authToken: string) => set({ authToken }),
-      setLoading: (loading: boolean) => set({ loading }),
+      setIsLoggingIn: (isLoggingIn: boolean) => set({ isLoggingIn }),
+      setIsLoggedIn: (isLoggedIn: boolean) => set({ isLoggedIn }),
       reset: () => set(initialState),
       updateAccessTokenByProjectId: async (projectId: string) => {
         try {
-          set({ loading: true });
+          set({ isLoggingIn: true });
 
           const { authToken } = get();
 
@@ -84,13 +88,14 @@ export const useAuthStore = create<AuthStore>()(
           set({
             accessToken: res.data,
             projectId,
-            loading: false,
+            isLoggingIn: false,
           });
         } catch (err) {
           console.error('Failed to update access token:', err);
 
+          // TODO: Shouldn't this be set as spread of initialState obj?
           set({
-            loading: false,
+            isLoggingIn: false,
             accessToken: '',
             projectId: '',
           });
