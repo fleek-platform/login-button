@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 1.0.10
+
+### Patch Changes
+
+- 3754bd7: Test changeset Github Actions workflow
+
 ## 1.0.1
 
 ### Patch Changes
