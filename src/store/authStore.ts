@@ -4,7 +4,6 @@ import { loginWithDynamic } from '../api/graphql-client';
 import { useConfigStore } from './configStore';
 import { getStoreName } from '../utils/store';
 import { decodeAccessToken } from '../utils/token';
-import { useIsLoggedIn } from '@dynamic-labs/sdk-react-core';
 
 type TriggerLoginModal = (open: boolean) => void;
 type TriggerLogout = () => void;

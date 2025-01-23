@@ -8,14 +8,15 @@ import { generateUserSessionDetails } from '../api/graphql-client';
 import { useAuthStore } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 import { type LoginProviderChildrenProps } from './LoginProvider';
-import { useConfigStore } from '../store/configStore';
 import { clearStorageByMatchTerm } from '../utils/browser';
 
 export type DynamicProviderProps = {
+  graphqlApiUrl: string;
+  dynamicEnvironmentId: string;
   children: (props: LoginProviderChildrenProps) => React.JSX.Element;
 };
 
-export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
+export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId }) => {
   const {
     accessToken,
     authToken,
@@ -29,7 +30,6 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
     triggerLogout,
     setIsLoggedIn,
   } = useAuthStore();
-  const { graphqlApiUrl, dynamicEnvironmentId } = useConfigStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
@@ -91,10 +91,24 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
   }, [accessToken]);
 
   const DynamicUtils = () => {
-    const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
+    const { sdkHasLoaded, setShowAuthFlow, handleLogOut, user } = useDynamicContext();
+    // const { setShowLinkNewWalletModal } = useDynamicModals();
 
     useEffect(() => {
       if (!sdkHasLoaded || triggerLoginModal) return;
+        // const callback = (showModal: boolean) => {
+        //   try {
+        //     setShowAuthFlow(showModal);
+        //   } catch (error) {
+        //     console.error('Auth flow failed, falling back to wallet modal:', error);
+        //     try {
+        //       setShowLinkNewWalletModal(showModal);
+        //     } catch (fallbackError) {
+        //       console.error('Both auth flow and fallback failed:', fallbackError);
+        //     }
+        //   }
+        // }
+      
       setTriggerLoginModal(setShowAuthFlow);
     }, [setTriggerLoginModal,sdkHasLoaded]);
 
@@ -110,7 +124,6 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
   const settings = {
     environmentId: dynamicEnvironmentId,
     walletConnectors: [EthereumWalletConnectors],
-    // eventsCallbacks: { onLogout, onAuthSuccess },
     events: {
       onLogout,
       onAuthSuccess,
@@ -121,14 +134,6 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
     shadowDOMEnabled: false,
     cssOverrides: '.modal__items { scale: 1.5 }',
   };
-
-  // Important to prevent initialisation errors
-  // On post-SSR it'll cause html mismatch
-  // e.g. astro dev server
-  // This is a known issue, which should be looked
-  // at in a separate PR task
-  // it should be non-blocking
-  if (!dynamicEnvironmentId) return <></>;
 
   return (
     <DynamicContextProvider settings={settings}>
