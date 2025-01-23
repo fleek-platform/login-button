@@ -3,31 +3,33 @@
 import React, { type FC } from 'react';
 
 import Button from './components/Button';
-import type { CookiesContext } from '../providers/CookiesProvider';
-import LoginProvider from '../providers/LoginProvider';
+import { LoginProvider } from '../providers/LoginProvider';
+import { useAuthStore } from '../store/authStore';
 
-type Props = {
-  requestCookies?: CookiesContext['values'];
-};
+// Staging
+const graphqlApiUrl = 'https://graphql.service.staging.fleeksandbox.xyz/graphql';
+const dynamicEnvironmentId = 'c4d4ccad-9460-419c-9ca3-494488f8c892';
 
 // example usage
-const LoginButton: FC<Props> = ({ requestCookies }) => {
+const LoginButton = () => {
   const paragraphStyles = {
     maxWidth: '16rem',
     wordBreak: 'break-word',
     marginTop: '1rem',
   } as const;
 
+  const { setTriggerLogout, setShowLogin } = useAuthStore();
+
   return (
-    <LoginProvider requestCookies={requestCookies} graphqlApiUrl="https://example.com/graphql" environmentId="my-env-id">
+    <LoginProvider graphqlApiUrl={graphqlApiUrl} dynamicEnvironmentId={dynamicEnvironmentId}>
       {(props) => {
-        const { login, logout, accessToken, isLoading, error } = props;
+        const { accessToken, isLoading, error } = props;
 
         const handleClick = () => {
           if (accessToken) {
-            logout();
+            setTriggerLogout(true);
           } else {
-            login();
+            setShowLogin(true);
           }
         };
 

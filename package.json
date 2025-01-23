@@ -1,6 +1,6 @@
 {
   "name": "@fleek-platform/login-button",
-  "version": "1.0.10",
+  "version": "1.2.3",
   "description": "A standalone login component with an embedded Dynamic modal that functions independently of host application.",
   "repository": "https://github.com/fleek-platform/login-button",
   "homepage": "https://github.com/fleek-platform/login-button",
@@ -17,11 +17,12 @@
   ],
   "exports": {
     ".": {
-      "import": "./src/index.ts"
+      "import": "./dist/bundle.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
-    "build": "pnpm clean:dist && pnpm transpile",
+    "build": "pnpm clean:dist && bun build.ts && pnpm run transpile",
     "transpile": "pnpm exec tsc -p tsconfig.json",
     "changeset:add": "pnpm exec changeset",
     "changeset:status": "pnpm exec changeset status",
@@ -37,13 +38,13 @@
   "dependencies": {
     "@dynamic-labs/ethereum": "3.9.2",
     "@dynamic-labs/sdk-react-core": "3.9.2",
-    "@fleek-platform/errors": "^2.7.0",
     "@fleek-platform/utils-token": "^0.2.2",
     "cookies-next": "^2.1.1",
-    "luxon": "^3.5.0",
+    "dotenv": "^16.4.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "viem": "^2.21.55"
+    "viem": "^2.21.55",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
@@ -52,6 +53,8 @@
     "@types/node": "^20",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.9",
+    "bun": "^1.1.45",
+    "esbuild": "^0.24.2",
     "pino-pretty": "^13.0.0",
     "typescript": "5.6.2"
   }

@@ -1,25 +1,48 @@
-import type { FC } from 'react';
+import { type FC, useEffect } from 'react';
 
-import { type CookiesContext, CookiesProvider } from '../providers/CookiesProvider';
-import { DynamicProvider, type DynamicProviderProps } from '../providers/DynamicProvider';
+import { DynamicProvider } from '../providers/DynamicProvider';
+import { isClient } from '../utils/browser';
+import { useConfigStore } from '../store/configStore';
+
+export interface LoginProviderChildrenProps {
+  accessToken: string;
+  isLoading: boolean;
+  error: unknown;
+  login: () => void;
+  logout: () => void;
+}
 
 export type LoginProviderProps = {
-  requestCookies?: CookiesContext['values'];
-} & DynamicProviderProps;
+  graphqlApiUrl?: string;
+  dynamicEnvironmentId?: string;
+  children: (props: LoginProviderChildrenProps) => React.JSX.Element;
+};
 
-// main component to publish
-export const LoginProvider: FC<LoginProviderProps> = ({ children, requestCookies, graphqlApiUrl, environmentId }) => {
-  if (typeof window === 'undefined') {
+export const LoginProvider: FC<LoginProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId }) => {
+  if (!isClient) {
     return null;
   }
 
-  return (
-    <CookiesProvider requestCookies={requestCookies}>
-      <DynamicProvider graphqlApiUrl={graphqlApiUrl} environmentId={environmentId}>
-        {children}
-      </DynamicProvider>
-    </CookiesProvider>
-  );
-};
+  // Use configStore for configuration needs
+  const { setConfig } = useConfigStore();
 
-// a change to test changeset workflow
+  // Override if user provide Graphql API URL
+  useEffect(() => {
+    if (!graphqlApiUrl) return;
+
+    setConfig({
+      graphqlApiUrl,
+    });
+  }, [graphqlApiUrl]);
+
+  // Override if user provide Dynamic Environment ID
+  useEffect(() => {
+    if (!dynamicEnvironmentId) return;
+
+    setConfig({
+      dynamicEnvironmentId,
+    });
+  }, [dynamicEnvironmentId]);
+
+  return <DynamicProvider>{children}</DynamicProvider>;
+};
