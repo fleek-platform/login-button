@@ -42,3 +42,6 @@ dist
 # formatting
 .vscode
 
+# turborepo
+.turbo/*
+!.turbo/config.json
