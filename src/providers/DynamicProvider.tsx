@@ -29,6 +29,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     setTriggerLogout,
     triggerLogout,
     setIsLoggedIn,
+    projectId,
   } = useAuthStore();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -91,6 +92,12 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
 
     cookies.set('authToken', authToken);
   }, [accessToken]);
+
+  useEffect(() => {
+    if (!projectId) return;
+
+    cookies.set('projectId', projectId);
+  }, [projectId]);
 
   const DynamicUtils = () => {
     const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
