@@ -9,6 +9,7 @@ import { useAuthStore } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 import { type LoginProviderChildrenProps } from './LoginProvider';
 import { useConfigStore } from '../store/configStore';
+import { clearStorageByMatchTerm } from '../utils/browser';
 
 export type DynamicProviderProps = {
   children: (props: LoginProviderChildrenProps) => React.JSX.Element;
@@ -39,6 +40,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
     // TODO: Make sure the reset is not clearing
     // the trigger callbacks
     resetStore();
+    clearStorageByMatchTerm('dynamic');
     setIsLoggedIn(false);
   }, [cookies, resetStore, setIsLoggedIn]);
 
