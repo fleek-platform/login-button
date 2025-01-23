@@ -2,13 +2,14 @@
 
 import { type FC, useCallback, useState, useEffect } from 'react';
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
-import { DynamicContextProvider, useDynamicContext, type UserProfile } from '@dynamic-labs/sdk-react-core';
+import { DynamicContextProvider, useDynamicContext, type UserProfile, useIsLoggedIn } from '@dynamic-labs/sdk-react-core';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
 import { generateUserSessionDetails } from '../api/graphql-client';
 import { useAuthStore } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 import { type LoginProviderChildrenProps } from './LoginProvider';
 import { clearStorageByMatchTerm } from '../utils/browser';
+import { isClient } from '../utils/browser';
 
 export type DynamicProviderProps = {
   graphqlApiUrl: string;
@@ -40,8 +41,10 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     // TODO: Make sure the reset is not clearing
     // the trigger callbacks
     resetStore();
-    clearStorageByMatchTerm('dynamic');
+    // Clear critical stores
+    ['dynamic', 'wagmi', 'fleek-xyz'].forEach(item => clearStorageByMatchTerm(item));
     setIsLoggedIn(false);
+    window.location.reload();    
   }, [cookies, resetStore, setIsLoggedIn]);
 
   // TODO: Remove useCallback to inspect re-triggers
@@ -91,26 +94,14 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
   }, [accessToken]);
 
   const DynamicUtils = () => {
-    const { sdkHasLoaded, setShowAuthFlow, handleLogOut, user } = useDynamicContext();
-    // const { setShowLinkNewWalletModal } = useDynamicModals();
+    const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
+
+    const isLoggedIn = useIsLoggedIn();
 
     useEffect(() => {
-      if (!sdkHasLoaded || triggerLoginModal) return;
-        // const callback = (showModal: boolean) => {
-        //   try {
-        //     setShowAuthFlow(showModal);
-        //   } catch (error) {
-        //     console.error('Auth flow failed, falling back to wallet modal:', error);
-        //     try {
-        //       setShowLinkNewWalletModal(showModal);
-        //     } catch (fallbackError) {
-        //       console.error('Both auth flow and fallback failed:', fallbackError);
-        //     }
-        //   }
-        // }
-      
-      setTriggerLoginModal(setShowAuthFlow);
-    }, [setTriggerLoginModal,sdkHasLoaded]);
+      if (!sdkHasLoaded || triggerLoginModal) return;      
+        setTriggerLoginModal(setShowAuthFlow);
+    }, [setTriggerLoginModal, sdkHasLoaded, isLoggedIn]);
 
     useEffect(() => {
       if (!sdkHasLoaded || triggerLogout) return;
