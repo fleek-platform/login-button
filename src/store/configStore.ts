@@ -10,9 +10,16 @@ interface Config {
 
 const name = getStoreName('config');
 
+// TODO: Can get default from env var through getDefined
+// but these should only be set if the user doesn't provide it
+// as a fallback. Otherwise, the initial call will use
+// the settings and cause CORS. To prevent it, we only pass
+// fallback values, if host app does not provide it.
+// Which settings will be prod.
+// Setter is in src/providers/LoginProvider.tsx
 const defaultConfig: Config = {
-  graphqlApiUrl: getDefined('PUBLIC_GRAPHQL_ENDPOINT'),
-  dynamicEnvironmentId: getDefined('PUBLIC_DYNAMIC_ENVIRONMENT_ID'),
+  graphqlApiUrl: '',
+  dynamicEnvironmentId: '',
 };
 
 export interface ConfigStore {
