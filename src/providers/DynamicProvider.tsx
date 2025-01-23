@@ -123,6 +123,11 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
   };
 
   // Important to prevent initialisation errors
+  // On post-SSR it'll cause html mismatch
+  // e.g. astro dev server
+  // This is a known issue, which should be looked
+  // at in a separate PR task
+  // it should be non-blocking
   if (!dynamicEnvironmentId) return <></>;
 
   return (
