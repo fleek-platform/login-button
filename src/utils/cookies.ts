@@ -10,6 +10,11 @@ import { isClient } from '../utils/browser';
 // TODO: Might want to get this as a prop instead
 const domain = isClient ? getTopLevelDomain(window.location.href) : '';
 
+const defaultOptions: OptionsType = {
+  domain,
+  path: '/',
+};
+
 export type AppCookies = 'authToken' | 'accessToken' | 'projectId';
 
 const requiredAuthKeys: AppCookies[] = ['accessToken', 'authToken', 'projectId'];
@@ -20,9 +25,9 @@ export const cookies = {
   // TODO: Add domain for cross domain use
   set: (key: AppCookies, value: string, options?: OptionsType) =>
     setCookie(key, value, {
-      domain,
+      ...defaultOptions,
       ...options,
     }),
-  reset: () => requiredAuthKeys.forEach((k) => deleteCookie(k)),
+  reset: () => requiredAuthKeys.forEach((k) => deleteCookie(k, defaultOptions)),
   remove: (key: AppCookies) => deleteCookie(key),
 };
