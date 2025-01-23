@@ -44,5 +44,9 @@ export const LoginProvider: FC<LoginProviderProps> = ({ children, graphqlApiUrl,
     });
   }, [dynamicEnvironmentId]);
 
-  return <DynamicProvider graphqlApiUrl={graphqlApiUrl} dynamicEnvironmentId={dynamicEnvironmentId}>{children}</DynamicProvider>;
+  return (
+    <DynamicProvider graphqlApiUrl={graphqlApiUrl} dynamicEnvironmentId={dynamicEnvironmentId}>
+      {children}
+    </DynamicProvider>
+  );
 };

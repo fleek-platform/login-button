@@ -42,9 +42,9 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     // the trigger callbacks
     resetStore();
     // Clear critical stores
-    ['dynamic', 'wagmi', 'fleek-xyz'].forEach(item => clearStorageByMatchTerm(item));
+    ['dynamic', 'wagmi', 'fleek-xyz'].forEach((item) => clearStorageByMatchTerm(item));
     setIsLoggedIn(false);
-    window.location.reload();    
+    window.location.reload();
   }, [cookies, resetStore, setIsLoggedIn]);
 
   // TODO: Remove useCallback to inspect re-triggers
@@ -71,7 +71,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         setAccessToken(result.data.accessToken);
         setIsLoggedIn(true);
       } catch (err) {
-        console.error(err)
+        console.error(err);
         // TODO: Is this really required?
         setError(err);
       } finally {
@@ -99,15 +99,15 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     const isLoggedIn = useIsLoggedIn();
 
     useEffect(() => {
-      if (!sdkHasLoaded || triggerLoginModal) return;      
-        setTriggerLoginModal(setShowAuthFlow);
+      if (!sdkHasLoaded || triggerLoginModal) return;
+      setTriggerLoginModal(setShowAuthFlow);
     }, [setTriggerLoginModal, sdkHasLoaded, isLoggedIn]);
 
     useEffect(() => {
       if (!sdkHasLoaded || triggerLogout) return;
 
       setTriggerLogout(handleLogOut);
-    }, [setTriggerLogout,sdkHasLoaded]);
+    }, [setTriggerLogout, sdkHasLoaded]);
 
     return <></>;
   };

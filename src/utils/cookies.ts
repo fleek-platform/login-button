@@ -8,9 +8,7 @@ import { isClient } from '../utils/browser';
 // Refers to the application hostname
 // during runtime
 // TODO: Might want to get this as a prop instead
-const domain = isClient
-  ? getTopLevelDomain(window.location.href)
-  : '';
+const domain = isClient ? getTopLevelDomain(window.location.href) : '';
 
 export type AppCookies = 'authToken' | 'accessToken' | 'projectId';
 

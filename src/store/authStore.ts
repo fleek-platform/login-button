@@ -32,7 +32,10 @@ export interface AuthStore {
 }
 
 export interface AuthState
-  extends Pick<AuthStore, 'accessToken' | 'authToken' | 'projectId' | 'isNewUser' | 'triggerLoginModal' | 'triggerLogout' | 'isLoggedIn' | 'isLoggingIn'> {}
+  extends Pick<
+    AuthStore,
+    'accessToken' | 'authToken' | 'projectId' | 'isNewUser' | 'triggerLoginModal' | 'triggerLogout' | 'isLoggedIn' | 'isLoggingIn'
+  > {}
 
 export const initialState: AuthState = {
   accessToken: '',
@@ -112,13 +115,7 @@ export const useAuthStore = create<AuthStore>()(
       name,
       storage: createJSONStorage(() => localStorage),
       // Persist only selected keys
-      partialize: ({
-        accessToken,
-        authToken,
-        projectId,
-        isLoggedIn,
-        isNewUser,
-      }) => ({
+      partialize: ({ accessToken, authToken, projectId, isLoggedIn, isNewUser }) => ({
         accessToken,
         authToken,
         projectId,
