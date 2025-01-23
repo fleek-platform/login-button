@@ -120,6 +120,9 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
     cssOverrides: '.modal__items { scale: 1.5 }',
   };
 
+  // Important to prevent initialisation errors
+  if (!dynamicEnvironmentId) return <></>;
+
   return (
     <DynamicContextProvider settings={settings}>
       <DynamicUtils />
