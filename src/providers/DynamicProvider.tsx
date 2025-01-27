@@ -107,6 +107,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
 
     try {
       decodeAccessToken(accessToken);
+      setAccessToken(accessToken);
       setIsLoggedIn(true);
     } catch (_err) {
       console.warn('A user access token was found to be invalid!');
