@@ -9,6 +9,7 @@ import { useAuthStore } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 import { type LoginProviderChildrenProps } from './LoginProvider';
 import { clearStorageByMatchTerm } from '../utils/browser';
+import { decodeAccessToken } from '../utils/token';
 
 export type DynamicProviderProps = {
   graphqlApiUrl: string;
@@ -98,6 +99,19 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
 
     cookies.set('projectId', projectId);
   }, [projectId]);
+
+  useEffect(() => {
+    const accessToken = cookies.get('accessToken');
+    
+    if (!accessToken) return;
+
+    try {
+      decodeAccessToken(accessToken);
+      setIsLoggedIn(true);
+    } catch (_err) {
+      console.warn('A user access token was found to be invalid!');
+    }
+  }, []);
 
   const DynamicUtils = () => {
     const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
