@@ -14,4 +14,4 @@ export const decodeAccessToken = (accessToken: string) => {
   }
 
   return projectId;
-}
+};

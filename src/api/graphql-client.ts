@@ -25,13 +25,11 @@ export type GraphQLError = {
   message: string;
 };
 
-export type ExecGraphQLOperationResult<Data> = 
-  | { success: true; data: Data }
-  | { success: false; error: GraphQLError };
+export type ExecGraphQLOperationResult<Data> = { success: true; data: Data } | { success: false; error: GraphQLError };
 
 const executeGraphQLOperation = async <Variables, Result>(
   graphqlApiUrl: string,
-  operation: GraphQLOperation<Variables, Result>
+  operation: GraphQLOperation<Variables, Result>,
 ): Promise<ExecGraphQLOperationResult<Result>> => {
   try {
     const { operationName, query, variables } = operation;
@@ -99,11 +97,9 @@ const executeGraphQLOperation = async <Variables, Result>(
 export const loginWithDynamic = async (
   graphqlApiUrl: string,
   authToken: string,
-  projectId?: string
-): Promise<ExecGraphQLOperationResult<string>> => executeGraphQLOperation<
-    { data: { authToken: string; projectId?: string } },
-    string
-  >(graphqlApiUrl, {
+  projectId?: string,
+): Promise<ExecGraphQLOperationResult<string>> =>
+  executeGraphQLOperation<{ data: { authToken: string; projectId?: string } }, string>(graphqlApiUrl, {
     operationName: 'loginWithDynamic',
     query: `
       mutation loginWithDynamic($data: LoginWithDynamicDataInput!) {
@@ -117,11 +113,9 @@ export const loginWithDynamic = async (
 // TODO: We'd possibly want to use @fleek-platform/utils-genql-client since hard-typed queries will eventually fail on source change. The utils-genql-client is computed/generated.
 export const generateUserSessionDetails = async (
   graphqlApiUrl: string,
-  authToken: string
-): Promise<ExecGraphQLOperationResult<SessionDetails>> => executeGraphQLOperation<
-    { data: { authToken: string } },
-    SessionDetails
-  >(graphqlApiUrl, {
+  authToken: string,
+): Promise<ExecGraphQLOperationResult<SessionDetails>> =>
+  executeGraphQLOperation<{ data: { authToken: string } }, SessionDetails>(graphqlApiUrl, {
     operationName: 'generateUserSessionDetails',
     query: `
       mutation generateUserSessionDetails($data: GenerateUserSessionDetailsDataInput!) {

@@ -8,14 +8,15 @@ import { generateUserSessionDetails } from '../api/graphql-client';
 import { useAuthStore } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 import { type LoginProviderChildrenProps } from './LoginProvider';
-import { useConfigStore } from '../store/configStore';
 import { clearStorageByMatchTerm } from '../utils/browser';
 
 export type DynamicProviderProps = {
+  graphqlApiUrl: string;
+  dynamicEnvironmentId: string;
   children: (props: LoginProviderChildrenProps) => React.JSX.Element;
 };
 
-export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
+export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId }) => {
   const {
     accessToken,
     authToken,
@@ -28,8 +29,8 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
     setTriggerLogout,
     triggerLogout,
     setIsLoggedIn,
+    projectId,
   } = useAuthStore();
-  const { graphqlApiUrl, dynamicEnvironmentId } = useConfigStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
@@ -40,8 +41,10 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
     // TODO: Make sure the reset is not clearing
     // the trigger callbacks
     resetStore();
-    clearStorageByMatchTerm('dynamic');
+    // Clear critical stores
+    ['dynamic', 'wagmi', 'fleek-xyz'].forEach((item) => clearStorageByMatchTerm(item));
     setIsLoggedIn(false);
+    window.location.reload();
   }, [cookies, resetStore, setIsLoggedIn]);
 
   // TODO: Remove useCallback to inspect re-triggers
@@ -68,7 +71,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
         setAccessToken(result.data.accessToken);
         setIsLoggedIn(true);
       } catch (err) {
-        console.error(err)
+        console.error(err);
         // TODO: Is this really required?
         setError(err);
       } finally {
@@ -90,19 +93,25 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
     cookies.set('authToken', authToken);
   }, [accessToken]);
 
+  useEffect(() => {
+    if (!projectId) return;
+
+    cookies.set('projectId', projectId);
+  }, [projectId]);
+
   const DynamicUtils = () => {
     const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
 
     useEffect(() => {
       if (!sdkHasLoaded || triggerLoginModal) return;
       setTriggerLoginModal(setShowAuthFlow);
-    }, [setTriggerLoginModal,sdkHasLoaded]);
+    }, [setTriggerLoginModal, sdkHasLoaded]);
 
     useEffect(() => {
       if (!sdkHasLoaded || triggerLogout) return;
 
       setTriggerLogout(handleLogOut);
-    }, [setTriggerLogout,sdkHasLoaded]);
+    }, [setTriggerLogout, sdkHasLoaded]);
 
     return <></>;
   };
@@ -110,7 +119,6 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
   const settings = {
     environmentId: dynamicEnvironmentId,
     walletConnectors: [EthereumWalletConnectors],
-    // eventsCallbacks: { onLogout, onAuthSuccess },
     events: {
       onLogout,
       onAuthSuccess,
@@ -121,14 +129,6 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children }) => {
     shadowDOMEnabled: false,
     cssOverrides: '.modal__items { scale: 1.5 }',
   };
-
-  // Important to prevent initialisation errors
-  // On post-SSR it'll cause html mismatch
-  // e.g. astro dev server
-  // This is a known issue, which should be looked
-  // at in a separate PR task
-  // it should be non-blocking
-  if (!dynamicEnvironmentId) return <></>;
 
   return (
     <DynamicContextProvider settings={settings}>

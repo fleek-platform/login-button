@@ -2,7 +2,7 @@ export const isClient = typeof window !== 'undefined';
 
 export const clearStorageByMatchTerm = (term: string) => {
   try {
-    Object.keys(localStorage).forEach(key => {
+    Object.keys(localStorage).forEach((key) => {
       try {
         if (key.toLowerCase().includes(term)) {
           localStorage.removeItem(key);
@@ -12,7 +12,7 @@ export const clearStorageByMatchTerm = (term: string) => {
       }
     });
 
-    Object.keys(sessionStorage).forEach(key => {
+    Object.keys(sessionStorage).forEach((key) => {
       try {
         if (key.toLowerCase().includes(term)) {
           sessionStorage.removeItem(key);
@@ -24,4 +24,4 @@ export const clearStorageByMatchTerm = (term: string) => {
   } catch (error) {
     console.error('Failed to clear storage due to an error', error);
   }
-}
+};

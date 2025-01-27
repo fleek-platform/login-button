@@ -13,8 +13,8 @@ export interface LoginProviderChildrenProps {
 }
 
 export type LoginProviderProps = {
-  graphqlApiUrl?: string;
-  dynamicEnvironmentId?: string;
+  graphqlApiUrl: string;
+  dynamicEnvironmentId: string;
   children: (props: LoginProviderChildrenProps) => React.JSX.Element;
 };
 
@@ -44,5 +44,9 @@ export const LoginProvider: FC<LoginProviderProps> = ({ children, graphqlApiUrl,
     });
   }, [dynamicEnvironmentId]);
 
-  return <DynamicProvider>{children}</DynamicProvider>;
+  return (
+    <DynamicProvider graphqlApiUrl={graphqlApiUrl} dynamicEnvironmentId={dynamicEnvironmentId}>
+      {children}
+    </DynamicProvider>
+  );
 };
