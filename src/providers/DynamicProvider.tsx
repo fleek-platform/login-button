@@ -101,12 +101,20 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
   }, [projectId]);
 
   useEffect(() => {
+    const authToken = cookies.get('authToken');
     const accessToken = cookies.get('accessToken');
     
-    if (!accessToken) return;
+    if (!authToken) {
+      return;
+    }
+
+    if (!accessToken) {
+      return;
+    }
 
     try {
       decodeAccessToken(accessToken);
+      setAuthToken(authToken);
       setAccessToken(accessToken);
       setIsLoggedIn(true);
     } catch (_err) {
