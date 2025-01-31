@@ -1,10 +1,13 @@
-name: Changeset (Version Management)
+name: 🪡 Changeset (Version Management)
 
 on:
   push:
     branches:
+      - main
       - develop
-      - test
+      
+  # remove after test
+  workflow_dispatch:
 
 jobs:
   changeset_handler:
@@ -90,6 +93,17 @@ jobs:
         run: |
           pnpm changeset:version
           git status --short
+
+      - name: Update lockfile
+        if: ${{ steps.changeset-status.outputs.skip != 'true' }}
+        run: |
+          pnpm i --lockfile-only
+          
+          if git diff --quiet pnpm-lock.yaml; then
+            echo "🤖 No changes to lockfile"
+          else
+            echo "✅ Lockfile was updated"
+          fi
 
       - name: Commit changes
         if: ${{ steps.changeset-status.outputs.skip != 'true' }}
