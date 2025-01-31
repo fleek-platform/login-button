@@ -24,6 +24,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     setAccessToken,
     setAuthToken,
     reset: resetStore,
+    setUserProfile,
     setIsNewUser,
     triggerLoginModal,
     setTriggerLoginModal,
@@ -61,6 +62,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         setIsLoading(true);
         setAuthToken(authToken);
         setError(undefined);
+        setUserProfile(user);
         setIsNewUser(!!user?.newUser);
 
         const result = await generateUserSessionDetails(graphqlApiUrl, authToken);
@@ -103,7 +105,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
   useEffect(() => {
     const authToken = cookies.get('authToken');
     const accessToken = cookies.get('accessToken');
-    
+
     if (!authToken) {
       return;
     }
