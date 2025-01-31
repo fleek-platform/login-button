@@ -1,0 +1,46 @@
+name: 🔧 Build (dry-run)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
+jobs:
+  build-dry-run:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 9
+
+      - name: Install
+        run: pnpm i
+
+      - name: Build site
+        env:
+          PUBLIC_GRAPHQL_API_URL: ${{ vars.PUBLIC_GRAPHQL_API_URL }}
+          PUBLIC_DYNAMIC_ENVIRONMENT_ID: ${{ vars.PUBLIC_DYNAMIC_ENVIRONMENT_ID }}
+        run: pnpm run build
+
+      - name: Clear
+        run: |
+          rm .env
