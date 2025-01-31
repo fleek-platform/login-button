@@ -1,5 +1,16 @@
 # @fleek-platform/login-button
 
+## 2.0.0
+
+### Major Changes
+
+- ca8a8f7: Introduce global store, re-architect, etc
+
+### Minor Changes
+
+- c003107: Clear storage by matching term, e.g. dynamic
+- 9499ce0: expose user profile data
+
 ## 1.0.10
 
 ### Patch Changes
