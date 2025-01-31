@@ -56,9 +56,6 @@ jobs:
 
       - name: Build
         env:
-          PUBLIC_FLEEK_REST_API_URL: ${{ vars.PUBLIC_FLEEK_REST_API_URL }}
-          PUBLIC_UI_APP_URL: ${{ vars.PUBLIC_UI_APP_URL }}
-          PUBLIC_BEEHIIV_PROXY_SERVER_URL: ${{ vars.PUBLIC_BEEHIIV_PROXY_SERVER_URL }}
           PUBLIC_GRAPHQL_API_URL: ${{ vars.PUBLIC_GRAPHQL_API_URL }}
           PUBLIC_DYNAMIC_ENVIRONMENT_ID: ${{ vars.PUBLIC_DYNAMIC_ENVIRONMENT_ID }}
         run: |
