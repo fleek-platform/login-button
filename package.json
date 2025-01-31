@@ -23,17 +23,19 @@
   },
   "scripts": {
     "build": "pnpm clean:dist && bun build.ts && pnpm run transpile",
-    "transpile": "pnpm exec tsc -p tsconfig.json",
     "changeset:add": "pnpm exec changeset",
     "changeset:status": "pnpm exec changeset status",
     "changeset:version": "pnpm exec changeset version",
-    "format": "pnpm exec biome format --write ./src",
-    "format:check": "pnpm exec biome format ./src",
-    "lint": "pnpm exec biome lint --write --no-errors-on-unmatched ./src",
-    "lint:check": "pnpm exec biome lint ./src",
     "clean": "pnpm \"/^clean:.*/\"",
     "clean:dist": "rm -rf dist",
-    "clean:node": "rm -rf node_modules"
+    "clean:node": "rm -rf node_modules",
+    "clean:dot_install": "rm -rf .install",
+    "format": "pnpm exec biome format --write ./src",
+    "format:check": "pnpm exec biome format ./src",
+    "generate:local_package": "pnpm build && .scripts/generate_npm_package",
+    "lint": "pnpm exec biome lint --write --no-errors-on-unmatched ./src",
+    "lint:check": "pnpm exec biome lint ./src",
+    "transpile": "pnpm exec tsc -p tsconfig.json"
   },
   "dependencies": {
     "@dynamic-labs/ethereum": "3.9.2",
