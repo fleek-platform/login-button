@@ -4,6 +4,7 @@ import { loginWithDynamic } from '../api/graphql-client';
 import { useConfigStore } from './configStore';
 import { getStoreName } from '../utils/store';
 import { decodeAccessToken } from '../utils/token';
+import type { UserProfile } from '@dynamic-labs/sdk-react-core';
 
 type TriggerLoginModal = (open: boolean) => void;
 type TriggerLogout = () => void;
@@ -17,6 +18,7 @@ export interface AuthStore {
   projectId: string;
   isLoggedIn: boolean;
   isLoggingIn: boolean;
+  userProfile?: UserProfile;
   triggerLoginModal?: TriggerLoginModal;
   triggerLogout?: TriggerLogout;
   setAccessToken: (value: string) => void;
@@ -28,13 +30,22 @@ export interface AuthStore {
   updateAccessTokenByProjectId: (projectId: string) => Promise<void>;
   reset: () => void;
   setIsNewUser: (isNewUser: boolean) => void;
+  setUserProfile: (userProfile: UserProfile) => void;
   setProjectId: (projectId: string) => void;
 }
 
 export interface AuthState
   extends Pick<
     AuthStore,
-    'accessToken' | 'authToken' | 'projectId' | 'isNewUser' | 'triggerLoginModal' | 'triggerLogout' | 'isLoggedIn' | 'isLoggingIn'
+    | 'accessToken'
+    | 'authToken'
+    | 'projectId'
+    | 'isNewUser'
+    | 'triggerLoginModal'
+    | 'triggerLogout'
+    | 'isLoggedIn'
+    | 'isLoggingIn'
+    | 'userProfile'
   > {}
 
 export const initialState: AuthState = {
@@ -44,6 +55,7 @@ export const initialState: AuthState = {
   isNewUser: false,
   isLoggedIn: false,
   isLoggingIn: false,
+  userProfile: undefined,
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -106,6 +118,7 @@ export const useAuthStore = create<AuthStore>()(
           throw err;
         }
       },
+      setUserProfile: (userProfile: UserProfile) => set({ userProfile }),
       setIsNewUser: (isNewUser: boolean) => set({ isNewUser }),
       setTriggerLoginModal: (triggerLoginModal: TriggerLoginModal) => set({ triggerLoginModal }),
       setTriggerLogout: (triggerLogout: TriggerLogout) => set({ triggerLogout }),
@@ -115,7 +128,8 @@ export const useAuthStore = create<AuthStore>()(
       name,
       storage: createJSONStorage(() => localStorage),
       // Persist only selected keys
-      partialize: ({ accessToken, authToken, projectId, isLoggedIn, isNewUser }) => ({
+      partialize: ({ accessToken, authToken, projectId, isLoggedIn, isNewUser, userProfile }) => ({
+        userProfile,
         accessToken,
         authToken,
         projectId,
