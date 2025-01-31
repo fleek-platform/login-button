@@ -1,0 +1,90 @@
+name: 🚀 NPM Packages Publisher
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - 🪡 Changeset (Version Management)
+    types:
+      - completed
+    branches:
+      - main
+      - develop
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    env:
+      # Important: Use the same logic for `environment`
+      # since github actions at time of writing
+      # does not have a way to access it directly from steps
+      DEPLOY_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    steps:
+      - name: GitHub Action Environment info
+        run: |
+          echo "🤖 Enviroment's set to $DEPLOY_ENVIRONMENT"
+          
+      - name: Checkout
+        uses: actions/checkout@v4
+          
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      # TODO: The changeset should provide the latest
+      # pnpm-lock file update
+      - name: Update lockfile
+        run: |
+          pnpm i --lockfile-only
+          
+          if git diff --quiet pnpm-lock.yaml; then
+            echo "🤖 No changes to lockfile"
+          else
+            echo "✅ Lockfile was updated"
+          fi
+
+      - name: Install dependencies
+        run: |
+          pnpm i --frozen-lockfile
+
+      - name: Build
+        env:
+          PUBLIC_FLEEK_REST_API_URL: ${{ vars.PUBLIC_FLEEK_REST_API_URL }}
+          PUBLIC_UI_APP_URL: ${{ vars.PUBLIC_UI_APP_URL }}
+          PUBLIC_BEEHIIV_PROXY_SERVER_URL: ${{ vars.PUBLIC_BEEHIIV_PROXY_SERVER_URL }}
+          PUBLIC_GRAPHQL_API_URL: ${{ vars.PUBLIC_GRAPHQL_API_URL }}
+          PUBLIC_DYNAMIC_ENVIRONMENT_ID: ${{ vars.PUBLIC_DYNAMIC_ENVIRONMENT_ID }}
+        run: |
+          pnpm build
+
+      - name: Create .npmrc file
+        run: |
+          echo "//${{ vars.NPM_REGISTRY_HOST }}/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+          echo "${{ vars.NPM_ORG_SCOPE }}:registry=https://${{ vars.NPM_REGISTRY_HOST }}" >> .npmrc
+          cat .npmrc
+
+      - name: Set registry
+        run: |
+          registry_url="https://${{ vars.NPM_REGISTRY_HOST }}"
+
+          if pnpm config set registry "$registry_url"; then
+            echo "✅ Has set registry to $registry_url"
+          else
+            echo "⚠️ WARN: Failed to set registry to $registry_url"
+          fi
+
+          registry=$(pnpm config get registry)
+          registry_scope=$(pnpm config get @fleek-platform:registry)
+          echo "🔎 Registry is $registry"
+          echo "🔎 Registry scope is $registry_scope"
+
+      - name: Publish
+        run: |
+          pnpm publish --access=public --no-git-checks
