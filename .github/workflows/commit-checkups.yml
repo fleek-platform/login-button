@@ -1,0 +1,29 @@
+name: 🫡 Commit checkups (Verification)
+
+on:
+ push:
+    branches:
+      - main
+      - develop
+ pull_request:
+
+jobs:
+ commit-checkups:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 9
+
+      - name: Install
+        run: pnpm i
+
+      - name: Commit checks
+        run: ./.husky/pre-commit

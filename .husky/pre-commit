@@ -1,0 +1,20 @@
+echo "🚑 Health check, please be patient..."
+
+if pnpm run format:check; then
+  echo "✅ Code format checked!"
+else
+  echo "⚠️ WARNING: Incorrect code format, fix it before committing, please!"
+  echo "💡 Use the command npm run fmt"
+  exit 1
+fi
+
+if pnpm run lint:check; then
+  echo "✅ Code format checked!"
+else
+  echo "⚠️ WARNING: Incorrect code format, fix it before committing, please!"
+  echo "💡 Use the command npm run fmt"
+  exit 1
+fi
+
+echo "👍 Health check completed."
+echo

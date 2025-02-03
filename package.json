@@ -35,7 +35,8 @@
     "generate:local_package": "pnpm build && .scripts/generate_npm_package",
     "lint": "pnpm exec biome lint --write --no-errors-on-unmatched ./src",
     "lint:check": "pnpm exec biome lint ./src",
-    "transpile": "pnpm exec tsc -p tsconfig.json"
+    "transpile": "pnpm exec tsc -p tsconfig.json",
+    "prepare": "husky"
   },
   "dependencies": {
     "@dynamic-labs/ethereum": "3.9.2",
@@ -56,6 +57,7 @@
     "@types/react-dom": "^18.0.9",
     "bun": "^1.1.45",
     "esbuild": "^0.24.2",
+    "husky": "^9.1.7",
     "pino-pretty": "^13.0.0",
     "typescript": "5.6.2"
   }
