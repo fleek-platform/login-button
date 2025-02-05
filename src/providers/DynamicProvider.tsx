@@ -138,7 +138,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
       setTriggerLogout(handleLogOut);
     }, [setTriggerLogout, sdkHasLoaded]);
 
-    return <></>;
+    return null;
   };
 
   const settings = {
