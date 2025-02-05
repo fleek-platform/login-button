@@ -2,24 +2,28 @@ name: 🚀 NPM Packages Publisher
 
 on:
   workflow_dispatch:
+  # The workflow's dispatched after Changeset in develop
   workflow_run:
     workflows:
       - 🪡 Changeset (Version Management)
     types:
       - completed
     branches:
-      - main
       - develop
+  # The workflow's dispatched on Release by develop hash
+  repository_dispatch:
+    types: [Release]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    # Important: Use the same logic for `env`
+    environment: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'Release' && 'production' || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
     env:
       # Important: Use the same logic for `environment`
       # since github actions at time of writing
       # does not have a way to access it directly from steps
-      DEPLOY_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+      DEPLOY_ENVIRONMENT: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'Release' && 'production' || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
     steps:
       - name: GitHub Action Environment info
         run: |
