@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.0.2
+
+### Patch Changes
+
+- 76cff37: Bump version for workflow test only
+
 ## 2.0.1
 
 ### Patch Changes
