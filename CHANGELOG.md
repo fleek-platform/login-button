@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.0.1
+
+### Patch Changes
+
+- c070cbd: Make DynamicUtils return nullish
+
 ## 2.0.0
 
 ### Major Changes
