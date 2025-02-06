@@ -22,7 +22,7 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean:dist && bun build.ts && pnpm run transpile",
+    "build": "pnpm clean:dist && pnpm exec bun build.ts && pnpm run transpile",
     "changeset:add": "pnpm exec changeset",
     "changeset:status": "pnpm exec changeset status",
     "changeset:version": "pnpm exec changeset version",
