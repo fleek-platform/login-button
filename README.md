@@ -21,6 +21,9 @@ The Fleek Login Button provides standalone authentication button component with 
   - [Reading auth cookie](#reading-auth-cookie)
 - [📋 Additional Notes](#additional-notes)
 - [📖 Docs](https://fleek.xyz/docs/sdk)
+- [🚀 Package Release](#package-release)
+  - [Override organisation registry](#override-organisation-registry)
+  - [Create a private GHCR Token](#create-a-private-ghcr-token)
 - [🙏 Contributing](#contributing)
   - [Branching strategy](#branching-strategy)
   - [Contributing](#conventional-commits)
@@ -69,7 +72,7 @@ Open your favourite text editor to edit the file.
 Here's an example for staging environent variable values:
 
 ```sh
-PUBLIC_GRAPHQL_API_URL="https://graphql.service.staging.fleeksandbox.xyz/graphql"
+PUBLIC_GRAPHQL_ENDPOINT="https://graphql.service.staging.fleeksandbox.xyz/graphql"
 PUBLIC_DYNAMIC_ENVIRONMENT_ID="c4d4ccad-9460-419c-9ca3-494488f8c892"
 ```
 
@@ -209,6 +212,68 @@ const accessToken: string | undefined = getAuthCookie();
 ## Additional notes
 
 Currently the `generateUserSessionDetails` mutation is called using a simple `fetch` call in [fetchGenerateUserSessionDetails.ts](src/graphql/fetchGenerateUserSessionDetails.ts) due to the fact that `@fleek-platform/utils-genql-client` package breaks the build. Once the issue is resolved, the existing implementation should be restored from this point in Git history [commit](https://github.com/fleek-platform/login-button/tree/5922518804e9cac498db5b23d5c7be5e191dbabe).
+
+## Package Release
+
+The main principal to understand is that when a branch is merged into **main** or **develop**, the npm-publisher.yml workflow is triggered to publish packages to the appropriate registry.
+
+For the main branch, packages are published to the [npmjs.org](https://www.npmjs.com/~fleek-platform) registry, ensuring they are available for public use.
+
+Conversely, when changes are merged into the develop branch, packages are published to the [GitHub Registry packages (GHCR)](https://github.com/orgs/fleek-platform/packages)
+, which serves as a staging environment.
+
+This setup allows for a clear separation between production-ready packages and those in development.
+
+### Override organisation registry
+
+You can override the organisation registry in different ways. For example, you can setup a local `.npmrc` that overrides the organisation `@fleek-platform` registry.
+
+Start by changing to project directory and create or edit a .npmrc file:
+
+```sh
+touch .npmrc
+```
+
+Use your favourite text editor and put the following content:
+
+```
+//npm.pkg.github.com/:_authToken=$PAT
+@fleek-platform:registry=https://npm.pkg.github.com
+```
+
+The `PAT` is an environment variable for your private authentication token. An authentication token is required for GHCR Registry, as GHCR is our private registry used for testing.
+
+Alternatively, some users prefer to use the npm CLI to authenticate against the organisation scope.
+
+Here's a quick set of instructions to allow to login via NPM CLI.
+
+1) Execute the command npm login with scope and registry URL
+
+```sh
+npm login --scope=@fleek-platform --registry=https://npm.pkg.github.com
+```
+
+2) Provide a random username, e.g. somebody
+
+```sh
+username: somebody
+```
+
+3) Put the provided token as the user password
+
+```sh
+password: ***
+```
+
+Onwards, your registry for `@fleek-platform` will be pointing to private GitHub Registry. Make sure that you logout after testing, as this might cause confusion.
+
+### Create a private GHCR Token
+
+Visit your GitHub user [tokens](https://github.com/settings/tokens).
+
+Create a new token that allows you to:
+- Upload packages to GitHub Package Registry, e.g. `write:packages`
+- Download packages from GitHub Package Registry, e.g. `read:packages`
 
 ## Contributing
 
