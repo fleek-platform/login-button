@@ -33,7 +33,7 @@ export const LoginProvider: FC<LoginProviderProps> = ({ children, graphqlApiUrl,
     setConfig({
       graphqlApiUrl,
     });
-  }, [graphqlApiUrl]);
+  }, [graphqlApiUrl, setConfig]);
 
   // Override if user provide Dynamic Environment ID
   useEffect(() => {
@@ -42,7 +42,7 @@ export const LoginProvider: FC<LoginProviderProps> = ({ children, graphqlApiUrl,
     setConfig({
       dynamicEnvironmentId,
     });
-  }, [dynamicEnvironmentId]);
+  }, [dynamicEnvironmentId, setConfig]);
 
   return (
     <DynamicProvider graphqlApiUrl={graphqlApiUrl} dynamicEnvironmentId={dynamicEnvironmentId}>

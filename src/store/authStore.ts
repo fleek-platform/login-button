@@ -6,8 +6,8 @@ import { getStoreName } from '../utils/store';
 import { decodeAccessToken } from '../utils/token';
 import type { UserProfile } from '@dynamic-labs/sdk-react-core';
 
-type TriggerLoginModal = (open: boolean) => void;
-type TriggerLogout = () => void;
+export type TriggerLoginModal = (open: boolean) => void;
+export type TriggerLogout = () => void;
 
 const name = getStoreName('login-button');
 
