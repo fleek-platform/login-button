@@ -75,3 +75,39 @@
 .dynamic-shadow-dom .text-button {
   font-size: 0.75em;
 }
+
+.dynamic-shadow-dom .pin-input__input {
+  font-size: 1em;
+  height: 2.75em;
+  max-width: 2.75em;
+}
+
+.dynamic-shadow-dom .search-instead__container {
+  font-size: .75em;
+  line-height: 1em;
+  margin-top: 2.5em;
+  padding-bottom: 1em;
+}
+
+.dynamic-shadow-dom .search-icon__container {
+  height: 1em;
+  width: 1em;
+}
+
+.dynamic-shadow-dom .search__container {
+  gap: .625em;
+  height: 2.625em;
+  justify-content: space-between;
+  min-height: 2.25em;
+  padding-left: .75em;
+  padding-right: .75em;
+}
+
+.dynamic-shadow-dom .icon--size-mini {
+  height: 1.25em;
+  width: 1.25em;
+}
+
+.dynamic-shadow-dom .qr-code-wrapper__scan-issue-button {
+  font-size: .75em;
+}
