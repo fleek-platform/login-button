@@ -97,7 +97,6 @@
 .dynamic-shadow-dom .search__container {
   gap: .625em;
   height: 2.625em;
-  justify-content: space-between;
   min-height: 2.25em;
   padding-left: .75em;
   padding-right: .75em;
