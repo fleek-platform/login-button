@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.0.3
+
+### Patch Changes
+
+- 6297860: Replace CSS scale with em based size overrides
+
 ## 2.0.2
 
 ### Patch Changes
