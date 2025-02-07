@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.0.5
+
+### Patch Changes
+
+- 10e0e88: Fixes re-send code button font-size and fixes LoginProvider not re-rendering on isLoading change
+
 ## 2.0.4
 
 ### Patch Changes
