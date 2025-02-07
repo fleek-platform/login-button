@@ -40,7 +40,7 @@ const setCookie = (name: string, value: string, options: CookieOptions = {}) => 
   document.cookie = cookie;
 };
 
-const getCookie = (name: string): string | void => {
+const getCookie = (name: string): string | undefined => {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
   if (parts.length === 2) return decodeURIComponent(parts.pop()?.split(';').shift() || '');
@@ -63,6 +63,10 @@ export const cookies = {
       ...defaultOptions,
       ...options,
     }),
-  reset: () => requiredAuthKeys.forEach((k) => deleteCookie(k, defaultOptions)),
+  reset: () => {
+    for (const key of requiredAuthKeys) {
+      deleteCookie(key, defaultOptions);
+    }
+  },
   remove: (key: AppCookies) => deleteCookie(key, defaultOptions),
 };
