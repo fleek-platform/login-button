@@ -5,11 +5,34 @@ import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
 import { DynamicContextProvider, useDynamicContext, type UserProfile } from '@dynamic-labs/sdk-react-core';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
 import { generateUserSessionDetails } from '../api/graphql-client';
-import { useAuthStore } from '../store/authStore';
+import { type TriggerLoginModal, type TriggerLogout, useAuthStore } from '../store/authStore';
 import { cookies } from '../utils/cookies';
-import { type LoginProviderChildrenProps } from './LoginProvider';
+import type { LoginProviderChildrenProps } from './LoginProvider';
 import { clearStorageByMatchTerm } from '../utils/browser';
 import { decodeAccessToken } from '../utils/token';
+
+type DynamicUtilsProps = {
+  onTriggerLoginModal?: (callback: TriggerLoginModal) => void;
+  onTriggerLogout?: (triggerLogout: TriggerLogout) => void;
+};
+
+const DynamicUtils = ({ onTriggerLoginModal, onTriggerLogout }: DynamicUtilsProps) => {
+  const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies(setShowAuthFlow): causes infinite render, probably not memoized
+  useEffect(() => {
+    if (!sdkHasLoaded || !onTriggerLoginModal) return;
+    onTriggerLoginModal(setShowAuthFlow);
+  }, [onTriggerLoginModal, sdkHasLoaded]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies(handleLogOut): causes infinite render, probably not memoized
+  useEffect(() => {
+    if (!sdkHasLoaded || !onTriggerLogout) return;
+    onTriggerLogout(handleLogOut);
+  }, [onTriggerLogout, sdkHasLoaded]);
+
+  return null;
+};
 
 export type DynamicProviderProps = {
   graphqlApiUrl: string;
@@ -44,10 +67,12 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     // the trigger callbacks
     resetStore();
     // Clear critical stores
-    ['dynamic', 'wagmi', 'fleek-xyz'].forEach((item) => clearStorageByMatchTerm(item));
+    for (const item in ['dynamic', 'wagmi', 'fleek-xyz']) {
+      clearStorageByMatchTerm(item);
+    }
     setIsLoggedIn(false);
     window.location.reload();
-  }, [cookies, resetStore, setIsLoggedIn]);
+  }, [resetStore, setIsLoggedIn]);
 
   // TODO: Remove useCallback to inspect re-triggers
   const onAuthSuccess = useCallback(
@@ -81,7 +106,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         setIsLoading(false);
       }
     },
-    [graphqlApiUrl, setAuthToken, setAccessToken, setIsLoggedIn],
+    [graphqlApiUrl, setAuthToken, setAccessToken, setIsLoggedIn, setUserProfile, setIsNewUser],
   );
 
   useEffect(() => {
@@ -94,7 +119,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     if (!authToken) return;
 
     cookies.set('authToken', authToken);
-  }, [accessToken]);
+  }, [authToken]);
 
   useEffect(() => {
     if (!projectId) return;
@@ -122,24 +147,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     } catch (_err) {
       console.warn('A user access token was found to be invalid!');
     }
-  }, []);
-
-  const DynamicUtils = () => {
-    const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
-
-    useEffect(() => {
-      if (!sdkHasLoaded || triggerLoginModal) return;
-      setTriggerLoginModal(setShowAuthFlow);
-    }, [setTriggerLoginModal, sdkHasLoaded]);
-
-    useEffect(() => {
-      if (!sdkHasLoaded || triggerLogout) return;
-
-      setTriggerLogout(handleLogOut);
-    }, [setTriggerLogout, sdkHasLoaded]);
-
-    return null;
-  };
+  }, [setAuthToken, setAccessToken, setIsLoggedIn]);
 
   const settings = {
     environmentId: dynamicEnvironmentId,
@@ -157,7 +165,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
 
   return (
     <DynamicContextProvider settings={settings}>
-      <DynamicUtils />
+      <DynamicUtils onTriggerLoginModal={setTriggerLoginModal} onTriggerLogout={setTriggerLogout} />
       {children({
         accessToken,
         isLoading,
