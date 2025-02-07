@@ -65,7 +65,7 @@ export const cookies = {
     }),
   reset: () => {
     for (const key of requiredAuthKeys) {
-      deleteCookie(key, defaultOptions)
+      deleteCookie(key, defaultOptions);
     }
   },
   remove: (key: AppCookies) => deleteCookie(key, defaultOptions),
