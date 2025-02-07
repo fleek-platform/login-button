@@ -24,6 +24,9 @@ const main = async () => {
     sourcemap: true,
     external,
     minify: true,
+    loader: {
+      '.css': 'text',
+    },
   };
 
   try {

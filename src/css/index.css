@@ -1,0 +1,73 @@
+.dynamic-shadow-dom {
+  font-size: 16px;
+
+  --dynamic-search-border-radius: 1em;
+  --dynamic-border-radius: 1.5em;
+  --dynamic-text-size-body-mini: 0.6875em;
+  --dynamic-text-size-body-normal: 0.9375em;
+  --dynamic-text-size-body-small: 0.75em;
+  --dynamic-text-size-button-primary: 0.875em;
+  --dynamic-text-size-button-secondary: 0.75em;
+  --dynamic-text-size-numbers-big: 0.875em;
+  --dynamic-text-size-numbers-medium: 0.75em;
+  --dynamic-text-size-title: 1.125em;
+  --dynamic-modal-width: 22.5em;
+  --dynamic-modal-padding: 1.5em;
+  --dynamic-wallet-list-tile-padding: 0.75em;
+  --dynamic-wallet-list-tile-gap: 0.375em;
+  --dynamic-wallet-list-max-height: 16.25em;
+  --dynamic-wallet-list-tile-border-radius: 0.75em;
+  --dynamic-initial-view-content-padding: 0em 1.5em 1.5em;
+  --dynamic-button-primary-font-size: 0.875em;
+  --dynamic-button-secondary-font-size: 0.75em;
+  --dynamic-search-padding: 0 1.5em 0.5em;
+  --dynamic-layout-content-padding: 0 1.5em 1.5em;
+  --dynamic-layout-content-error-padding: 1.5em 1.5em 1.5em;
+  --dynamic-footer-padding: 0.75em 1.5em 0.75em;
+  --dynamic-header-padding: 1.5em 1.5em 1.25em;
+}
+
+.dynamic-shadow-dom .button--padding-login-screen-height {
+  height: 2.5em;
+}
+
+.dynamic-shadow-dom .social-sign-in--tile {
+  height: 2.5em;
+}
+
+.dynamic-shadow-dom .connect-with-wallet-button {
+  height: 2.5em;
+}
+
+.dynamic-shadow-dom .input__container .input {
+  font-size: 0.9375em;
+}
+
+.dynamic-shadow-dom .input__container .input__label {
+  font-size: 0.625em;
+}
+
+.dynamic-shadow-dom .input__container--dense .input:placeholder-shown ~ .input__label {
+  font-size: 0.9375em;
+  top: 0.75em;
+}
+
+.dynamic-shadow-dom .input__container--dense .input:focus ~ .input__label {
+  font-size: 0.625em;
+  top: 0.4375em;
+}
+
+.dynamic-shadow-dom .input__container--dense .input {
+  padding: 1.125em 0.5em 0.375em;
+}
+
+.dynamic-shadow-dom .powered-by-dynamic__logo {
+  margin-top: 0.0625em;
+  max-width: 3.6875em;
+  width: 3.6875em;
+}
+
+.dynamic-shadow-dom .header__icon svg {
+  height: 1.5em;
+  width: 1.5em;
+}

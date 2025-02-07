@@ -10,6 +10,7 @@ import { cookies } from '../utils/cookies';
 import { type LoginProviderChildrenProps } from './LoginProvider';
 import { clearStorageByMatchTerm } from '../utils/browser';
 import { decodeAccessToken } from '../utils/token';
+import cssOverrides from '../css/index.css';
 
 export type DynamicProviderProps = {
   graphqlApiUrl: string;
@@ -152,7 +153,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     // using scale might not be appropriate
     // https://docs.dynamic.xyz/design-customizations/css/css-variables#css-variables
     shadowDOMEnabled: false,
-    cssOverrides: '.modal__items { scale: 1.5 }',
+    cssOverrides,
   };
 
   return (
