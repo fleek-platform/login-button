@@ -22,6 +22,7 @@ The Fleek Login Button provides standalone authentication button component with 
 - [📋 Additional Notes](#additional-notes)
 - [📖 Docs](https://fleek.xyz/docs/sdk)
 - [🚀 Package Release](#package-release)
+  - [Release by develop hash](#release-by-develop-hash)
   - [Override organisation registry](#override-organisation-registry)
   - [Create a private GHCR Token](#create-a-private-ghcr-token)
 - [🙏 Contributing](#contributing)
@@ -215,6 +216,8 @@ Currently the `generateUserSessionDetails` mutation is called using a simple `fe
 
 ## Package Release
 
+TLDR; Use the [Release by develop hash](#release-by-develop-hash). The **main branch** must have a linear strategy, e.g. we don't want contributors to push directly to **main**. At anytime, it should be a subset of **develop**, as we are strictly about preventing source diversion. On production release, the package should be available at [npmjs.org](https://www.npmjs.com/~fleek-platform), for staging [GitHub Registry packages (GHCR)](https://github.com/orgs/fleek-platform/packages).
+
 The main principal to understand is that when a branch is merged into **main** or **develop**, the npm-publisher.yml workflow is triggered to publish packages to the appropriate registry.
 
 For the main branch, packages are published to the [npmjs.org](https://www.npmjs.com/~fleek-platform) registry, ensuring they are available for public use.
@@ -223,6 +226,19 @@ Conversely, when changes are merged into the develop branch, packages are publis
 , which serves as a staging environment.
 
 This setup allows for a clear separation between production-ready packages and those in development.
+
+### Release by develop hash
+
+You can release to production following a linear strategy. This assumes that the convention "main" branch is of linear history and is a subset of the "develop" branch commit history. For example, the team is happy to have "develop" as where the latest version of the project exists, that "main" shouldn't diverge and only contain commits from "develop".
+
+Use-case examples:
+
+- The team has merged some feature branches into develop identified as commit hash "abc123" and want to release upto to the commit history hash "abc123" onto "main". By doing this they expect the build process to occur and deploy into the Fleek Platform
+- The team has merged several feature branches into develop identified as commit hashes `commitFeat1`, `commitFeat2` and `commitFeat3` by this historical order. It's decided to release everything in commit history until `commitFeat1`, but not `commitFeat2` and `commitFeat3`. Although, it'd be wiser to keep the feature branches in pending state as "develop" should always be in a ready state for testing and release as the team may want to release some quick hotfixes, etc
+
+To release to production open the actions tab [here](https://github.com/fleek-platform/login-button/actions).
+
+Select the "🚀 Release by develop hash" job in the left sidebar. Next, select the "Run workflow" drop-down and provide the required details, e.g. the commit hash of `develop branch` you are interested. Do note that it'll release everything up until the commit hash you select. If you have anything in develop which's not ready, that should be reverted from `develop branch`.
 
 ### Override organisation registry
 
