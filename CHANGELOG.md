@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.0.6
+
+### Patch Changes
+
+- cebf203: Add missing css overrides for login modal
+
 ## 2.0.5
 
 ### Patch Changes
