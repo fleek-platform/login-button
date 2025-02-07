@@ -71,3 +71,7 @@
   height: 1.5em;
   width: 1.5em;
 }
+
+.dynamic-shadow-dom .text-button {
+  font-size: 0.75em;
+}
