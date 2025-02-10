@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.0.7
+
+### Patch Changes
+
+- 2fee2fc: Fix clearing of storage on logout
+
 ## 2.0.6
 
 ### Patch Changes
