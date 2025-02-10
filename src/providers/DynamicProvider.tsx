@@ -68,7 +68,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     // the trigger callbacks
     resetStore();
     // Clear critical stores
-    for (const item in ['dynamic', 'wagmi', 'fleek-xyz']) {
+    for (const item of ['dynamic', 'wagmi', 'fleek-xyz']) {
       clearStorageByMatchTerm(item);
     }
     setIsLoggedIn(false);
