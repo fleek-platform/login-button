@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.0.8
+
+### Patch Changes
+
+- a3ed9fe: Adds minimum versions for engines
+
 ## 2.0.7
 
 ### Patch Changes
