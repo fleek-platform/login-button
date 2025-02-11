@@ -8,15 +8,21 @@ package=""
 
 mkdir -p "$DEST_DIR"
 
-abs_filepath=$(pnpm pack --pack-destination "$DEST_DIR")
+# Currently, running `pnpm` executes the "prepare" script
+# causing husky to display output that interfere with
+# the instructions shown to end users.
+# Thus, use `npm` fallback due to ignore script support
+filepath=$(npm pack -s --ignore-scripts --pack-destination "$DEST_DIR")
 
-if [[ -z "$abs_filepath" ]]; then
+if [[ -z "$filepath" ]]; then
   echo "👹 Oops! Failed to generate package in $DEST_DIR"
 
   exit 1
 fi
 
-package=$(echo "$abs_filepath" | rev | cut -d '/' -f1 | rev)
+package=$(echo "$filepath" | rev | cut -d '/' -f1 | rev)
+
+abs_filepath="$(pwd)/$filepath"
 
 echo "✅ Packaged successfully in $DEST_DIR/$package"
 echo "💡 Copy and paste the command to install in your project. You can use the universal npm in any project:"
