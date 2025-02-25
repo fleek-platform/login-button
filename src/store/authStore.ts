@@ -128,12 +128,11 @@ export const useAuthStore = create<AuthStore>()(
       name,
       storage: createJSONStorage(() => localStorage),
       // Persist only selected keys
-      partialize: ({ accessToken, authToken, projectId, isLoggedIn, isNewUser, userProfile }) => ({
+      partialize: ({ accessToken, authToken, projectId, isNewUser, userProfile }) => ({
         userProfile,
         accessToken,
         authToken,
         projectId,
-        isLoggedIn,
         isNewUser,
       }),
     },
