@@ -167,9 +167,7 @@ export const me = async (graphqlApiUrl: string, accessToken: string): Promise<Ex
       query me {
         user {
           id
-          avatar
           username
-          firstName
           email
           walletAddress
         }
