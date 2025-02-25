@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.0.9
+
+### Patch Changes
+
+- 3ac0730: Amend generated local package pathname in copy and paste command
+
 ## 2.0.8
 
 ### Patch Changes
