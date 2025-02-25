@@ -22,7 +22,7 @@ type GraphQLVariables = {
     authToken?: string;
     projectId?: string;
   };
-}
+};
 
 interface GraphQLOperation<Variables extends GraphQLVariables, Result> {
   operationName: string;
@@ -52,7 +52,7 @@ const executeGraphQLOperation = async <Variables extends GraphQLVariables, Resul
       variables,
     });
 
-    console.log(`[debug] executeGraphQLOperation: graphql-client.ts: variables = ${JSON.stringify(variables)}`)
+    console.log(`[debug] executeGraphQLOperation: graphql-client.ts: variables = ${JSON.stringify(variables)}`);
 
     const headers = (() => {
       const commonHeader = { 'Content-Type': 'application/json' };
@@ -63,11 +63,11 @@ const executeGraphQLOperation = async <Variables extends GraphQLVariables, Resul
 
       return {
         ...commonHeader,
-        'Authorization': `Bearer ${variables.data.accessToken}`
-      }
+        Authorization: `Bearer ${variables.data.accessToken}`,
+      };
     })();
 
-    console.log(`[debug] graphql-client.ts: headers = ${JSON.stringify(headers)}`)
+    console.log(`[debug] graphql-client.ts: headers = ${JSON.stringify(headers)}`);
 
     const response = await fetch(graphqlApiUrl, {
       method: 'POST',
@@ -160,10 +160,7 @@ export const generateUserSessionDetails = async (
     dataField: 'generateUserSessionDetails',
   });
 
-export const me = async (
-  graphqlApiUrl: string,
-  accessToken: string,
-): Promise<ExecGraphQLOperationResult<SessionDetails>> =>
+export const me = async (graphqlApiUrl: string, accessToken: string): Promise<ExecGraphQLOperationResult<SessionDetails>> =>
   executeGraphQLOperation<{ data: { accessToken: string } }, SessionDetails>(graphqlApiUrl, {
     operationName: 'me',
     query: `
@@ -184,14 +181,14 @@ export const me = async (
 
 type ProjectWhereInput = {
   id: string;
-}
+};
 
 export const project = async (
   graphqlApiUrl: string,
   accessToken: string,
   projectId: string,
 ): Promise<ExecGraphQLOperationResult<ProjectResponse>> =>
-  executeGraphQLOperation<{ data: { accessToken: string }, where: { id: string } }, ProjectResponse>(graphqlApiUrl, {
+  executeGraphQLOperation<{ data: { accessToken: string }; where: { id: string } }, ProjectResponse>(graphqlApiUrl, {
     operationName: 'project',
     query: `
       query project($where: ProjectWhereInput!) {
