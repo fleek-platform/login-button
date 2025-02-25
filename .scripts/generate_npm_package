@@ -22,7 +22,7 @@ fi
 
 package=$(echo "$filepath" | rev | cut -d '/' -f1 | rev)
 
-abs_filepath="$(pwd)/$filepath"
+abs_filepath="$(pwd)/$DEST_DIR/$filepath"
 
 echo "✅ Packaged successfully in $DEST_DIR/$package"
 echo "💡 Copy and paste the command to install in your project. You can use the universal npm in any project:"
