@@ -56,14 +56,14 @@ const validateUserSession = async ({
 }): Promise<boolean> => {
   try {
     const { success: meSuccess } = await me(graphqlApiUrl, accessToken);
-    
+
     const { success: projectSuccess } = await project(graphqlApiUrl, accessToken, projectId);
 
     if (!meSuccess || !projectSuccess) {
       onAuthenticationFailure();
       return false;
     }
-    
+
     typeof onAuthenticationSuccess === 'function' && onAuthenticationSuccess();
 
     return true;
@@ -169,7 +169,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
       return;
     }
 
-    if (!accessToken) {      
+    if (!accessToken) {
       return;
     }
 
@@ -192,8 +192,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
       accessToken,
       graphqlApiUrl,
       projectId,
-      onAuthenticationFailure: () => 
-        typeof triggerLogout === 'function' && triggerLogout(),
+      onAuthenticationFailure: () => typeof triggerLogout === 'function' && triggerLogout(),
     });
   }, [accessToken, graphqlApiUrl, projectId]);
 

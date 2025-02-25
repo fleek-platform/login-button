@@ -25,7 +25,7 @@ interface GraphQLOperation<Variables extends UserSessionDetails, Result> {
 type ProjectResponse = {
   id: string;
   name: string;
-}
+};
 
 type UserSessionDetails = {
   data?: {
