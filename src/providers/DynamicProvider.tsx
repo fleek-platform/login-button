@@ -194,7 +194,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
       projectId,
       onAuthenticationFailure: () => typeof triggerLogout === 'function' && triggerLogout(),
     });
-  }, [accessToken, graphqlApiUrl, projectId]);
+  }, [accessToken, graphqlApiUrl, projectId, triggerLogout]);
 
   const settings = {
     environmentId: dynamicEnvironmentId,
