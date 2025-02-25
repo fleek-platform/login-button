@@ -1,3 +1,7 @@
+// TODO: if requirements increase might be best
+// to generate the client from schema instead of curating
+// HTTP utility methods
+
 export interface SessionDetails {
   accessToken: string;
   projectId: string | null;
@@ -21,7 +25,7 @@ interface GraphQLOperation<Variables extends UserSessionDetails, Result> {
 type ProjectResponse = {
   id: string;
   name: string;
-};
+}
 
 type UserSessionDetails = {
   data?: {
