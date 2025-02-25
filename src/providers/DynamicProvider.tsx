@@ -4,7 +4,7 @@ import { type FC, useCallback, useState, useEffect } from 'react';
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
 import { DynamicContextProvider, useDynamicContext, type UserProfile } from '@dynamic-labs/sdk-react-core';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
-import { generateUserSessionDetails, me } from '../api/graphql-client';
+import { generateUserSessionDetails, me, project } from '../api/graphql-client';
 import { type TriggerLoginModal, type TriggerLogout, useAuthStore } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 import type { LoginProviderChildrenProps } from './LoginProvider';
@@ -44,19 +44,22 @@ export type DynamicProviderProps = {
 const validateUserSession = async ({
   accessToken,
   graphqlApiUrl,
+  projectId,
   onAuthenticationFailure,
   onAuthenticationSuccess = () => {},
 }: {
   accessToken: string;
   graphqlApiUrl: string;
+  projectId: string;
   onAuthenticationFailure: () => void;
   onAuthenticationSuccess?: () => void;
 }): Promise<boolean> => {
   try {
-    const { success } = await me(graphqlApiUrl, accessToken);
-    // TODO: Check project exists
+    const { success: meSuccess } = await me(graphqlApiUrl, accessToken);
     
-    if (!success) {
+    const { success: projectSuccess } = await project(graphqlApiUrl, accessToken, projectId);
+
+    if (!meSuccess || !projectSuccess) {
       onAuthenticationFailure();
       return false;
     }
@@ -187,10 +190,11 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     validateUserSession({
       accessToken,
       graphqlApiUrl,
+      projectId,
       onAuthenticationFailure: () => 
         typeof triggerLogout === 'function' && triggerLogout(),
     });
-  }, [accessToken, graphqlApiUrl]);
+  }, [accessToken, graphqlApiUrl, projectId]);
 
   const settings = {
     environmentId: dynamicEnvironmentId,

@@ -4,6 +4,11 @@ export interface SessionDetails {
   __typename: 'SessionDetails';
 }
 
+export interface ProjectResponse {
+  id: string;
+  name: string;
+}
+
 interface GraphQLResponse<T> {
   data: {
     [key: string]: T;
@@ -175,4 +180,34 @@ export const me = async (
     `,
     variables: { data: { accessToken } },
     dataField: 'me',
+  });
+
+type ProjectWhereInput = {
+  id: string;
+}
+
+export const project = async (
+  graphqlApiUrl: string,
+  accessToken: string,
+  projectId: string,
+): Promise<ExecGraphQLOperationResult<ProjectResponse>> =>
+  executeGraphQLOperation<{ data: { accessToken: string }, where: { id: string } }, ProjectResponse>(graphqlApiUrl, {
+    operationName: 'project',
+    query: `
+      query project($where: ProjectWhereInput!) {
+        project(where: $where) {
+          id
+          name
+        }
+      }
+    `,
+    variables: {
+      data: {
+        accessToken,
+      },
+      where: {
+        id: projectId,
+      },
+    },
+    dataField: 'project',
   });
