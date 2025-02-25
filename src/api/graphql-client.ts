@@ -52,8 +52,6 @@ const executeGraphQLOperation = async <Variables extends GraphQLVariables, Resul
       variables,
     });
 
-    console.log(`[debug] executeGraphQLOperation: graphql-client.ts: variables = ${JSON.stringify(variables)}`);
-
     const headers = (() => {
       const commonHeader = { 'Content-Type': 'application/json' };
 
@@ -66,8 +64,6 @@ const executeGraphQLOperation = async <Variables extends GraphQLVariables, Resul
         Authorization: `Bearer ${variables.data.accessToken}`,
       };
     })();
-
-    console.log(`[debug] graphql-client.ts: headers = ${JSON.stringify(headers)}`);
 
     const response = await fetch(graphqlApiUrl, {
       method: 'POST',
