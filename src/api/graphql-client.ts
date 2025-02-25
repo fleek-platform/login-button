@@ -4,17 +4,24 @@ export interface SessionDetails {
   __typename: 'SessionDetails';
 }
 
-export interface ProjectResponse {
-  id: string;
-  name: string;
-}
-
 interface GraphQLResponse<T> {
   data: {
     [key: string]: T;
   };
   errors?: Array<{ message: string }>;
 }
+
+interface GraphQLOperation<Variables extends GraphQLVariables, Result> {
+  operationName: string;
+  query: string;
+  variables?: Variables;
+  dataField: keyof GraphQLResponse<Result>['data'];
+}
+
+type ProjectResponse = {
+  id: string;
+  name: string;
+};
 
 type GraphQLVariables = {
   data?: {
@@ -23,13 +30,6 @@ type GraphQLVariables = {
     projectId?: string;
   };
 };
-
-interface GraphQLOperation<Variables extends GraphQLVariables, Result> {
-  operationName: string;
-  query: string;
-  variables?: Variables;
-  dataField: keyof GraphQLResponse<Result>['data'];
-}
 
 type Errors = 'UNAUTHORIZED' | 'NETWORK_ERROR' | 'GRAPHQL_ERROR';
 
