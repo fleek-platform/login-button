@@ -11,7 +11,7 @@ interface GraphQLResponse<T> {
   errors?: Array<{ message: string }>;
 }
 
-interface GraphQLOperation<Variables extends GraphQLVariables, Result> {
+interface GraphQLOperation<Variables extends UserSessionDetails, Result> {
   operationName: string;
   query: string;
   variables?: Variables;
@@ -23,7 +23,7 @@ type ProjectResponse = {
   name: string;
 };
 
-type GraphQLVariables = {
+type UserSessionDetails = {
   data?: {
     accessToken?: string;
     authToken?: string;
@@ -40,7 +40,7 @@ export type GraphQLError = {
 
 export type ExecGraphQLOperationResult<Data> = { success: true; data: Data } | { success: false; error: GraphQLError };
 
-const executeGraphQLOperation = async <Variables extends GraphQLVariables, Result>(
+const executeGraphQLOperation = async <Variables extends UserSessionDetails, Result>(
   graphqlApiUrl: string,
   operation: GraphQLOperation<Variables, Result>,
 ): Promise<ExecGraphQLOperationResult<Result>> => {
