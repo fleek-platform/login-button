@@ -1,3 +1,7 @@
+// TODO: if requirements increase might be best
+// to generate the client from schema instead of curating
+// HTTP utility methods
+
 export interface SessionDetails {
   accessToken: string;
   projectId: string | null;
@@ -11,12 +15,25 @@ interface GraphQLResponse<T> {
   errors?: Array<{ message: string }>;
 }
 
-interface GraphQLOperation<Variables, Result> {
+interface GraphQLOperation<Variables extends UserSessionDetails, Result> {
   operationName: string;
   query: string;
-  variables: Variables;
+  variables?: Variables;
   dataField: keyof GraphQLResponse<Result>['data'];
 }
+
+type ProjectResponse = {
+  id: string;
+  name: string;
+};
+
+type UserSessionDetails = {
+  data?: {
+    accessToken?: string;
+    authToken?: string;
+    projectId?: string;
+  };
+};
 
 type Errors = 'UNAUTHORIZED' | 'NETWORK_ERROR' | 'GRAPHQL_ERROR';
 
@@ -27,7 +44,7 @@ export type GraphQLError = {
 
 export type ExecGraphQLOperationResult<Data> = { success: true; data: Data } | { success: false; error: GraphQLError };
 
-const executeGraphQLOperation = async <Variables, Result>(
+const executeGraphQLOperation = async <Variables extends UserSessionDetails, Result>(
   graphqlApiUrl: string,
   operation: GraphQLOperation<Variables, Result>,
 ): Promise<ExecGraphQLOperationResult<Result>> => {
@@ -39,9 +56,22 @@ const executeGraphQLOperation = async <Variables, Result>(
       variables,
     });
 
+    const headers = (() => {
+      const commonHeader = { 'Content-Type': 'application/json' };
+
+      if (!variables?.data?.accessToken) {
+        return commonHeader;
+      }
+
+      return {
+        ...commonHeader,
+        Authorization: `Bearer ${variables.data.accessToken}`,
+      };
+    })();
+
     const response = await fetch(graphqlApiUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body,
     });
 
@@ -128,4 +158,51 @@ export const generateUserSessionDetails = async (
     `,
     variables: { data: { authToken } },
     dataField: 'generateUserSessionDetails',
+  });
+
+export const me = async (graphqlApiUrl: string, accessToken: string): Promise<ExecGraphQLOperationResult<SessionDetails>> =>
+  executeGraphQLOperation<{ data: { accessToken: string } }, SessionDetails>(graphqlApiUrl, {
+    operationName: 'me',
+    query: `
+      query me {
+        user {
+          id
+          username
+          email
+          walletAddress
+        }
+      }
+    `,
+    variables: { data: { accessToken } },
+    dataField: 'me',
+  });
+
+type ProjectWhereInput = {
+  id: string;
+};
+
+export const project = async (
+  graphqlApiUrl: string,
+  accessToken: string,
+  projectId: string,
+): Promise<ExecGraphQLOperationResult<ProjectResponse>> =>
+  executeGraphQLOperation<{ data: { accessToken: string }; where: { id: string } }, ProjectResponse>(graphqlApiUrl, {
+    operationName: 'project',
+    query: `
+      query project($where: ProjectWhereInput!) {
+        project(where: $where) {
+          id
+          name
+        }
+      }
+    `,
+    variables: {
+      data: {
+        accessToken,
+      },
+      where: {
+        id: projectId,
+      },
+    },
+    dataField: 'project',
   });

@@ -4,7 +4,7 @@ import { type FC, useCallback, useState, useEffect } from 'react';
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
 import { DynamicContextProvider, useDynamicContext, type UserProfile } from '@dynamic-labs/sdk-react-core';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
-import { generateUserSessionDetails } from '../api/graphql-client';
+import { generateUserSessionDetails, me, project } from '../api/graphql-client';
 import { type TriggerLoginModal, type TriggerLogout, useAuthStore } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 import type { LoginProviderChildrenProps } from './LoginProvider';
@@ -39,6 +39,39 @@ export type DynamicProviderProps = {
   graphqlApiUrl: string;
   dynamicEnvironmentId: string;
   children: (props: LoginProviderChildrenProps) => React.JSX.Element;
+};
+
+const validateUserSession = async ({
+  accessToken,
+  graphqlApiUrl,
+  projectId,
+  onAuthenticationFailure,
+  onAuthenticationSuccess = () => {},
+}: {
+  accessToken: string;
+  graphqlApiUrl: string;
+  projectId: string;
+  onAuthenticationFailure: () => void;
+  onAuthenticationSuccess?: () => void;
+}): Promise<boolean> => {
+  try {
+    const { success: meSuccess } = await me(graphqlApiUrl, accessToken);
+
+    const { success: projectSuccess } = await project(graphqlApiUrl, accessToken, projectId);
+
+    if (!meSuccess || !projectSuccess) {
+      onAuthenticationFailure();
+      return false;
+    }
+
+    typeof onAuthenticationSuccess === 'function' && onAuthenticationSuccess();
+
+    return true;
+  } catch (error) {
+    console.error('Authentication validation failed:', error);
+    onAuthenticationFailure();
+    return false;
+  }
 };
 
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId }) => {
@@ -149,6 +182,19 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
       console.warn('A user access token was found to be invalid!');
     }
   }, [setAuthToken, setAccessToken, setIsLoggedIn]);
+
+  useEffect(() => {
+    if (!accessToken || !graphqlApiUrl) return;
+
+    // Validates the user session sometime in the future
+    // if found faulty, it should clear the user session
+    validateUserSession({
+      accessToken,
+      graphqlApiUrl,
+      projectId,
+      onAuthenticationFailure: () => typeof triggerLogout === 'function' && triggerLogout(),
+    });
+  }, [accessToken, graphqlApiUrl, projectId, triggerLogout]);
 
   const settings = {
     environmentId: dynamicEnvironmentId,
