@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.1.0
+
+### Minor Changes
+
+- 7ed2bec: Prevent faulty user sessions
+
 ## 2.0.9
 
 ### Patch Changes
