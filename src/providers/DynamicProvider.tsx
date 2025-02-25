@@ -41,6 +41,35 @@ export type DynamicProviderProps = {
   children: (props: LoginProviderChildrenProps) => React.JSX.Element;
 };
 
+const validateUserSession = async ({
+  accessToken,
+  graphqlApiUrl,
+  onAuthenticationFailure,
+  onAuthenticationSuccess = () => {},
+}: {
+  accessToken: string;
+  graphqlApiUrl: string;
+  onAuthenticationFailure: () => void;
+  onAuthenticationSuccess?: () => void;
+}): Promise<boolean> => {
+  try {
+    const { success } = await me(graphqlApiUrl, accessToken);
+    // TODO: Check project exists
+    
+    if (!success) {
+      onAuthenticationFailure();
+      return false;
+    }
+    
+    onAuthenticationSuccess();
+    return true;
+  } catch (error) {
+    console.error('Authentication validation failed:', error);
+    onAuthenticationFailure();
+    return false;
+  }
+};
+
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId }) => {
   const {
     accessToken,
@@ -136,7 +165,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
       return;
     }
 
-    if (!accessToken) {
+    if (!accessToken) {      
       return;
     }
 
@@ -149,6 +178,19 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
       console.warn('A user access token was found to be invalid!');
     }
   }, [setAuthToken, setAccessToken, setIsLoggedIn]);
+
+  useEffect(() => {
+    if (!accessToken || !graphqlApiUrl) return;
+
+    // Validates the user session sometime in the future
+    // if found faulty, it should clear the user session
+    validateUserSession({
+      accessToken,
+      graphqlApiUrl,
+      onAuthenticationFailure: () => 
+        typeof triggerLogout === 'function' && triggerLogout(),
+    });
+  }, [accessToken, graphqlApiUrl]);
 
   const settings = {
     environmentId: dynamicEnvironmentId,
