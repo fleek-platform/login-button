@@ -4,7 +4,7 @@ import { type FC, useCallback, useState, useEffect } from 'react';
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
 import { DynamicContextProvider, useDynamicContext, type UserProfile } from '@dynamic-labs/sdk-react-core';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
-import { generateUserSessionDetails } from '../api/graphql-client';
+import { generateUserSessionDetails, me } from '../api/graphql-client';
 import { type TriggerLoginModal, type TriggerLogout, useAuthStore } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 import type { LoginProviderChildrenProps } from './LoginProvider';

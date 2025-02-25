@@ -11,10 +11,18 @@ interface GraphQLResponse<T> {
   errors?: Array<{ message: string }>;
 }
 
-interface GraphQLOperation<Variables, Result> {
+type GraphQLVariables = {
+  data?: {
+    accessToken?: string;
+    authToken?: string;
+    projectId?: string;
+  };
+}
+
+interface GraphQLOperation<Variables extends GraphQLVariables, Result> {
   operationName: string;
   query: string;
-  variables: Variables;
+  variables?: Variables;
   dataField: keyof GraphQLResponse<Result>['data'];
 }
 
@@ -27,7 +35,7 @@ export type GraphQLError = {
 
 export type ExecGraphQLOperationResult<Data> = { success: true; data: Data } | { success: false; error: GraphQLError };
 
-const executeGraphQLOperation = async <Variables, Result>(
+const executeGraphQLOperation = async <Variables extends GraphQLVariables, Result>(
   graphqlApiUrl: string,
   operation: GraphQLOperation<Variables, Result>,
 ): Promise<ExecGraphQLOperationResult<Result>> => {
@@ -39,9 +47,26 @@ const executeGraphQLOperation = async <Variables, Result>(
       variables,
     });
 
+    console.log(`[debug] executeGraphQLOperation: graphql-client.ts: variables = ${JSON.stringify(variables)}`)
+
+    const headers = (() => {
+      const commonHeader = { 'Content-Type': 'application/json' };
+
+      if (!variables?.data?.accessToken) {
+        return commonHeader;
+      }
+
+      return {
+        ...commonHeader,
+        'Authorization': `Bearer ${variables.data.accessToken}`
+      }
+    })();
+
+    console.log(`[debug] graphql-client.ts: headers = ${JSON.stringify(headers)}`)
+
     const response = await fetch(graphqlApiUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body,
     });
 
@@ -128,4 +153,26 @@ export const generateUserSessionDetails = async (
     `,
     variables: { data: { authToken } },
     dataField: 'generateUserSessionDetails',
+  });
+
+export const me = async (
+  graphqlApiUrl: string,
+  accessToken: string,
+): Promise<ExecGraphQLOperationResult<SessionDetails>> =>
+  executeGraphQLOperation<{ data: { accessToken: string } }, SessionDetails>(graphqlApiUrl, {
+    operationName: 'me',
+    query: `
+      query me {
+        user {
+          id
+          avatar
+          username
+          firstName
+          email
+          walletAddress
+        }
+      }
+    `,
+    variables: { data: { accessToken } },
+    dataField: 'me',
   });
