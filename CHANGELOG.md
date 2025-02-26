@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.2.0
+
+### Minor Changes
+
+- 63d5d14: Introduces a on authentication callback
+
 ## 2.1.0
 
 ### Minor Changes
