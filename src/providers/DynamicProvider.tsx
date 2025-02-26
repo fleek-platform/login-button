@@ -38,6 +38,7 @@ const DynamicUtils = ({ onTriggerLoginModal, onTriggerLogout }: DynamicUtilsProp
 export type DynamicProviderProps = {
   graphqlApiUrl: string;
   dynamicEnvironmentId: string;
+  onAuthenticationSuccess?: () => void;
   children: (props: LoginProviderChildrenProps) => React.JSX.Element;
 };
 
@@ -46,13 +47,11 @@ const validateUserSession = async ({
   graphqlApiUrl,
   projectId,
   onAuthenticationFailure,
-  onAuthenticationSuccess = () => {},
 }: {
   accessToken: string;
   graphqlApiUrl: string;
   projectId: string;
   onAuthenticationFailure: () => void;
-  onAuthenticationSuccess?: () => void;
 }): Promise<boolean> => {
   try {
     const { success: meSuccess } = await me(graphqlApiUrl, accessToken);
@@ -64,8 +63,6 @@ const validateUserSession = async ({
       return false;
     }
 
-    typeof onAuthenticationSuccess === 'function' && onAuthenticationSuccess();
-
     return true;
   } catch (error) {
     console.error('Authentication validation failed:', error);
@@ -74,7 +71,7 @@ const validateUserSession = async ({
   }
 };
 
-export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId }) => {
+export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId, onAuthenticationSuccess }) => {
   const {
     accessToken,
     authToken,
@@ -90,7 +87,6 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     setIsLoggedIn,
     projectId,
   } = useAuthStore();
-
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
 
@@ -132,6 +128,8 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
 
         setAccessToken(result.data.accessToken);
         setIsLoggedIn(true);
+
+        typeof onAuthenticationSuccess === 'function' && onAuthenticationSuccess();
       } catch (err) {
         console.error(err);
         // TODO: Is this really required?
@@ -140,7 +138,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         setIsLoading(false);
       }
     },
-    [graphqlApiUrl, setAuthToken, setAccessToken, setIsLoggedIn, setUserProfile, setIsNewUser],
+    [graphqlApiUrl, setAuthToken, setAccessToken, setIsLoggedIn, setUserProfile, setIsNewUser, onAuthenticationSuccess],
   );
 
   useEffect(() => {

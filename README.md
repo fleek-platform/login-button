@@ -158,11 +158,13 @@ The `graphqlApiUrl` and `dynamicEnvironmentId` can be overriden. Otherwise, it'l
 // Staging
 const graphqlApiUrl = 'https://graphql.service.staging.fleeksandbox.xyz/graphql';
 const dynamicEnvironmentId = 'c4d4ccad-9460-419c-9ca3-494488f8c892';
+const onAuthenticationSuccess = () => console.log('onAuthenticationSuccess callback!');
 
 // Use Login provider
 <LoginProvider
   graphqlApiUrl={graphqlApiUrl}
   dynamicEnvironmentId={dynamicEnvironmentId}
+  onAuthenticationSuccess={onAuthenticationSuccess}
 >
   {(props) => {
     const { login, logout, accessToken, isLoading, error } = props;
