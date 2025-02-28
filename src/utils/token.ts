@@ -16,7 +16,7 @@ export const decodeAccessToken = (accessToken: string) => {
   return projectId;
 };
 
-export const truncateMiddle = (str: string, numOfChars: number = 3, ellipsis: string = '...'): string => {
+export const truncateMiddle = (str: string, numOfChars = 3, ellipsis = '...'): string => {
   const start = str.substring(0, numOfChars);
   const end = str.slice(-numOfChars);
 
