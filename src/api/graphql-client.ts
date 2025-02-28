@@ -5,6 +5,13 @@
 export interface SessionDetails {
   accessToken: string;
   projectId: string | null;
+  user: {
+    avatar?: string;
+    email: string;
+    id: string;
+    username: string;
+    walletAddress?: string;
+  };
   __typename: 'SessionDetails';
 }
 
@@ -143,18 +150,25 @@ export const generateUserSessionDetails = async (
   graphqlApiUrl: string,
   authToken: string,
 ): Promise<ExecGraphQLOperationResult<SessionDetails>> =>
-  executeGraphQLOperation<{ data: { authToken: string } }, SessionDetails>(graphqlApiUrl, {
+  executeGraphQLOperation<{ data: { authToken: string; includeUserResponseData: boolean } }, SessionDetails>(graphqlApiUrl, {
     operationName: 'generateUserSessionDetails',
     query: `
       mutation generateUserSessionDetails($data: GenerateUserSessionDetailsDataInput!) {
         generateUserSessionDetails(data: $data) {
           accessToken
           projectId
+          user {
+            id
+            username
+            email
+            avatar
+            walletAddress
+            }
           __typename
         }
       }
     `,
-    variables: { data: { authToken } },
+    variables: { data: { authToken, includeUserResponseData: true } },
   });
 
 export const me = async (graphqlApiUrl: string, accessToken: string): Promise<ExecGraphQLOperationResult<SessionDetails>> =>
