@@ -115,7 +115,7 @@ export const useAuthStore = create<AuthStore>()(
             projectId,
             isLoggingIn: false,
           });
-          
+
           cookies.set('accessToken', accessToken);
         } catch (err) {
           console.error('Failed to update access token:', err);

@@ -64,10 +64,13 @@ const validateUserSession = async ({
 
     const cookieAccessToken = cookies.get('accessToken');
 
-    if (cookieAccessToken !== accessToken) throw Error(`Expected ${truncateMiddle(accessToken)} but got ${typeof cookieAccessToken === 'string' ? truncateMiddle(cookieAccessToken) : typeof cookieAccessToken}`);
+    if (cookieAccessToken !== accessToken)
+      throw Error(
+        `Expected ${truncateMiddle(accessToken)} but got ${typeof cookieAccessToken === 'string' ? truncateMiddle(cookieAccessToken) : typeof cookieAccessToken}`,
+      );
 
     typeof onAuthenticationSuccess === 'function' && onAuthenticationSuccess();
-        
+
     return true;
   } catch (error) {
     console.error('Authentication validation failed:', error);
@@ -190,7 +193,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
       onAuthenticationSuccess: () => {
         cookies.set('accessToken', accessToken);
         cookies.set('projectId', projectId);
-      }
+      },
     });
   }, [onLogout]);
 
