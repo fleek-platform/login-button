@@ -9,7 +9,7 @@ import { type TriggerLoginModal, type TriggerLogout, useAuthStore } from '../sto
 import { cookies } from '../utils/cookies';
 import type { LoginProviderChildrenProps } from './LoginProvider';
 import { clearStorageByMatchTerm } from '../utils/browser';
-import { decodeAccessToken } from '../utils/token';
+import { decodeAccessToken, truncateMiddle } from '../utils/token';
 import cssOverrides from '../css/index.css';
 
 type DynamicUtilsProps = {
@@ -47,22 +47,27 @@ const validateUserSession = async ({
   graphqlApiUrl,
   projectId,
   onAuthenticationFailure,
+  onAuthenticationSuccess,
 }: {
   accessToken: string;
   graphqlApiUrl: string;
   projectId: string;
   onAuthenticationFailure: () => void;
+  onAuthenticationSuccess: () => void;
 }): Promise<boolean> => {
   try {
     const { success: meSuccess } = await me(graphqlApiUrl, accessToken);
 
     const { success: projectSuccess } = await project(graphqlApiUrl, accessToken, projectId);
 
-    if (!meSuccess || !projectSuccess) {
-      onAuthenticationFailure();
-      return false;
-    }
+    if (!meSuccess || !projectSuccess) throw Error('Unexpected user session details');
 
+    const cookieAccessToken = cookies.get('accessToken');
+
+    if (cookieAccessToken !== accessToken) throw Error(`Expected ${truncateMiddle(accessToken)} but got ${typeof cookieAccessToken === 'string' ? truncateMiddle(cookieAccessToken) : typeof cookieAccessToken}`);
+
+    typeof onAuthenticationSuccess === 'function' && onAuthenticationSuccess();
+        
     return true;
   } catch (error) {
     console.error('Authentication validation failed:', error);
@@ -90,12 +95,13 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
 
-  // TODO: Remove useCallback to inspect re-triggers
   const onLogout = useCallback(() => {
     cookies.reset();
     // TODO: Make sure the reset is not clearing
     // the trigger callbacks
     resetStore();
+    // TODO: Dashboard has a concurrent process
+    // that should also match these requirements
     // Clear critical stores
     for (const item of ['dynamic', 'wagmi', 'fleek-xyz']) {
       clearStorageByMatchTerm(item);
@@ -142,24 +148,6 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
   );
 
   useEffect(() => {
-    if (!accessToken) return;
-
-    cookies.set('accessToken', accessToken);
-  }, [accessToken]);
-
-  useEffect(() => {
-    if (!authToken) return;
-
-    cookies.set('authToken', authToken);
-  }, [authToken]);
-
-  useEffect(() => {
-    if (!projectId) return;
-
-    cookies.set('projectId', projectId);
-  }, [projectId]);
-
-  useEffect(() => {
     const authToken = cookies.get('authToken');
     const accessToken = cookies.get('accessToken');
 
@@ -184,15 +172,27 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
   useEffect(() => {
     if (!accessToken || !graphqlApiUrl) return;
 
-    // Validates the user session sometime in the future
-    // if found faulty, it should clear the user session
+    // Validates the user session sometime in the future.
+    // If found faulty, it should clear the user session
+    // e.g. user session clear/logout by dashboard.
+    // On the other hand, an existing user session can
+    // persist (localStorage), but dashboard uses cookies
+    // e.g. user logins in website and expect cross session.
+    // This is more of a safe-guard due to Dashboard
+    // having the requirement to clear localStorage items
+    // that match prefix `fleek-xyz-login`, meaning
+    // we're only computing if that fails to happen
     validateUserSession({
       accessToken,
       graphqlApiUrl,
       projectId,
-      onAuthenticationFailure: () => typeof triggerLogout === 'function' && triggerLogout(),
+      onAuthenticationFailure: () => onLogout(),
+      onAuthenticationSuccess: () => {
+        cookies.set('accessToken', accessToken);
+        cookies.set('projectId', projectId);
+      }
     });
-  }, [accessToken, graphqlApiUrl, projectId, triggerLogout]);
+  }, [onLogout]);
 
   const settings = {
     environmentId: dynamicEnvironmentId,
