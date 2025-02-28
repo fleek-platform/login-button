@@ -108,6 +108,10 @@ export const useAuthStore = create<AuthStore>()(
             throw new Error('Failed to get access token');
           }
 
+          // TODO: Make a projectId validation against
+          // the accessToken projectId as it should match.
+          // On failure, throw error.
+
           const accessToken = res.data;
 
           set({
