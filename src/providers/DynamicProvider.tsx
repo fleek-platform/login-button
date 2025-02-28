@@ -8,9 +8,10 @@ import { generateUserSessionDetails, me, project } from '../api/graphql-client';
 import { type TriggerLoginModal, type TriggerLogout, useAuthStore } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 import type { LoginProviderChildrenProps } from './LoginProvider';
-import { clearStorageByMatchTerm } from '../utils/browser';
+import { clearStorageByMatchTerm, clearUserSessionKeys } from '../utils/browser';
 import { decodeAccessToken, truncateMiddle } from '../utils/token';
 import cssOverrides from '../css/index.css';
+import { hasLocalStorageItems } from '../utils/store';
 
 type DynamicUtilsProps = {
   onTriggerLoginModal?: (callback: TriggerLoginModal) => void;
@@ -45,35 +46,67 @@ export type DynamicProviderProps = {
 const validateUserSession = async ({
   accessToken,
   graphqlApiUrl,
-  projectId,
   onAuthenticationFailure,
   onAuthenticationSuccess,
 }: {
   accessToken: string;
   graphqlApiUrl: string;
-  projectId: string;
   onAuthenticationFailure: () => void;
-  onAuthenticationSuccess: () => void;
+  onAuthenticationSuccess?: () => void;
 }): Promise<boolean> => {
   try {
-    const { success: meSuccess } = await me(graphqlApiUrl, accessToken);
-
-    const { success: projectSuccess } = await project(graphqlApiUrl, accessToken, projectId);
-
-    if (!meSuccess || !projectSuccess) throw Error('Unexpected user session details');
-
+    const cookieAuthToken = cookies.get('authToken');
     const cookieAccessToken = cookies.get('accessToken');
 
-    if (cookieAccessToken !== accessToken)
+    const hasDynamicLocalStorageItems = hasLocalStorageItems('dynamic');
+
+    const hasDynamicAuthWithoutAccessTokens =
+      hasDynamicLocalStorageItems
+      && (!cookieAuthToken || !cookieAccessToken);
+
+    const hasDynamicAuthWithAccessTokens =
+      hasDynamicLocalStorageItems
+      && accessToken
+      && cookieAuthToken
+      && cookieAccessToken;
+
+    const hasMatchingAcessTokenInCookie =
+      accessToken
+      && (accessToken === cookieAccessToken);
+    
+    if (hasDynamicAuthWithoutAccessTokens) {
+      cookies.reset();
+      clearUserSessionKeys();
+
+      return false;
+    }
+
+    if (!hasDynamicAuthWithAccessTokens || !cookieAccessToken) return false;
+
+    if (!hasMatchingAcessTokenInCookie)
       throw Error(
         `Expected ${truncateMiddle(accessToken)} but got ${typeof cookieAccessToken === 'string' ? truncateMiddle(cookieAccessToken) : typeof cookieAccessToken}`,
       );
+
+    const projectId = decodeAccessToken(cookieAccessToken);
+
+    if (!projectId) throw Error(`Expected a Project identifier but got ${projectId || typeof projectId}`);
+
+    const { success: hasMe } = await me(graphqlApiUrl, cookieAccessToken);
+
+    const { success: hasProject } = await project(graphqlApiUrl, cookieAccessToken, projectId);
+
+    const hasUserSessionExpectedDetails =
+      hasMe
+      && hasProject
+
+    if (!hasUserSessionExpectedDetails) throw Error('Unexpected user session details');
 
     typeof onAuthenticationSuccess === 'function' && onAuthenticationSuccess();
 
     return true;
   } catch (error) {
-    console.error('Authentication validation failed:', error);
+    console.error('Authentication validation failed', error);
     onAuthenticationFailure();
     return false;
   }
@@ -82,7 +115,6 @@ const validateUserSession = async ({
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId, onAuthenticationSuccess }) => {
   const {
     accessToken,
-    authToken,
     setAccessToken,
     setAuthToken,
     reset: resetStore,
@@ -106,9 +138,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     // TODO: Dashboard has a concurrent process
     // that should also match these requirements
     // Clear critical stores
-    for (const item of ['dynamic', 'wagmi', 'fleek-xyz']) {
-      clearStorageByMatchTerm(item);
-    }
+    clearUserSessionKeys();
     setIsLoggedIn(false);
     window.location.reload();
   }, [resetStore, setIsLoggedIn]);
@@ -173,8 +203,8 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
   }, [setAuthToken, setAccessToken, setIsLoggedIn]);
 
   useEffect(() => {
-    if (!accessToken || !graphqlApiUrl) return;
-
+    if (!graphqlApiUrl) return;
+    
     // Validates the user session sometime in the future.
     // If found faulty, it should clear the user session
     // e.g. user session clear/logout by dashboard.
@@ -188,14 +218,9 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     validateUserSession({
       accessToken,
       graphqlApiUrl,
-      projectId,
       onAuthenticationFailure: () => onLogout(),
-      onAuthenticationSuccess: () => {
-        cookies.set('accessToken', accessToken);
-        cookies.set('projectId', projectId);
-      },
     });
-  }, [onLogout]);
+  }, [graphqlApiUrl]);
 
   const settings = {
     environmentId: dynamicEnvironmentId,

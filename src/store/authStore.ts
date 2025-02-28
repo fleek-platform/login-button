@@ -60,7 +60,6 @@ export const initialState: AuthState = {
 };
 
 export const useAuthStore = create<AuthStore>()(
-  persist(
     (set, get) => ({
       ...initialState,
       setAccessToken: (accessToken: string) => {
@@ -139,18 +138,6 @@ export const useAuthStore = create<AuthStore>()(
       setTriggerLoginModal: (triggerLoginModal: TriggerLoginModal) => set({ triggerLoginModal }),
       setTriggerLogout: (triggerLogout: TriggerLogout) => set({ triggerLogout }),
       setProjectId: (projectId: string) => set({ projectId }),
-    }),
-    {
-      name,
-      storage: createJSONStorage(() => localStorage),
-      // Persist only selected keys
-      partialize: ({ accessToken, authToken, projectId, isNewUser, userProfile }) => ({
-        userProfile,
-        accessToken,
-        authToken,
-        projectId,
-        isNewUser,
-      }),
-    },
+    }
   ),
 );
