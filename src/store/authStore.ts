@@ -5,6 +5,7 @@ import { useConfigStore } from './configStore';
 import { getStoreName } from '../utils/store';
 import { decodeAccessToken } from '../utils/token';
 import type { UserProfile } from '@dynamic-labs/sdk-react-core';
+import { cookies } from '../utils/cookies';
 
 export type TriggerLoginModal = (open: boolean) => void;
 export type TriggerLogout = () => void;
@@ -69,8 +70,15 @@ export const useAuthStore = create<AuthStore>()(
           accessToken,
           projectId,
         });
+
+        cookies.set('accessToken', accessToken);
+        cookies.set('projectId', projectId);
       },
-      setAuthToken: (authToken: string) => set({ authToken }),
+      setAuthToken: (authToken: string) => {
+        set({ authToken });
+
+        cookies.set('authToken', authToken);
+      },
       setIsLoggingIn: (isLoggingIn: boolean) => set({ isLoggingIn }),
       setIsLoggedIn: (isLoggedIn: boolean) => set({ isLoggedIn }),
       reset: () => set(initialState),
@@ -100,11 +108,19 @@ export const useAuthStore = create<AuthStore>()(
             throw new Error('Failed to get access token');
           }
 
+          // TODO: Make a projectId validation against
+          // the accessToken projectId as it should match.
+          // On failure, throw error.
+
+          const accessToken = res.data;
+
           set({
-            accessToken: res.data,
+            accessToken,
             projectId,
             isLoggingIn: false,
           });
+
+          cookies.set('accessToken', accessToken);
         } catch (err) {
           console.error('Failed to update access token:', err);
 
