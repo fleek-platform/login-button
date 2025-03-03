@@ -1,10 +1,6 @@
 export const isClient = typeof window !== 'undefined';
 
-// TODO: The `navigation-store` is set in agents-ui
-// this have to be namespaced and prefixed by `fleek-xyz-`
-// e.g. rename as `fleek-xyz-navigation-store`
-const temp = 'navigation-store';
-const userSessionLocalStorageKeys = ['dynamic', 'wagmi', 'fleek-xyz', temp];
+const userSessionLocalStorageKeys = ['dynamic', 'wagmi', 'fleek-xyz'];
 
 export const clearStorageByMatchTerm = (term: string) => {
   try {
