@@ -106,11 +106,13 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
         throw new Error('Failed to get access token');
       }
 
-      // TODO: Make a projectId validation against
-      // the accessToken projectId as it should match.
-      // On failure, throw error.
-
       const accessToken = res.data;
+
+      const decodedProjectId = decodeAccessToken(accessToken);
+
+      if (!decodedProjectId) throw Error(`Expected a Project identifier but got ${projectId || typeof projectId}`);
+
+      if (decodedProjectId !== projectId) throw Error(`Found a project mismatch`);
 
       set({
         accessToken,
