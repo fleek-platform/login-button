@@ -54,43 +54,63 @@ const validateUserSession = async ({
   onAuthenticationFailure: () => void;
   onAuthenticationSuccess?: () => void;
 }): Promise<boolean> => {
+  console.log(`[debug] DynamicProvider: 1`);
+
   try {
     const cookieAuthToken = cookies.get('authToken');
     const cookieAccessToken = cookies.get('accessToken');
+  console.log(`[debug] DynamicProvider: data: `, JSON.stringify({
+    cookieAuthToken,
+    cookieAccessToken,
+  }));
 
     const hasDynamicLocalStorageItems = hasLocalStorageItems('dynamic');
 
     const hasDynamicAuthWithoutAccessTokens = hasDynamicLocalStorageItems && (!cookieAuthToken || !cookieAccessToken);
 
-    const hasDynamicAuthWithAccessTokens = hasDynamicLocalStorageItems && accessToken && cookieAuthToken && cookieAccessToken;
+    const hasDynamicAuthWithAccessTokens = hasDynamicLocalStorageItems && !!accessToken && !!cookieAuthToken && !!cookieAccessToken;
 
-    const hasMatchingAcessTokenInCookie = accessToken && accessToken === cookieAccessToken;
+    const hasMatchingAcessTokenInCookie = accessToken && (accessToken === cookieAccessToken);
+
+    console.log(`[debug] DynamicProvider: 3: data:`, {
+      hasDynamicLocalStorageItems,
+      hasDynamicAuthWithoutAccessTokens,
+      hasDynamicAuthWithAccessTokens,
+      hasMatchingAcessTokenInCookie,
+    })
 
     if (hasDynamicAuthWithoutAccessTokens) {
+    console.log(`[debug] DynamicProvider: 3.1: clear`);
       cookies.reset();
       clearUserSessionKeys();
 
       return false;
     }
+    console.log(`[debug] DynamicProvider: 4`);
 
     if (!hasDynamicAuthWithAccessTokens || !cookieAccessToken) return false;
+    console.log(`[debug] DynamicProvider: 5`);
 
     if (!hasMatchingAcessTokenInCookie)
       throw Error(
         `Expected ${truncateMiddle(accessToken)} but got ${typeof cookieAccessToken === 'string' ? truncateMiddle(cookieAccessToken) : typeof cookieAccessToken}`,
       );
+    console.log(`[debug] DynamicProvider: 6`);
 
     const projectId = decodeAccessToken(cookieAccessToken);
 
     if (!projectId) throw Error(`Expected a Project identifier but got ${projectId || typeof projectId}`);
+    console.log(`[debug] DynamicProvider: 7`);
 
     const { success: hasMe } = await me(graphqlApiUrl, cookieAccessToken);
 
     const { success: hasProject } = await project(graphqlApiUrl, cookieAccessToken, projectId);
 
     const hasUserSessionExpectedDetails = hasMe && hasProject;
+    console.log(`[debug] DynamicProvider: 8: hasUserSessionExpectedDetails = ${hasUserSessionExpectedDetails}`);
 
     if (!hasUserSessionExpectedDetails) throw Error('Unexpected user session details');
+    console.log(`[debug] DynamicProvider: 9`);
 
     typeof onAuthenticationSuccess === 'function' && onAuthenticationSuccess();
 
@@ -136,6 +156,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
   // TODO: Remove useCallback to inspect re-triggers
   const onAuthSuccess = useCallback(
     async ({ user }: { user: UserProfile }) => {
+      console.log(`[debug] DynamicProvider: onAuthSuccess: user = ${JSON.stringify(user)}`)
       try {
         const authToken = getAuthToken();
 
