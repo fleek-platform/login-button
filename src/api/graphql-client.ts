@@ -19,7 +19,6 @@ interface GraphQLOperation<Variables extends UserSessionDetails, Result> {
   operationName: string;
   query: string;
   variables?: Variables;
-  dataField: keyof GraphQLResponse<Result>['data'];
 }
 
 type ProjectResponse = {
@@ -109,7 +108,7 @@ const executeGraphQLOperation = async <Variables extends UserSessionDetails, Res
 
     return {
       success: true,
-      data: jsonRes.data[operation.dataField],
+      data: jsonRes.data[operation.operationName],
     };
   } catch (err) {
     console.error('Failed to execute GraphQL operation', err);
@@ -137,7 +136,6 @@ export const loginWithDynamic = async (
       }
     `,
     variables: { data: { authToken, projectId } },
-    dataField: 'loginWithDynamic',
   });
 
 // TODO: We'd possibly want to use @fleek-platform/utils-genql-client since hard-typed queries will eventually fail on source change. The utils-genql-client is computed/generated.
@@ -157,7 +155,6 @@ export const generateUserSessionDetails = async (
       }
     `,
     variables: { data: { authToken } },
-    dataField: 'generateUserSessionDetails',
   });
 
 export const me = async (graphqlApiUrl: string, accessToken: string): Promise<ExecGraphQLOperationResult<SessionDetails>> =>
@@ -174,7 +171,6 @@ export const me = async (graphqlApiUrl: string, accessToken: string): Promise<Ex
       }
     `,
     variables: { data: { accessToken } },
-    dataField: 'me',
   });
 
 type ProjectWhereInput = {
@@ -204,5 +200,4 @@ export const project = async (
         id: projectId,
       },
     },
-    dataField: 'project',
   });
