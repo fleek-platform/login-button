@@ -210,7 +210,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
       graphqlApiUrl,
       onAuthenticationFailure: () => onLogout(),
     });
-  }, [graphqlApiUrl]);
+  }, [accessToken, graphqlApiUrl, onLogout]);
 
   const settings = {
     environmentId: dynamicEnvironmentId,

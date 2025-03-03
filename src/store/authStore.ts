@@ -112,7 +112,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
 
       if (!decodedProjectId) throw Error(`Expected a Project identifier but got ${projectId || typeof projectId}`);
 
-      if (decodedProjectId !== projectId) throw Error(`Found a project mismatch`);
+      if (decodedProjectId !== projectId) throw Error('Found a project mismatch');
 
       set({
         accessToken,
