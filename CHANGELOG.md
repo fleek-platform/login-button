@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.3.0
+
+### Minor Changes
+
+- 77c2737: Deprecate dataField from graphql client
+
 ## 2.2.0
 
 ### Minor Changes
