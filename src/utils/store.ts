@@ -10,8 +10,8 @@ export const hasLocalStorageItems = (term: string) => {
       console.warn('localStorage is not available in this environment');
       return false;
     }
-    
-    return Object.keys(localStorage).some(key => key.startsWith(term));
+
+    return Object.keys(localStorage).some((key) => key.startsWith(term));
   } catch (error) {
     console.error('Failed to compute localStorage', error);
     return false;

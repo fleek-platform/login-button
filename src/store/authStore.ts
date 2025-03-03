@@ -59,85 +59,82 @@ export const initialState: AuthState = {
   userProfile: undefined,
 };
 
-export const useAuthStore = create<AuthStore>()(
-    (set, get) => ({
-      ...initialState,
-      setAccessToken: (accessToken: string) => {
-        const projectId = decodeAccessToken(accessToken);
+export const useAuthStore = create<AuthStore>()((set, get) => ({
+  ...initialState,
+  setAccessToken: (accessToken: string) => {
+    const projectId = decodeAccessToken(accessToken);
 
-        set({
-          accessToken,
-          projectId,
-        });
+    set({
+      accessToken,
+      projectId,
+    });
 
-        cookies.set('accessToken', accessToken);
-        cookies.set('projectId', projectId);
-      },
-      setAuthToken: (authToken: string) => {
-        set({ authToken });
+    cookies.set('accessToken', accessToken);
+    cookies.set('projectId', projectId);
+  },
+  setAuthToken: (authToken: string) => {
+    set({ authToken });
 
-        cookies.set('authToken', authToken);
-      },
-      setIsLoggingIn: (isLoggingIn: boolean) => set({ isLoggingIn }),
-      setIsLoggedIn: (isLoggedIn: boolean) => set({ isLoggedIn }),
-      reset: () => set(initialState),
-      updateAccessTokenByProjectId: async (projectId: string) => {
-        try {
-          set({ isLoggingIn: true });
+    cookies.set('authToken', authToken);
+  },
+  setIsLoggingIn: (isLoggingIn: boolean) => set({ isLoggingIn }),
+  setIsLoggedIn: (isLoggedIn: boolean) => set({ isLoggedIn }),
+  reset: () => set(initialState),
+  updateAccessTokenByProjectId: async (projectId: string) => {
+    try {
+      set({ isLoggingIn: true });
 
-          const { authToken } = get();
+      const { authToken } = get();
 
-          const { graphqlApiUrl } = useConfigStore.getState();
+      const { graphqlApiUrl } = useConfigStore.getState();
 
-          if (!authToken) {
-            throw new Error('Auth token is required to update access token');
-          }
+      if (!authToken) {
+        throw new Error('Auth token is required to update access token');
+      }
 
-          if (!graphqlApiUrl) {
-            throw new Error('GraphQL API URL is required to update access token');
-          }
+      if (!graphqlApiUrl) {
+        throw new Error('GraphQL API URL is required to update access token');
+      }
 
-          const res = await loginWithDynamic(graphqlApiUrl, authToken, projectId);
+      const res = await loginWithDynamic(graphqlApiUrl, authToken, projectId);
 
-          if (!res.success) {
-            throw new Error(res.error.message);
-          }
+      if (!res.success) {
+        throw new Error(res.error.message);
+      }
 
-          if (!res.data) {
-            throw new Error('Failed to get access token');
-          }
+      if (!res.data) {
+        throw new Error('Failed to get access token');
+      }
 
-          // TODO: Make a projectId validation against
-          // the accessToken projectId as it should match.
-          // On failure, throw error.
+      // TODO: Make a projectId validation against
+      // the accessToken projectId as it should match.
+      // On failure, throw error.
 
-          const accessToken = res.data;
+      const accessToken = res.data;
 
-          set({
-            accessToken,
-            projectId,
-            isLoggingIn: false,
-          });
+      set({
+        accessToken,
+        projectId,
+        isLoggingIn: false,
+      });
 
-          cookies.set('accessToken', accessToken);
-        } catch (err) {
-          console.error('Failed to update access token:', err);
+      cookies.set('accessToken', accessToken);
+    } catch (err) {
+      console.error('Failed to update access token:', err);
 
-          // TODO: Shouldn't this be set as spread of initialState obj?
-          set({
-            isLoggingIn: false,
-            accessToken: '',
-            projectId: '',
-          });
+      // TODO: Shouldn't this be set as spread of initialState obj?
+      set({
+        isLoggingIn: false,
+        accessToken: '',
+        projectId: '',
+      });
 
-          throw err;
-        }
-      },
-      setUserProfile: (userProfile: UserProfile) => set({ userProfile }),
-      setIsNewUser: (isNewUser: boolean) => set({ isNewUser }),
-      setTriggerLoginModal: (triggerLoginModal: TriggerLoginModal) => set({ triggerLoginModal }),
-      setTriggerLogout: (triggerLogout: TriggerLogout) => set({ triggerLogout }),
-      setProjectId: (projectId: string) => set({ projectId }),
+      throw err;
     }
-  ),
-);
+  },
+  setUserProfile: (userProfile: UserProfile) => set({ userProfile }),
+  setIsNewUser: (isNewUser: boolean) => set({ isNewUser }),
+  setTriggerLoginModal: (triggerLoginModal: TriggerLoginModal) => set({ triggerLoginModal }),
+  setTriggerLogout: (triggerLogout: TriggerLogout) => set({ triggerLogout }),
+  setProjectId: (projectId: string) => set({ projectId }),
+}));

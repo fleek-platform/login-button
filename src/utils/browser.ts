@@ -36,4 +36,4 @@ export const clearUserSessionKeys = () => {
   for (const item of userSessionLocalStorageKeys) {
     clearStorageByMatchTerm(item);
   }
-}
+};

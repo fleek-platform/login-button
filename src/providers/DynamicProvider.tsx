@@ -60,20 +60,12 @@ const validateUserSession = async ({
 
     const hasDynamicLocalStorageItems = hasLocalStorageItems('dynamic');
 
-    const hasDynamicAuthWithoutAccessTokens =
-      hasDynamicLocalStorageItems
-      && (!cookieAuthToken || !cookieAccessToken);
+    const hasDynamicAuthWithoutAccessTokens = hasDynamicLocalStorageItems && (!cookieAuthToken || !cookieAccessToken);
 
-    const hasDynamicAuthWithAccessTokens =
-      hasDynamicLocalStorageItems
-      && accessToken
-      && cookieAuthToken
-      && cookieAccessToken;
+    const hasDynamicAuthWithAccessTokens = hasDynamicLocalStorageItems && accessToken && cookieAuthToken && cookieAccessToken;
 
-    const hasMatchingAcessTokenInCookie =
-      accessToken
-      && (accessToken === cookieAccessToken);
-    
+    const hasMatchingAcessTokenInCookie = accessToken && accessToken === cookieAccessToken;
+
     if (hasDynamicAuthWithoutAccessTokens) {
       cookies.reset();
       clearUserSessionKeys();
@@ -96,9 +88,7 @@ const validateUserSession = async ({
 
     const { success: hasProject } = await project(graphqlApiUrl, cookieAccessToken, projectId);
 
-    const hasUserSessionExpectedDetails =
-      hasMe
-      && hasProject
+    const hasUserSessionExpectedDetails = hasMe && hasProject;
 
     if (!hasUserSessionExpectedDetails) throw Error('Unexpected user session details');
 
@@ -204,7 +194,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
 
   useEffect(() => {
     if (!graphqlApiUrl) return;
-    
+
     // Validates the user session sometime in the future.
     // If found faulty, it should clear the user session
     // e.g. user session clear/logout by dashboard.
