@@ -124,7 +124,6 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     } catch (err) {
       console.error('Failed to update access token:', err);
 
-      // TODO: Shouldn't this be set as spread of initialState obj?
       set({
         isLoggingIn: false,
         accessToken: '',
