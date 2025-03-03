@@ -2,4 +2,4 @@
 "@fleek-platform/login-button": minor
 ---
 
-Extend session dismissal check with cookie mismatching locals storage session details
+Enhance Session Dismissal checks by comparing cookie and Local Storage session details
