@@ -23,6 +23,12 @@ type DynamicUtilsProps = {
   setReinitializeSdk: (callback: ReinitializeSdk) => void;
 };
 
+type HasDataCommonError = {
+  error: {
+    type: string;
+  },
+};
+
 const DynamicUtils = ({
   onTriggerLoginModal,
   onTriggerLogout,
@@ -81,10 +87,8 @@ const DynamicUtils = ({
 
     debouncedValidation();
 
-    (window as any).reinitializeSdk = reinitializeSdk;
-
     return () => debouncedValidation.cancel();
-  }, [accessToken, graphqlApiUrl]);
+  }, [accessToken, graphqlApiUrl, localStorageAuthToken, onLogout, reinitializeSdk]);
 
   return null;
 };
@@ -147,8 +151,8 @@ const validateUserSession = async ({
     // e.g. it might cause to call `onAuthenticationFailure`
     // which would clear the user session details wrongly
     const hasNetworkError =
-      (!hasMeResult.success && (hasMeResult as any)?.error?.type === 'NETWORK_ERROR') ||
-      (!hasProjectResult.success && (hasProjectResult as any)?.error?.type === 'NETWORK_ERROR');
+      (!hasMeResult.success && (hasMeResult as HasDataCommonError)?.error?.type === 'NETWORK_ERROR') ||
+      (!hasProjectResult.success && (hasProjectResult as HasDataCommonError)?.error?.type === 'NETWORK_ERROR');
 
     if (hasNetworkError) return false;
 
