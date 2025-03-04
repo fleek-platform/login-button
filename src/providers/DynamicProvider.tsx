@@ -124,14 +124,8 @@ const validateUserSession = async ({
 
     const hasAuthenticationInProgress = authenticating;
 
-    // An accessToken is computed on authentication process.
-    // If a cookieAccess token's missing we'll assume
-    // that the authentication is processing returning truthy
-    // and only consider authToken matching
-    const hasMatchingTokens = (cookieAuthToken === localStorageAuthToken) && (cookieAccessToken === accessToken) && !authenticating;
+    const hasMatchingTokens = !authenticating && (cookieAuthToken === localStorageAuthToken) && (cookieAccessToken === accessToken);
 
-    // TODO: Maybe use the https://docs.dynamic.xyz/react-sdk/utilities/getauthtoken#getauthtoken
-    // to avoid using localStorage directly
     const hasDynamicLocalStorageItems = !!hasLocalStorageItems('dynamic') && !!localStorageAuthToken;
 
     const hasDynamicAuthWithoutAccessTokens = !!hasDynamicLocalStorageItems && (!cookieAuthToken || !cookieAccessToken);
@@ -140,10 +134,11 @@ const validateUserSession = async ({
 
     const hasMatchingAcessTokenInCookie = !!accessToken && accessToken === cookieAccessToken;
 
+    if (hasAuthenticationInProgress) return false;
 
-    if (hasAuthenticationInProgress  || hasMatchingTokens) return true;
+    if (hasMatchingTokens) return true;
 
-    if (hasDynamicAuthWithoutAccessTokens) throw Error('Found missing Dynamic cookie paired tokens');
+    if (hasDynamicAuthWithoutAccessTokens) throw Error('Authentication found incomplete token pair in cookie data');
 
     if (!hasDynamicAuthWithAccessTokens || !cookieAccessToken) return false;
 
@@ -214,6 +209,11 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     cookies.reset();
     // TODO: Make sure the reset is not clearing
     // the trigger callbacks
+    // TODO: Do we need store actions? Havint it
+    // in the store as `actions` is ok, but maybe
+    // have them set as mutable module variables
+    // to reduce configuration or setup needs
+    // which is quite verbose at the moment
     resetStore();
     // TODO: Dashboard has a concurrent process
     // that should also match these requirements
