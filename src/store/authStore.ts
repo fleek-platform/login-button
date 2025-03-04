@@ -9,6 +9,7 @@ import { cookies } from '../utils/cookies';
 
 export type TriggerLoginModal = (open: boolean) => void;
 export type TriggerLogout = () => void;
+export type ReinitializeSdk = () => void;
 
 const name = getStoreName('login-button');
 
@@ -22,12 +23,14 @@ export interface AuthStore {
   userProfile?: UserProfile;
   triggerLoginModal?: TriggerLoginModal;
   triggerLogout?: TriggerLogout;
+  reinitializeSdk?: ReinitializeSdk;
   setAccessToken: (value: string) => void;
   setAuthToken: (value: string) => void;
   setIsLoggingIn: (isLoggingIn: boolean) => void;
   setIsLoggedIn: (isLoggedIn: boolean) => void;
   setTriggerLogout: (triggerLogout: TriggerLogout) => void;
   setTriggerLoginModal: (callback: TriggerLoginModal) => void;
+  setReinitializeSdk: (callback: ReinitializeSdk) => void;
   updateAccessTokenByProjectId: (projectId: string) => Promise<void>;
   reset: () => void;
   setIsNewUser: (isNewUser: boolean) => void;
@@ -138,4 +141,5 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
   setTriggerLoginModal: (triggerLoginModal: TriggerLoginModal) => set({ triggerLoginModal }),
   setTriggerLogout: (triggerLogout: TriggerLogout) => set({ triggerLogout }),
   setProjectId: (projectId: string) => set({ projectId }),
+  setReinitializeSdk: (reinitializeSdk: ReinitializeSdk) => set({ reinitializeSdk }),
 }));
