@@ -43,6 +43,7 @@
     "@dynamic-labs/sdk-react-core": "3.9.2",
     "@fleek-platform/utils-token": "^0.2.2",
     "dotenv": "^16.4.7",
+    "lodash-es": "^4.17.21",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "viem": "^2.21.55",
@@ -51,6 +52,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
     "@changesets/cli": "^2.27.9",
+    "@types/lodash-es": "^4.17.12",
     "@types/luxon": "^3.4.2",
     "@types/node": "^20",
     "@types/react": "^18.0.9",
