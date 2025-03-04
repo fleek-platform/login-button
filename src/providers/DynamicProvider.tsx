@@ -220,7 +220,14 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     // Clear critical stores
     clearUserSessionKeys();
     setIsLoggedIn(false);
+
     typeof reinitializeSdk === 'function' && reinitializeSdk();
+
+    // TODO: The following can be dismiss since
+    // introducing reinitializeSdk. But, a logout
+    // processing state is required.
+    // For the moment, we'll flush the session
+    // by refreshing the page.
     window.location.reload();
   };
 
