@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.4.0
+
+### Minor Changes
+
+- 5027789: Enhance session dismissal checks by clearing session on faulty data, e.g. unknown project id, missing cookie access token
+
 ## 2.3.0
 
 ### Minor Changes
