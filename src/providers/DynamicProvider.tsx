@@ -2,23 +2,67 @@
 
 import { type FC, useCallback, useState, useEffect } from 'react';
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
-import { DynamicContextProvider, useDynamicContext, type UserProfile } from '@dynamic-labs/sdk-react-core';
+import { DynamicContextProvider, useDynamicContext, type UserProfile, useReinitialize } from '@dynamic-labs/sdk-react-core';
 import { getAuthToken } from '@dynamic-labs/sdk-react-core';
 import { generateUserSessionDetails, me, project } from '../api/graphql-client';
-import { type TriggerLoginModal, type TriggerLogout, useAuthStore } from '../store/authStore';
+import { type TriggerLoginModal, type TriggerLogout, useAuthStore, type ReinitializeSdk } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 import type { LoginProviderChildrenProps } from './LoginProvider';
-import { clearStorageByMatchTerm } from '../utils/browser';
-import { decodeAccessToken } from '../utils/token';
+import { clearUserSessionKeys } from '../utils/browser';
+import { decodeAccessToken, truncateMiddle } from '../utils/token';
 import cssOverrides from '../css/index.css';
+import { hasLocalStorageItems } from '../utils/store';
+import { debounce } from 'lodash-es';
+
+type HasDataCommonError = {
+  error: {
+    type: string;
+  };
+};
 
 type DynamicUtilsProps = {
   onTriggerLoginModal?: (callback: TriggerLoginModal) => void;
   onTriggerLogout?: (triggerLogout: TriggerLogout) => void;
+  graphqlApiUrl: string;
+  accessToken: string;
+  authenticating: boolean;
+  onLogout: () => void;
+  setReinitializeSdk: (callback: ReinitializeSdk) => void;
 };
 
-const DynamicUtils = ({ onTriggerLoginModal, onTriggerLogout }: DynamicUtilsProps) => {
+const DynamicUtils = ({
+  onTriggerLoginModal,
+  onTriggerLogout,
+  graphqlApiUrl,
+  accessToken,
+  authenticating,
+  onLogout,
+  setReinitializeSdk,
+}: DynamicUtilsProps) => {
   const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
+  const reinitializeSdk = useReinitialize();
+  const localStorageAuthToken = getAuthToken();
+
+  const validateUserSessionMemoized = useCallback(() => {
+    // Validates the user session sometime in the future.
+    // If found faulty, it should clear the user session
+    // e.g. user session clear/logout by dashboard.
+    // On the other hand, an existing user session can
+    // persist (localStorage), but dashboard uses cookies
+    // e.g. user logins in website and expect cross session.
+    // This is more of a safe-guard due to Dashboard
+    // having the requirement to clear localStorage items
+    // that match prefix `fleek-xyz-login`, meaning
+    // we're only computing if that fails to happen
+    validateUserSession({
+      accessToken,
+      authenticating,
+      localStorageAuthToken,
+      graphqlApiUrl,
+      reinitializeSdk,
+      onAuthenticationFailure: () => onLogout(),
+    });
+  }, [accessToken, authenticating, localStorageAuthToken, graphqlApiUrl, reinitializeSdk, onLogout]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies(setShowAuthFlow): causes infinite render, probably not memoized
   useEffect(() => {
@@ -32,6 +76,22 @@ const DynamicUtils = ({ onTriggerLoginModal, onTriggerLogout }: DynamicUtilsProp
     onTriggerLogout(handleLogOut);
   }, [onTriggerLogout, sdkHasLoaded]);
 
+  useEffect(() => {
+    if (!reinitializeSdk) return;
+
+    setReinitializeSdk(reinitializeSdk);
+  }, [setReinitializeSdk, reinitializeSdk]);
+
+  useEffect(() => {
+    if (!graphqlApiUrl || authenticating) return;
+
+    const debouncedValidation = debounce(validateUserSessionMemoized, 400);
+
+    debouncedValidation();
+
+    return () => debouncedValidation.cancel();
+  }, [authenticating, graphqlApiUrl, validateUserSessionMemoized]);
+
   return null;
 };
 
@@ -44,29 +104,82 @@ export type DynamicProviderProps = {
 
 const validateUserSession = async ({
   accessToken,
+  authenticating,
+  localStorageAuthToken,
   graphqlApiUrl,
-  projectId,
   onAuthenticationFailure,
+  onAuthenticationSuccess,
 }: {
   accessToken: string;
+  authenticating: boolean;
+  localStorageAuthToken?: string;
   graphqlApiUrl: string;
-  projectId: string;
   onAuthenticationFailure: () => void;
+  onAuthenticationSuccess?: () => void;
+  reinitializeSdk?: () => void;
 }): Promise<boolean> => {
   try {
-    const { success: meSuccess } = await me(graphqlApiUrl, accessToken);
+    const cookieAuthToken = cookies.get('authToken');
+    const cookieAccessToken = cookies.get('accessToken');
 
-    const { success: projectSuccess } = await project(graphqlApiUrl, accessToken, projectId);
+    const hasAuthenticationInProgress = authenticating;
 
-    if (!meSuccess || !projectSuccess) {
-      onAuthenticationFailure();
-      return false;
-    }
+    const hasMatchingTokens = !authenticating && cookieAuthToken === localStorageAuthToken && cookieAccessToken === accessToken;
+
+    const hasDynamicLocalStorageItems = !!hasLocalStorageItems('dynamic') && !!localStorageAuthToken;
+
+    const hasDynamicAuthWithoutAccessTokens = !!hasDynamicLocalStorageItems && (!cookieAuthToken || !cookieAccessToken);
+
+    const hasDynamicAuthWithAccessTokens = !!hasDynamicLocalStorageItems && !!accessToken && !!cookieAuthToken && !!cookieAccessToken;
+
+    const hasMatchingAcessTokenInCookie = !!accessToken && accessToken === cookieAccessToken;
+
+    if (hasAuthenticationInProgress) return false;
+
+    if (hasMatchingTokens) return true;
+
+    if (hasDynamicAuthWithoutAccessTokens) throw Error('Authentication found incomplete token pair in cookie data');
+
+    if (!hasDynamicAuthWithAccessTokens || !cookieAccessToken) return false;
+
+    if (!hasMatchingAcessTokenInCookie)
+      throw Error(
+        `Expected ${truncateMiddle(accessToken)} but got ${typeof cookieAccessToken === 'string' ? truncateMiddle(cookieAccessToken) : typeof cookieAccessToken}`,
+      );
+
+    const projectId = decodeAccessToken(cookieAccessToken);
+
+    if (!projectId) throw Error(`Expected a Project identifier but got ${projectId || typeof projectId}`);
+
+    const [hasMeResult, hasProjectResult] = await Promise.all([
+      me(graphqlApiUrl, cookieAccessToken),
+      project(graphqlApiUrl, cookieAccessToken, projectId),
+    ]);
+
+    // Important to prevent false status checkups
+    // e.g. it might cause to call `onAuthenticationFailure`
+    // which would clear the user session details wrongly
+    const hasNetworkError =
+      (!hasMeResult.success && (hasMeResult as HasDataCommonError)?.error?.type === 'NETWORK_ERROR') ||
+      (!hasProjectResult.success && (hasProjectResult as HasDataCommonError)?.error?.type === 'NETWORK_ERROR');
+
+    if (hasNetworkError) return false;
+
+    const hasMe = !!hasMeResult.success;
+    const hasProject = !!hasProjectResult.success;
+
+    const hasUserSessionExpectedDetails = hasMe && hasProject;
+
+    if (!hasUserSessionExpectedDetails) throw Error('Unexpected user session details');
+
+    typeof onAuthenticationSuccess === 'function' && onAuthenticationSuccess();
 
     return true;
   } catch (error) {
-    console.error('Authentication validation failed:', error);
+    console.error('Authentication validation failed', error);
+
     onAuthenticationFailure();
+
     return false;
   }
 };
@@ -74,7 +187,7 @@ const validateUserSession = async ({
 export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApiUrl, dynamicEnvironmentId, onAuthenticationSuccess }) => {
   const {
     accessToken,
-    authToken,
+    authenticating,
     setAccessToken,
     setAuthToken,
     reset: resetStore,
@@ -85,24 +198,40 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     setTriggerLogout,
     triggerLogout,
     setIsLoggedIn,
-    projectId,
+    setReinitializeSdk,
+    reinitializeSdk,
+    setAuthenticating,
   } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
 
-  // TODO: Remove useCallback to inspect re-triggers
-  const onLogout = useCallback(() => {
+  const onLogout = () => {
     cookies.reset();
     // TODO: Make sure the reset is not clearing
     // the trigger callbacks
+    // TODO: Do we need store actions? Havint it
+    // in the store as `actions` is ok, but maybe
+    // have them set as mutable module variables
+    // to reduce configuration or setup needs
+    // which is quite verbose at the moment
     resetStore();
+    // TODO: Dashboard has a concurrent process
+    // that should also match these requirements
     // Clear critical stores
-    for (const item of ['dynamic', 'wagmi', 'fleek-xyz']) {
-      clearStorageByMatchTerm(item);
-    }
+    clearUserSessionKeys();
     setIsLoggedIn(false);
+
+    typeof reinitializeSdk === 'function' && reinitializeSdk();
+
+    // TODO: The following can be dismiss since
+    // introducing reinitializeSdk. But, a logout
+    // processing state is required.
+    // For the moment, we'll flush the session
+    // by refreshing the page.
     window.location.reload();
-  }, [resetStore, setIsLoggedIn]);
+  };
+
+  const onAuthInit = () => setAuthenticating(true);
 
   // TODO: Remove useCallback to inspect re-triggers
   const onAuthSuccess = useCallback(
@@ -128,6 +257,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
 
         setAccessToken(result.data.accessToken);
         setIsLoggedIn(true);
+        setAuthenticating(false);
 
         typeof onAuthenticationSuccess === 'function' && onAuthenticationSuccess();
       } catch (err) {
@@ -138,27 +268,13 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         setIsLoading(false);
       }
     },
-    [graphqlApiUrl, setAuthToken, setAccessToken, setIsLoggedIn, setUserProfile, setIsNewUser, onAuthenticationSuccess],
+    [graphqlApiUrl, setAuthToken, setAccessToken, setIsLoggedIn, setUserProfile, setIsNewUser, onAuthenticationSuccess, setAuthenticating],
   );
 
-  useEffect(() => {
-    if (!accessToken) return;
-
-    cookies.set('accessToken', accessToken);
-  }, [accessToken]);
-
-  useEffect(() => {
-    if (!authToken) return;
-
-    cookies.set('authToken', authToken);
-  }, [authToken]);
-
-  useEffect(() => {
-    if (!projectId) return;
-
-    cookies.set('projectId', projectId);
-  }, [projectId]);
-
+  // Support cross application user session
+  // by applying authentication user details
+  // from user cookies based on app hostname
+  // e.g. *fleek.xyz
   useEffect(() => {
     const authToken = cookies.get('authToken');
     const accessToken = cookies.get('accessToken');
@@ -181,25 +297,13 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     }
   }, [setAuthToken, setAccessToken, setIsLoggedIn]);
 
-  useEffect(() => {
-    if (!accessToken || !graphqlApiUrl) return;
-
-    // Validates the user session sometime in the future
-    // if found faulty, it should clear the user session
-    validateUserSession({
-      accessToken,
-      graphqlApiUrl,
-      projectId,
-      onAuthenticationFailure: () => typeof triggerLogout === 'function' && triggerLogout(),
-    });
-  }, [accessToken, graphqlApiUrl, projectId, triggerLogout]);
-
   const settings = {
     environmentId: dynamicEnvironmentId,
     walletConnectors: [EthereumWalletConnectors],
     events: {
       onLogout,
       onAuthSuccess,
+      onAuthInit,
     },
     // TODO: Use the correct override
     // using scale might not be appropriate
@@ -210,7 +314,15 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
 
   return (
     <DynamicContextProvider settings={settings}>
-      <DynamicUtils onTriggerLoginModal={setTriggerLoginModal} onTriggerLogout={setTriggerLogout} />
+      <DynamicUtils
+        accessToken={accessToken}
+        authenticating={authenticating}
+        graphqlApiUrl={graphqlApiUrl}
+        onTriggerLoginModal={setTriggerLoginModal}
+        onTriggerLogout={setTriggerLogout}
+        onLogout={onLogout}
+        setReinitializeSdk={setReinitializeSdk}
+      />
       {children({
         accessToken,
         isLoading,
