@@ -117,24 +117,22 @@ const validateUserSession = async ({
   onAuthenticationFailure: () => void;
   onAuthenticationSuccess?: () => void;
   reinitializeSdk?: () => void;
-}): Promise<boolean> => {
-  if (authenticating) return false;
-  
+}): Promise<boolean> => {  
   try {
     const cookieAuthToken = cookies.get('authToken');
     const cookieAccessToken = cookies.get('accessToken');
-    const _localStorageAuthToken = localStorage?.dynamic_authentication_token;
+
+    const hasAuthenticationInProgress = authenticating;
 
     // An accessToken is computed on authentication process.
     // If a cookieAccess token's missing we'll assume
     // that the authentication is processing returning truthy
     // and only consider authToken matching
-    // const hasMatchingTokens = (cookieAuthToken === _localStorageAuthToken) && (!!cookieAccessToken && !!accessToken ? cookieAccessToken === accessToken : true);
-    const hasMatchingTokens = (cookieAuthToken === _localStorageAuthToken) && (cookieAccessToken === accessToken) && !authenticating;
+    const hasMatchingTokens = (cookieAuthToken === localStorageAuthToken) && (cookieAccessToken === accessToken) && !authenticating;
 
     // TODO: Maybe use the https://docs.dynamic.xyz/react-sdk/utilities/getauthtoken#getauthtoken
     // to avoid using localStorage directly
-    const hasDynamicLocalStorageItems = !!hasLocalStorageItems('dynamic') && !!_localStorageAuthToken;
+    const hasDynamicLocalStorageItems = !!hasLocalStorageItems('dynamic') && !!localStorageAuthToken;
 
     const hasDynamicAuthWithoutAccessTokens = !!hasDynamicLocalStorageItems && (!cookieAuthToken || !cookieAccessToken);
 
@@ -142,7 +140,8 @@ const validateUserSession = async ({
 
     const hasMatchingAcessTokenInCookie = !!accessToken && accessToken === cookieAccessToken;
 
-    if (hasMatchingTokens) return true;
+
+    if (hasAuthenticationInProgress  || hasMatchingTokens) return true;
 
     if (hasDynamicAuthWithoutAccessTokens) throw Error('Found missing Dynamic cookie paired tokens');
 
