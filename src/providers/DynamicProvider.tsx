@@ -23,7 +23,14 @@ type DynamicUtilsProps = {
   setReinitializeSdk: (callback: ReinitializeSdk) => void;
 };
 
-const DynamicUtils = ({ onTriggerLoginModal, onTriggerLogout, graphqlApiUrl, accessToken, onLogout, setReinitializeSdk }: DynamicUtilsProps) => {
+const DynamicUtils = ({
+  onTriggerLoginModal,
+  onTriggerLogout,
+  graphqlApiUrl,
+  accessToken,
+  onLogout,
+  setReinitializeSdk,
+}: DynamicUtilsProps) => {
   const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
   const reinitializeSdk = useReinitialize();
   const localStorageAuthToken = getAuthToken();
@@ -42,7 +49,7 @@ const DynamicUtils = ({ onTriggerLoginModal, onTriggerLogout, graphqlApiUrl, acc
 
   useEffect(() => {
     if (!reinitializeSdk) return;
-    
+
     setReinitializeSdk(reinitializeSdk);
   }, [setReinitializeSdk, reinitializeSdk]);
 
@@ -116,10 +123,9 @@ const validateUserSession = async ({
 
     const hasDynamicAuthWithAccessTokens = !!hasDynamicLocalStorageItems && !!accessToken && !!cookieAuthToken && !!cookieAccessToken;
 
-    const hasMatchingAcessTokenInCookie = !!accessToken && (accessToken === cookieAccessToken);
+    const hasMatchingAcessTokenInCookie = !!accessToken && accessToken === cookieAccessToken;
 
-    if (hasDynamicAuthWithoutAccessTokens) 
-      throw Error('Found missing Dynamic cookie paired tokens');
+    if (hasDynamicAuthWithoutAccessTokens) throw Error('Found missing Dynamic cookie paired tokens');
 
     if (!hasDynamicAuthWithAccessTokens || !cookieAccessToken) return false;
 
@@ -141,16 +147,14 @@ const validateUserSession = async ({
     // e.g. it might cause to call `onAuthenticationFailure`
     // which would clear the user session details wrongly
     const hasNetworkError =
-      !hasMeResult.success && (hasMeResult as any)?.error?.type === 'NETWORK_ERROR' ||
-      !hasProjectResult.success && (hasProjectResult as any)?.error?.type === 'NETWORK_ERROR';
+      (!hasMeResult.success && (hasMeResult as any)?.error?.type === 'NETWORK_ERROR') ||
+      (!hasProjectResult.success && (hasProjectResult as any)?.error?.type === 'NETWORK_ERROR');
 
-    if (hasNetworkError) 
-      return false;
-    
+    if (hasNetworkError) return false;
 
     const hasMe = !!hasMeResult.success;
     const hasProject = !!hasProjectResult.success;
-    
+
     const hasUserSessionExpectedDetails = hasMe && hasProject;
 
     if (!hasUserSessionExpectedDetails) throw Error('Unexpected user session details');
