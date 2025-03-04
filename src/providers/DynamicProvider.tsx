@@ -62,7 +62,7 @@ const DynamicUtils = ({
       reinitializeSdk,
       onAuthenticationFailure: () => onLogout(),
     });
-  }, [accessToken, localStorageAuthToken, graphqlApiUrl, reinitializeSdk, onLogout]);
+  }, [accessToken, authenticating, localStorageAuthToken, graphqlApiUrl, reinitializeSdk, onLogout]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies(setShowAuthFlow): causes infinite render, probably not memoized
   useEffect(() => {
@@ -90,7 +90,7 @@ const DynamicUtils = ({
     debouncedValidation();
 
     return () => debouncedValidation.cancel();
-  }, [authenticating, graphqlApiUrl, localStorageAuthToken, validateUserSessionMemoized]);
+  }, [authenticating, graphqlApiUrl, validateUserSessionMemoized]);
 
   return null;
 };
