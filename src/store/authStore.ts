@@ -4,7 +4,12 @@ import { loginWithDynamic } from '../api/graphql-client';
 import { useConfigStore } from './configStore';
 import { getStoreName } from '../utils/store';
 import { decodeAccessToken } from '../utils/token';
-import type { UserProfile } from '@dynamic-labs/sdk-react-core';
+import type { UserProfile as DynamicUserProfile } from '@dynamic-labs/sdk-react-core';
+
+export type UserProfile = DynamicUserProfile & {
+  avatar?: string;
+  username?: string;
+};
 
 export type TriggerLoginModal = (open: boolean) => void;
 export type TriggerLogout = () => void;
