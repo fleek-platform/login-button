@@ -146,5 +146,5 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
   setTriggerLogout: (triggerLogout: TriggerLogout) => set({ triggerLogout }),
   setProjectId: (projectId: string) => set({ projectId }),
   setReinitializeSdk: (reinitializeSdk: ReinitializeSdk) => set({ reinitializeSdk }),
-  setAuthenticating: (authenticating: boolean) => set({ authenticating })
+  setAuthenticating: (authenticating: boolean) => set({ authenticating }),
 }));

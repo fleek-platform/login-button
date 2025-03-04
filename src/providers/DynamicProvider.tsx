@@ -117,14 +117,14 @@ const validateUserSession = async ({
   onAuthenticationFailure: () => void;
   onAuthenticationSuccess?: () => void;
   reinitializeSdk?: () => void;
-}): Promise<boolean> => {  
+}): Promise<boolean> => {
   try {
     const cookieAuthToken = cookies.get('authToken');
     const cookieAccessToken = cookies.get('accessToken');
 
     const hasAuthenticationInProgress = authenticating;
 
-    const hasMatchingTokens = !authenticating && (cookieAuthToken === localStorageAuthToken) && (cookieAccessToken === accessToken);
+    const hasMatchingTokens = !authenticating && cookieAuthToken === localStorageAuthToken && cookieAccessToken === accessToken;
 
     const hasDynamicLocalStorageItems = !!hasLocalStorageItems('dynamic') && !!localStorageAuthToken;
 
@@ -224,8 +224,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     window.location.reload();
   };
 
-  const onAuthInit = () => 
-    setAuthenticating(true);
+  const onAuthInit = () => setAuthenticating(true);
 
   // TODO: Remove useCallback to inspect re-triggers
   const onAuthSuccess = useCallback(
