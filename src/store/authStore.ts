@@ -16,6 +16,7 @@ const name = getStoreName('login-button');
 export interface AuthStore {
   accessToken: string;
   authToken: string;
+  authenticating: boolean;
   isNewUser: boolean;
   projectId: string;
   isLoggedIn: boolean;
@@ -36,12 +37,14 @@ export interface AuthStore {
   setIsNewUser: (isNewUser: boolean) => void;
   setUserProfile: (userProfile: UserProfile) => void;
   setProjectId: (projectId: string) => void;
+  setAuthenticating: (authenticating: boolean) => void;
 }
 
 export interface AuthState
   extends Pick<
     AuthStore,
     | 'accessToken'
+    | 'authenticating'
     | 'authToken'
     | 'projectId'
     | 'isNewUser'
@@ -54,6 +57,7 @@ export interface AuthState
 
 export const initialState: AuthState = {
   accessToken: '',
+  authenticating: false,
   authToken: '',
   projectId: '',
   isNewUser: false,
@@ -142,4 +146,5 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
   setTriggerLogout: (triggerLogout: TriggerLogout) => set({ triggerLogout }),
   setProjectId: (projectId: string) => set({ projectId }),
   setReinitializeSdk: (reinitializeSdk: ReinitializeSdk) => set({ reinitializeSdk }),
+  setAuthenticating: (authenticating: boolean) => set({ authenticating })
 }));

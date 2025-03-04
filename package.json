@@ -1,6 +1,6 @@
 {
   "name": "@fleek-platform/login-button",
-  "version": "2.2.0",
+  "version": "2.2.0-dev.233",
   "description": "A standalone login component with an embedded Dynamic modal that functions independently of host application.",
   "repository": "https://github.com/fleek-platform/login-button",
   "homepage": "https://github.com/fleek-platform/login-button",
@@ -42,6 +42,7 @@
     "@dynamic-labs/ethereum": "3.9.2",
     "@dynamic-labs/sdk-react-core": "3.9.2",
     "@fleek-platform/utils-token": "^0.2.2",
+    "@types/lodash-es": "^4.17.12",
     "dotenv": "^16.4.7",
     "lodash-es": "^4.17.21",
     "react": "^18.3.1",
@@ -52,7 +53,6 @@
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
     "@changesets/cli": "^2.27.9",
-    "@types/lodash-es": "^4.17.12",
     "@types/luxon": "^3.4.2",
     "@types/node": "^20",
     "@types/react": "^18.0.9",

@@ -17,6 +17,9 @@ importers:
       '@fleek-platform/utils-token':
         specifier: ^0.2.2
         version: 0.2.3
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7
@@ -42,9 +45,6 @@ importers:
       '@changesets/cli':
         specifier: ^2.27.9
         version: 2.27.12
-      '@types/lodash-es':
-        specifier: ^4.17.12
-        version: 4.17.12
       '@types/luxon':
         specifier: ^3.4.2
         version: 3.4.2
@@ -1984,7 +1984,6 @@ packages:
 
   bun@1.2.2:
     resolution: {integrity: sha512-RUc8uVVTw8WoASUzXaEQJR1s7mnwoHm3P871qBUIqSaoOpuwcU+bSVX151/xoqDwnyv38SjOX7yQ3oO0IeT73g==}
-    cpu: [arm64, x64, aarch64]
     os: [darwin, linux, win32]
     hasBin: true
 
