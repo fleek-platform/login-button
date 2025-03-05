@@ -2,10 +2,15 @@
 
 import { type FC, useCallback, useState, useEffect } from 'react';
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
-import { DynamicContextProvider, useDynamicContext, type UserProfile, useReinitialize } from '@dynamic-labs/sdk-react-core';
-import { getAuthToken } from '@dynamic-labs/sdk-react-core';
+import {
+  DynamicContextProvider,
+  useDynamicContext,
+  type UserProfile as DynamicUserProfile,
+  useReinitialize,
+  getAuthToken,
+} from '@dynamic-labs/sdk-react-core';
 import { generateUserSessionDetails, me, project } from '../api/graphql-client';
-import { type TriggerLoginModal, type TriggerLogout, useAuthStore, type ReinitializeSdk } from '../store/authStore';
+import { type TriggerLoginModal, type TriggerLogout, useAuthStore, type ReinitializeSdk, type UserProfile } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 import type { LoginProviderChildrenProps } from './LoginProvider';
 import { clearUserSessionKeys } from '../utils/browser';
@@ -235,7 +240,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
 
   // TODO: Remove useCallback to inspect re-triggers
   const onAuthSuccess = useCallback(
-    async ({ user }: { user: UserProfile }) => {
+    async ({ user }: { user: DynamicUserProfile }) => {
       try {
         const authToken = getAuthToken();
 
@@ -246,7 +251,6 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         setIsLoading(true);
         setAuthToken(authToken);
         setError(undefined);
-        setUserProfile(user);
         setIsNewUser(!!user?.newUser);
 
         const result = await generateUserSessionDetails(graphqlApiUrl, authToken);
@@ -255,6 +259,8 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
 
         if (!result.data.accessToken) throw Error(`Expected a valid access token but got ${typeof result.data.accessToken}`);
 
+        const userProfile: UserProfile = { ...user, avatar: result.data?.user.avatar, username: result.data?.user.username };
+        setUserProfile(userProfile);
         setAccessToken(result.data.accessToken);
         setIsLoggedIn(true);
         setAuthenticating(false);
