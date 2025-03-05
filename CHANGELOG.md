@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.5.0
+
+### Minor Changes
+
+- 93cd943: expose user avatar from the auth store
+
 ## 2.4.0
 
 ### Minor Changes
