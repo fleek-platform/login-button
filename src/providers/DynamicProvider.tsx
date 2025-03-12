@@ -91,12 +91,12 @@ const DynamicUtils = ({
     const debouncedValidation = debounce(validateUserSessionMemoized, 400);
 
     // TODO: Is visibilitychange supported on all major browsers? Test against `focus`
-    document.addEventListener("visibilitychange", debouncedValidation);
+    document.addEventListener('visibilitychange', debouncedValidation);
 
     // document.addEventListener("focus", debouncedValidation);
 
     return () => {
-      document.removeEventListener("visibilitychange", debouncedValidation);
+      document.removeEventListener('visibilitychange', debouncedValidation);
 
       // document.removeEventListener("focus", debouncedValidation);
     };
