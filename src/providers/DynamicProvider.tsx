@@ -88,14 +88,19 @@ const DynamicUtils = ({
   }, [setReinitializeSdk, reinitializeSdk]);
 
   useEffect(() => {
-    if (!graphqlApiUrl || authenticating) return;
-
     const debouncedValidation = debounce(validateUserSessionMemoized, 400);
 
-    debouncedValidation();
+    // TODO: Is visibilitychange supported on all major browsers? Test against `focus`
+    document.addEventListener("visibilitychange", debouncedValidation);
 
-    return () => debouncedValidation.cancel();
-  }, [authenticating, graphqlApiUrl, validateUserSessionMemoized]);
+    // document.addEventListener("focus", debouncedValidation);
+
+    return () => {
+      document.removeEventListener("visibilitychange", debouncedValidation);
+
+      // document.removeEventListener("focus", debouncedValidation);
+    };
+  }, [validateUserSessionMemoized]);
 
   return null;
 };
@@ -163,6 +168,7 @@ const validateUserSession = async ({
 
       return false;
     }
+
     const projectId = decodeAccessToken(cookieAccessToken);
 
     if (!projectId) throw Error(`Expected a Project identifier but got ${projectId || typeof projectId}`);
