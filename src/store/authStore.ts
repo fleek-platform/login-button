@@ -79,6 +79,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     set({
       accessToken,
       projectId,
+      isLoggingIn: false,
     });
 
     cookies.set('accessToken', accessToken);
@@ -96,7 +97,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     try {
       set({ isLoggingIn: true });
 
-      const { authToken } = get();
+      const { authToken, setAccessToken } = get();
 
       const { graphqlApiUrl } = useConfigStore.getState();
 
@@ -126,13 +127,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
 
       if (decodedProjectId !== projectId) throw Error('Found a project mismatch');
 
-      set({
-        accessToken,
-        projectId,
-        isLoggingIn: false,
-      });
-
-      cookies.set('accessToken', accessToken);
+      setAccessToken(accessToken);
     } catch (err) {
       console.error('Failed to update access token:', err);
 
