@@ -147,11 +147,22 @@ const validateUserSession = async ({
 
     if (!hasDynamicAuthWithAccessTokens || !cookieAccessToken) return false;
 
-    if (!hasMatchingAcessTokenInCookie)
-      throw Error(
-        `Expected ${truncateMiddle(accessToken)} but got ${typeof cookieAccessToken === 'string' ? truncateMiddle(cookieAccessToken) : typeof cookieAccessToken}`,
+    if (!hasMatchingAcessTokenInCookie) {
+      console.error(
+        `Expected ${truncateMiddle(accessToken)} but got ${typeof cookieAccessToken === 'string' ? truncateMiddle(cookieAccessToken) : typeof cookieAccessToken}. The browser tab should reload!`,
       );
 
+      // TODO: When a user switches project in a tab
+      // other open tabs detect a mismatch with the in-memory
+      // versus the cookie project ID and consider it faulty
+      // Instead of dismissing the user session (current
+      // behavior), it'll reload as a temporary solution
+      // until we can properly control the project switcher
+      // with the user's latest preference.
+      window.location.reload();
+
+      return false;
+    }
     const projectId = decodeAccessToken(cookieAccessToken);
 
     if (!projectId) throw Error(`Expected a Project identifier but got ${projectId || typeof projectId}`);
