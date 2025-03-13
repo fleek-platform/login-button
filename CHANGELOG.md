@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.6.0
+
+### Minor Changes
+
+- 60df314: Prevent in-memory Project ID cookie mismatch dismiss user session
+
 ## 2.5.0
 
 ### Minor Changes
