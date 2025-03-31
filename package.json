@@ -22,7 +22,7 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean:dist && pnpm exec bun build.ts && pnpm run transpile",
+    "build": "pnpm clean:dist && vite build && pnpm run transpile",
     "changeset:add": "pnpm exec changeset",
     "changeset:status": "pnpm exec changeset status",
     "changeset:version": "pnpm exec changeset version",
@@ -57,11 +57,16 @@
     "@types/node": "^20",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.9",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.21",
     "bun": "^1.1.45",
-    "esbuild": "^0.24.2",
+    "dotenv": "^16.4.7",
     "husky": "^9.1.7",
     "pino-pretty": "^13.0.0",
-    "typescript": "5.6.2"
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.0.17",
+    "typescript": "5.6.2",
+    "vite": "^6.2.3"
   },
   "engines": {
     "node": ">=18",
