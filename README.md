@@ -73,7 +73,7 @@ Open your favourite text editor to edit the file.
 Here's an example for staging environent variable values:
 
 ```sh
-PUBLIC_GRAPHQL_ENDPOINT="https://graphql.service.staging.fleeksandbox.xyz/graphql"
+PUBLIC_GRAPHQL_API_URL="https://graphql.service.staging.fleeksandbox.xyz/graphql"
 PUBLIC_DYNAMIC_ENVIRONMENT_ID="c4d4ccad-9460-419c-9ca3-494488f8c892"
 ```
 
