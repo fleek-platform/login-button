@@ -14,7 +14,7 @@ export const Content: React.FC<DropdownMenuContentProps> = ({ children, classNam
         sideOffset={props.sideOffset || 6}
         align={props.align || 'start'}
         className={cn(
-          'max-h-352 z-20 w-[var(--radix-dropdown-menu-trigger-width)] overflow-auto rounded-8 border border-elz-neutral-6 bg-elz-neutral-1 p-4 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-[.98]',
+          'max-h-352 z-20 w-[var(--radix-dropdown-menu-trigger-width)] overflow-auto rounded-8 border border-neutral-6 bg-neutral-1 p-4 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-[.98]',
           className,
         )}
         {...props}
@@ -29,7 +29,7 @@ export const Item: React.FC<DropdownMenuItemProps> = ({ children, className, ...
   return (
     <BaseItem
       className={cn(
-        'cursor-pointer select-none rounded-6 px-5 py-3 font-elz-plex-sans text-[1.4rem] text-elz-neutral-11 outline-none hover:bg-elz-neutral-3 focus:bg-elz-neutral-3',
+        'cursor-pointer select-none rounded-6 px-5 py-3 font-plex-sans text-[1.4rem] text-neutral-11 outline-none hover:bg-neutral-3 focus:bg-neutral-3',
         className,
       )}
       {...props}

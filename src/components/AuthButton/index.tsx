@@ -2,7 +2,7 @@ import type { ElementType, ComponentPropsWithoutRef, ReactNode } from 'react';
 import type { LoginProviderChildrenProps } from '../../providers/LoginProvider';
 import { AuthDropdown } from './AuthDropdown';
 
-export interface AuthButtonProps<T extends ElementType = 'button'> extends LoginProviderChildrenProps {
+export interface AuthButtonProps<T> extends LoginProviderChildrenProps {
   text?: {
     default?: string;
     loading?: string;
