@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.7.2
+
+### Patch Changes
+
+- 14e25a2: Do a Me checkup on load
+
 ## 2.7.1
 
 ### Patch Changes
