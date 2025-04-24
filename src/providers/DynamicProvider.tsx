@@ -93,14 +93,25 @@ const DynamicUtils = ({
     // TODO: Is visibilitychange supported on all major browsers? Test against `focus`
     document.addEventListener('visibilitychange', debouncedValidation);
 
-    // document.addEventListener("focus", debouncedValidation);
-
     return () => {
       document.removeEventListener('visibilitychange', debouncedValidation);
-
-      // document.removeEventListener("focus", debouncedValidation);
     };
   }, [validateUserSessionMemoized]);
+
+  useEffect(() => {
+    if (!accessToken) return;
+
+    const check = async () => {
+      const hasMeResult = await me(graphqlApiUrl, accessToken);
+      const hasMe = !!hasMeResult.success;
+
+      if (!hasMe) {
+        onLogout();
+      }
+    };
+
+    check();
+  }, [accessToken]);
 
   return null;
 };
