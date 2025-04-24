@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.7.0
+
+### Minor Changes
+
+- 94b67c1: Validate token via me endpoint during user session validation
+
 ## 2.6.0
 
 ### Minor Changes
