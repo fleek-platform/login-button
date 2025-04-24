@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.7.1
+
+### Patch Changes
+
+- 25a8ec5: Invalid user access token validation
+
 ## 2.7.0
 
 ### Minor Changes
