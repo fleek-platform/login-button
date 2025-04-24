@@ -146,7 +146,14 @@ const validateUserSession = async ({
 
     if (hasAuthenticationInProgress) return false;
 
-    if (hasMatchingTokens) return true;
+    if (hasMatchingTokens) {
+      const hasMeResult = await me(graphqlApiUrl, cookieAccessToken);
+      const hasMe = !!hasMeResult.success;
+
+      if (!hasMe) throw Error('Invalid user access token result!');
+
+      return true;
+    }
 
     if (hasDynamicAuthWithoutAccessTokens) throw Error('Authentication found incomplete token pair in cookie data');
 
