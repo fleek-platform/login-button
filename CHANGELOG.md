@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.7.3
+
+### Patch Changes
+
+- dd58f3e: Dismiss network errors on Me checkups
+
 ## 2.7.2
 
 ### Patch Changes

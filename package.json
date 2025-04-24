@@ -1,6 +1,6 @@
 {
   "name": "@fleek-platform/login-button",
-  "version": "2.7.2",
+  "version": "2.7.3",
   "description": "A standalone login component with an embedded Dynamic modal that functions independently of host application.",
   "repository": "https://github.com/fleek-platform/login-button",
   "homepage": "https://github.com/fleek-platform/login-button",
