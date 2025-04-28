@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.8.0
+
+### Minor Changes
+
+- 383b946: If token expired, invalidate user session
+
 ## 2.7.3
 
 ### Patch Changes
