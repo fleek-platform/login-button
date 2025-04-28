@@ -110,3 +110,10 @@
 .dynamic-shadow-dom .qr-code-wrapper__scan-issue-button {
   font-size: .75em;
 }
+
+@media (max-width: 640px) {
+  .modal {
+    bottom: auto;
+    top: 0;
+  }
+}
