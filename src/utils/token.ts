@@ -28,7 +28,6 @@ export const truncateMiddle = (str: string, numOfChars = 3, ellipsis = '...'): s
 
 export const isTokenExpired = (exp: number): boolean => {
   const currentTimestamp = Math.floor(Date.now() / 1000);
-  
+
   return currentTimestamp >= exp;
 };
-

@@ -109,8 +109,7 @@ const DynamicUtils = ({
 
       const hasMeResult = await me(graphqlApiUrl, accessToken);
       const hasMe = !!hasMeResult.success;
-      const hasNetworkError =
-        (!hasMeResult.success && (hasMeResult as HasDataCommonError)?.error?.type === 'NETWORK_ERROR');
+      const hasNetworkError = !hasMeResult.success && (hasMeResult as HasDataCommonError)?.error?.type === 'NETWORK_ERROR';
 
       if (hasNetworkError) return false;
 
