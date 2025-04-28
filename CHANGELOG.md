@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.10.0
+
+### Minor Changes
+
+- 73bcc00: On mobile, position login modal at the top
+
 ## 2.9.0
 
 ### Minor Changes
