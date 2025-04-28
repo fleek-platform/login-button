@@ -14,7 +14,7 @@ import { type TriggerLoginModal, type TriggerLogout, useAuthStore, type Reinitia
 import { cookies } from '../utils/cookies';
 import type { LoginProviderChildrenProps } from './LoginProvider';
 import { clearUserSessionKeys } from '../utils/browser';
-import { decodeAccessToken, truncateMiddle } from '../utils/token';
+import { decodeAccessToken, truncateMiddle, isTokenExpired } from '../utils/token';
 import cssOverrides from '../css/index.css';
 import { hasLocalStorageItems } from '../utils/store';
 import { debounce } from 'lodash-es';
@@ -102,6 +102,11 @@ const DynamicUtils = ({
     if (!accessToken) return;
 
     const check = async () => {
+      const { exp } = decodeAccessToken(accessToken);
+      const hasExpiredToken = isTokenExpired(exp);
+
+      // TODO: On expiration, make new token and update cookie
+
       const hasMeResult = await me(graphqlApiUrl, accessToken);
       const hasMe = !!hasMeResult.success;
       const hasNetworkError =
@@ -109,8 +114,10 @@ const DynamicUtils = ({
 
       if (hasNetworkError) return false;
 
-      if (!hasMe) {
+      if (hasExpiredToken || !hasMe) {
         onLogout();
+
+        return;
       }
     };
 
@@ -191,7 +198,7 @@ const validateUserSession = async ({
       return false;
     }
 
-    const projectId = decodeAccessToken(cookieAccessToken);
+    const { projectId } = decodeAccessToken(cookieAccessToken);
 
     if (!projectId) throw Error(`Expected a Project identifier but got ${projectId || typeof projectId}`);
 

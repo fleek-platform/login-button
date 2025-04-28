@@ -74,7 +74,7 @@ export const initialState: AuthState = {
 export const useAuthStore = create<AuthStore>()((set, get) => ({
   ...initialState,
   setAccessToken: (accessToken: string) => {
-    const projectId = decodeAccessToken(accessToken);
+    const { projectId } = decodeAccessToken(accessToken);
 
     set({
       accessToken,
@@ -121,7 +121,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
 
       const accessToken = res.data;
 
-      const decodedProjectId = decodeAccessToken(accessToken);
+      const { projectId: decodedProjectId } = decodeAccessToken(accessToken);
 
       if (!decodedProjectId) throw Error(`Expected a Project identifier but got ${projectId || typeof projectId}`);
 
