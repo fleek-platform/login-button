@@ -18,6 +18,7 @@ import { decodeAccessToken, truncateMiddle, isTokenExpired } from '../utils/toke
 import cssOverrides from '../css/index.css';
 import { hasLocalStorageItems } from '../utils/store';
 import { debounce } from 'lodash-es';
+import { useDebouncedCallback } from 'use-debounce';
 
 type HasDataCommonError = {
   error: {
@@ -44,11 +45,15 @@ const DynamicUtils = ({
   onLogout,
   setReinitializeSdk,
 }: DynamicUtilsProps) => {
+  const {
+    updateAccessTokenByProjectId,
+  } = useAuthStore();
+
   const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
   const reinitializeSdk = useReinitialize();
   const localStorageAuthToken = getAuthToken();
 
-  const validateUserSessionMemoized = useCallback(() => {
+  const validateUserSessionDebonced = useDebouncedCallback(() => {
     // Validates the user session sometime in the future.
     // If found faulty, it should clear the user session
     // e.g. user session clear/logout by dashboard.
@@ -67,7 +72,7 @@ const DynamicUtils = ({
       reinitializeSdk,
       onAuthenticationFailure: () => onLogout(),
     });
-  }, [accessToken, authenticating, localStorageAuthToken, graphqlApiUrl, reinitializeSdk, onLogout]);
+  }, 400);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies(setShowAuthFlow): causes infinite render, probably not memoized
   useEffect(() => {
@@ -88,24 +93,34 @@ const DynamicUtils = ({
   }, [setReinitializeSdk, reinitializeSdk]);
 
   useEffect(() => {
-    const debouncedValidation = debounce(validateUserSessionMemoized, 400);
-
     // TODO: Is visibilitychange supported on all major browsers? Test against `focus`
-    document.addEventListener('visibilitychange', debouncedValidation);
+    document.addEventListener('visibilitychange', validateUserSessionDebonced);
 
     return () => {
-      document.removeEventListener('visibilitychange', debouncedValidation);
+      document.removeEventListener('visibilitychange', validateUserSessionDebonced);
     };
-  }, [validateUserSessionMemoized]);
+  }, [validateUserSessionDebonced]);
 
   useEffect(() => {
     if (!accessToken) return;
 
     const check = async () => {
-      const { exp } = decodeAccessToken(accessToken);
-      const hasExpiredToken = isTokenExpired(exp);
+      const { exp, projectId } = decodeAccessToken(accessToken); 
+      // TODO: The expiration Offset is used for debugging
+      // can be removed in the future
+      const expirationOffset = cookies.get('expirationOffset')
+      const computedExpiration =
+        expirationOffset
+        ? exp - Number(expirationOffset)
+        : exp;
+        
+      const hasExpiredToken = isTokenExpired(computedExpiration);
 
-      // TODO: On expiration, make new token and update cookie
+      if (hasExpiredToken) {
+        updateAccessTokenByProjectId(projectId);
+
+        return;
+      }
 
       const hasMeResult = await me(graphqlApiUrl, accessToken);
       const hasMe = !!hasMeResult.success;
