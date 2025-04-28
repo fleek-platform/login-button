@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.9.0
+
+### Minor Changes
+
+- 3b1ad6d: On access token expiration, create a new token and update cookie
+
 ## 2.8.0
 
 ### Minor Changes
