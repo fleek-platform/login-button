@@ -45,9 +45,7 @@ const DynamicUtils = ({
   onLogout,
   setReinitializeSdk,
 }: DynamicUtilsProps) => {
-  const {
-    updateAccessTokenByProjectId,
-  } = useAuthStore();
+  const { updateAccessTokenByProjectId } = useAuthStore();
 
   const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
   const reinitializeSdk = useReinitialize();
@@ -105,15 +103,12 @@ const DynamicUtils = ({
     if (!accessToken) return;
 
     const check = async () => {
-      const { exp, projectId } = decodeAccessToken(accessToken); 
+      const { exp, projectId } = decodeAccessToken(accessToken);
       // TODO: The expiration Offset is used for debugging
       // can be removed in the future
-      const expirationOffset = cookies.get('expirationOffset')
-      const computedExpiration =
-        expirationOffset
-        ? exp - Number(expirationOffset)
-        : exp;
-        
+      const expirationOffset = cookies.get('expirationOffset');
+      const computedExpiration = expirationOffset ? exp - Number(expirationOffset) : exp;
+
       const hasExpiredToken = isTokenExpired(computedExpiration);
 
       if (hasExpiredToken) {
