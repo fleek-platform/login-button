@@ -8,12 +8,13 @@ import {
   type UserProfile as DynamicUserProfile,
   useReinitialize,
   getAuthToken,
+  DynamicWidget,
 } from '@dynamic-labs/sdk-react-core';
 import { generateUserSessionDetails, me, project } from '../api/graphql-client';
 import { type TriggerLoginModal, type TriggerLogout, useAuthStore, type ReinitializeSdk, type UserProfile } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 import type { LoginProviderChildrenProps } from './LoginProvider';
-import { clearUserSessionKeys } from '../utils/browser';
+import { clearUserSessionKeys, isTouchDevice } from '../utils/browser';
 import { decodeAccessToken, truncateMiddle, isTokenExpired } from '../utils/token';
 import cssOverrides from '../css/index.css';
 import { hasLocalStorageItems } from '../utils/store';
@@ -45,7 +46,9 @@ const DynamicUtils = ({
   onLogout,
   setReinitializeSdk,
 }: DynamicUtilsProps) => {
-  const { updateAccessTokenByProjectId } = useAuthStore();
+  const {
+    updateAccessTokenByProjectId,
+  } = useAuthStore();
 
   const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
   const reinitializeSdk = useReinitialize();
@@ -103,12 +106,15 @@ const DynamicUtils = ({
     if (!accessToken) return;
 
     const check = async () => {
-      const { exp, projectId } = decodeAccessToken(accessToken);
+      const { exp, projectId } = decodeAccessToken(accessToken); 
       // TODO: The expiration Offset is used for debugging
       // can be removed in the future
-      const expirationOffset = cookies.get('expirationOffset');
-      const computedExpiration = expirationOffset ? exp - Number(expirationOffset) : exp;
-
+      const expirationOffset = cookies.get('expirationOffset')
+      const computedExpiration =
+        expirationOffset
+        ? exp - Number(expirationOffset)
+        : exp;
+        
       const hasExpiredToken = isTokenExpired(computedExpiration);
 
       if (hasExpiredToken) {
@@ -293,6 +299,24 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
 
   const onAuthInit = () => setAuthenticating(true);
 
+  // The following to mitigate an issue reported in ticket 
+  // https://linear.app/fleekxyz/issue/PLAT-2777
+  // e.g. on wallet signup can't type email.
+  // The following is a temporary solution
+  // that relies on <DynamicWidget /> due to triggering
+  // via provided hook causes the issue on mobile.
+  const customLogin = () => {
+    const el = document.querySelector('#dynamic-widget button.connect-button') as HTMLElement;
+
+    if (el && isTouchDevice()) {
+      el.click();
+
+      return;
+    }
+
+    typeof triggerLoginModal === 'function' && triggerLoginModal(true);
+  }
+
   // TODO: Remove useCallback to inspect re-triggers
   const onAuthSuccess = useCallback(
     async ({ user }: { user: DynamicUserProfile }) => {
@@ -384,11 +408,15 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         onLogout={onLogout}
         setReinitializeSdk={setReinitializeSdk}
       />
+      {/* Warning: The following is a quick solution for https://linear.app/fleekxyz/issue/PLAT-2777; It's not a long term solution; See customLogin() patched implementation */}
+      <div className="hidden">
+        <DynamicWidget variant='modal' />
+      </div>
       {children({
         accessToken,
         isLoading,
         error,
-        login: () => typeof triggerLoginModal === 'function' && triggerLoginModal(true),
+        login: () => customLogin(),
         logout: () => typeof triggerLogout === 'function' && triggerLogout(),
       })}
     </DynamicContextProvider>

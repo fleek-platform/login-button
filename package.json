@@ -39,8 +39,8 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@dynamic-labs/ethereum": "3.9.2",
-    "@dynamic-labs/sdk-react-core": "3.9.2",
+    "@dynamic-labs/ethereum": "4.14.0",
+    "@dynamic-labs/sdk-react-core": "4.14.0",
     "@fleek-platform/utils-token": "^0.2.2",
     "@types/lodash-es": "^4.17.12",
     "dotenv": "^16.4.7",

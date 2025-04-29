@@ -27,10 +27,6 @@
   --dynamic-header-padding: 1.5em 1.5em 1.25em;
 }
 
-.dynamic-shadow-dom .button--padding-login-screen-height {
-  height: 2.5em;
-}
-
 .dynamic-shadow-dom .social-sign-in--tile {
   height: 2.5em;
 }
@@ -109,6 +105,11 @@
 
 .dynamic-shadow-dom .qr-code-wrapper__scan-issue-button {
   font-size: .75em;
+}
+
+.modal form .typography-button__content {
+  height: 2.5em;
+  justify-content: center;  
 }
 
 @media (max-width: 640px) {
