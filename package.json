@@ -35,7 +35,7 @@
     "generate:local_package": "pnpm build && .scripts/generate_npm_package",
     "lint": "pnpm exec biome lint --write --no-errors-on-unmatched ./src",
     "lint:check": "pnpm exec biome lint ./src",
-    "tailwind:build": "pnpm exec tailwindcss -i ./src/styles/globals.css -c tailwind.config.mjs -o dist/styles/main.css",
+    "tailwind:build": "pnpm exec tailwindcss -i ./src/styles/globals.css -c tailwind.config.mjs -o dist/styles/main.min.css --minify",
     "transpile": "pnpm exec tsc -p tsconfig.json",
     "prepare": "husky"
   },
