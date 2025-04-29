@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.10.1
+
+### Patch Changes
+
+- ce5df46: On wallet connect users cannot type email address
+
 ## 2.10.0
 
 ### Minor Changes
