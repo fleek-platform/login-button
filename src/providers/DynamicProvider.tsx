@@ -8,15 +8,16 @@ import {
   type UserProfile as DynamicUserProfile,
   useReinitialize,
   getAuthToken,
+  DynamicWidget,
 } from '@dynamic-labs/sdk-react-core';
 import { generateUserSessionDetails, me, project } from '../api/graphql-client';
 import { type TriggerLoginModal, type TriggerLogout, useAuthStore, type ReinitializeSdk, type UserProfile } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 import type { LoginProviderChildrenProps } from './LoginProvider';
-import { clearUserSessionKeys } from '../utils/browser';
-import { decodeAccessToken, truncateMiddle } from '../utils/token';
+import { decodeAccessToken, truncateMiddle, isTokenExpired } from '../utils/token';
+import { clearUserSessionKeys, isTouchDevice } from '../utils/browser';
 import { hasLocalStorageItems } from '../utils/store';
-import { debounce } from 'lodash-es';
+import { useDebouncedCallback } from 'use-debounce';
 
 type HasDataCommonError = {
   error: {
@@ -43,11 +44,13 @@ const DynamicUtils = ({
   onLogout,
   setReinitializeSdk,
 }: DynamicUtilsProps) => {
+  const { updateAccessTokenByProjectId } = useAuthStore();
+
   const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
   const reinitializeSdk = useReinitialize();
   const localStorageAuthToken = getAuthToken();
 
-  const validateUserSessionMemoized = useCallback(() => {
+  const validateUserSessionDebonced = useDebouncedCallback(() => {
     // Validates the user session sometime in the future.
     // If found faulty, it should clear the user session
     // e.g. user session clear/logout by dashboard.
@@ -66,7 +69,7 @@ const DynamicUtils = ({
       reinitializeSdk,
       onAuthenticationFailure: () => onLogout(),
     });
-  }, [accessToken, authenticating, localStorageAuthToken, graphqlApiUrl, reinitializeSdk, onLogout]);
+  }, 400);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies(setShowAuthFlow): causes infinite render, probably not memoized
   useEffect(() => {
@@ -87,19 +90,47 @@ const DynamicUtils = ({
   }, [setReinitializeSdk, reinitializeSdk]);
 
   useEffect(() => {
-    const debouncedValidation = debounce(validateUserSessionMemoized, 400);
-
     // TODO: Is visibilitychange supported on all major browsers? Test against `focus`
-    document.addEventListener('visibilitychange', debouncedValidation);
-
-    // document.addEventListener("focus", debouncedValidation);
+    document.addEventListener('visibilitychange', validateUserSessionDebonced);
 
     return () => {
-      document.removeEventListener('visibilitychange', debouncedValidation);
-
-      // document.removeEventListener("focus", debouncedValidation);
+      document.removeEventListener('visibilitychange', validateUserSessionDebonced);
     };
-  }, [validateUserSessionMemoized]);
+  }, [validateUserSessionDebonced]);
+
+  useEffect(() => {
+    if (!accessToken) return;
+
+    const check = async () => {
+      const { exp, projectId } = decodeAccessToken(accessToken);
+      // TODO: The expiration Offset is used for debugging
+      // can be removed in the future
+      const expirationOffset = cookies.get('expirationOffset');
+      const computedExpiration = expirationOffset ? exp - Number(expirationOffset) : exp;
+
+      const hasExpiredToken = isTokenExpired(computedExpiration);
+
+      if (hasExpiredToken) {
+        updateAccessTokenByProjectId(projectId);
+
+        return;
+      }
+
+      const hasMeResult = await me(graphqlApiUrl, accessToken);
+      const hasMe = !!hasMeResult.success;
+      const hasNetworkError = !hasMeResult.success && (hasMeResult as HasDataCommonError)?.error?.type === 'NETWORK_ERROR';
+
+      if (hasNetworkError) return false;
+
+      if (hasExpiredToken || !hasMe) {
+        onLogout();
+
+        return;
+      }
+    };
+
+    check();
+  }, [accessToken]);
 
   return null;
 };
@@ -145,7 +176,14 @@ const validateUserSession = async ({
 
     if (hasAuthenticationInProgress) return false;
 
-    if (hasMatchingTokens) return true;
+    if (hasMatchingTokens) {
+      const hasMeResult = await me(graphqlApiUrl, cookieAccessToken);
+      const hasMe = !!hasMeResult.success;
+
+      if (!hasMe) throw Error('Invalid user access token result!');
+
+      return true;
+    }
 
     if (hasDynamicAuthWithoutAccessTokens) throw Error('Authentication found incomplete token pair in cookie data');
 
@@ -168,7 +206,7 @@ const validateUserSession = async ({
       return false;
     }
 
-    const projectId = decodeAccessToken(cookieAccessToken);
+    const { projectId } = decodeAccessToken(cookieAccessToken);
 
     if (!projectId) throw Error(`Expected a Project identifier but got ${projectId || typeof projectId}`);
 
@@ -253,6 +291,24 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
   };
 
   const onAuthInit = () => setAuthenticating(true);
+
+  // The following to mitigate an issue reported in ticket
+  // https://linear.app/fleekxyz/issue/PLAT-2777
+  // e.g. on wallet signup can't type email.
+  // The following is a temporary solution
+  // that relies on <DynamicWidget /> due to triggering
+  // via provided hook causes the issue on mobile.
+  const customLogin = () => {
+    const el = document.querySelector('#dynamic-widget button.connect-button') as HTMLElement;
+
+    if (el && isTouchDevice()) {
+      el.click();
+
+      return;
+    }
+
+    typeof triggerLoginModal === 'function' && triggerLoginModal(true);
+  };
 
   // TODO: Remove useCallback to inspect re-triggers
   const onAuthSuccess = useCallback(
@@ -345,11 +401,15 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         onLogout={onLogout}
         setReinitializeSdk={setReinitializeSdk}
       />
+      {/* Warning: The following is a quick solution for https://linear.app/fleekxyz/issue/PLAT-2777; It's not a long term solution; See customLogin() patched implementation */}
+      <div className="hidden">
+        <DynamicWidget variant="modal" />
+      </div>
       {children({
         accessToken,
         isLoading,
         error,
-        login: () => typeof triggerLoginModal === 'function' && triggerLoginModal(true),
+        login: () => customLogin(),
         logout: () => typeof triggerLogout === 'function' && triggerLogout(),
       })}
     </DynamicContextProvider>
@@ -384,10 +444,6 @@ const cssOverrides = `
   --dynamic-layout-content-error-padding: 1.5em 1.5em 1.5em;
   --dynamic-footer-padding: 0.75em 1.5em 0.75em;
   --dynamic-header-padding: 1.5em 1.5em 1.25em;
-}
-
-.dynamic-shadow-dom .button--padding-login-screen-height {
-  height: 2.5em;
 }
 
 .dynamic-shadow-dom .social-sign-in--tile {
@@ -469,4 +525,15 @@ const cssOverrides = `
 .dynamic-shadow-dom .qr-code-wrapper__scan-issue-button {
   font-size: .75em;
 }
-`;
+
+.modal form .typography-button__content {
+  height: 2.5em;
+  justify-content: center;  
+}
+
+@media (max-width: 640px) {
+  .modal {
+    bottom: auto;
+    top: 0;
+  }
+}`;

@@ -5,7 +5,7 @@ export const decodeAccessToken = (accessToken: string) => {
   // instead of providing here?
   // For the moment we provide this for free
   // everytime the token is computed to help
-  const { projectId } = decodeToken({
+  const { projectId, exp } = decodeToken({
     token: accessToken,
   });
 
@@ -13,7 +13,10 @@ export const decodeAccessToken = (accessToken: string) => {
     throw Error(`Expected accessToken to include a project ID, but found ${typeof projectId}`);
   }
 
-  return projectId;
+  return {
+    projectId,
+    exp,
+  };
 };
 
 export const truncateMiddle = (str: string, numOfChars = 3, ellipsis = '...'): string => {
@@ -21,4 +24,10 @@ export const truncateMiddle = (str: string, numOfChars = 3, ellipsis = '...'): s
   const end = str.slice(-numOfChars);
 
   return `${start}${ellipsis}${end}`;
+};
+
+export const isTokenExpired = (exp: number): boolean => {
+  const currentTimestamp = Math.floor(Date.now() / 1000);
+
+  return currentTimestamp >= exp;
 };

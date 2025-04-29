@@ -1,5 +1,53 @@
 # @fleek-platform/login-button
 
+## 2.10.1
+
+### Patch Changes
+
+- ce5df46: On wallet connect users cannot type email address
+
+## 2.10.0
+
+### Minor Changes
+
+- 73bcc00: On mobile, position login modal at the top
+
+## 2.9.0
+
+### Minor Changes
+
+- 3b1ad6d: On access token expiration, create a new token and update cookie
+
+## 2.8.0
+
+### Minor Changes
+
+- 383b946: If token expired, invalidate user session
+
+## 2.7.3
+
+### Patch Changes
+
+- dd58f3e: Dismiss network errors on Me checkups
+
+## 2.7.2
+
+### Patch Changes
+
+- 14e25a2: Do a Me checkup on load
+
+## 2.7.1
+
+### Patch Changes
+
+- 25a8ec5: Invalid user access token validation
+
+## 2.7.0
+
+### Minor Changes
+
+- 94b67c1: Validate token via me endpoint during user session validation
+
 ## 2.6.0
 
 ### Minor Changes

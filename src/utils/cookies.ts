@@ -22,7 +22,9 @@ const defaultOptions: CookieOptions = {
   path: '/',
 };
 
-export type AppCookies = 'authToken' | 'accessToken' | 'projectId';
+// TODO: The expiration Offset is used for debugging
+// can be removed in the future
+export type AppCookies = 'authToken' | 'accessToken' | 'projectId' | 'expirationOffset';
 
 const requiredAuthKeys: AppCookies[] = ['accessToken', 'authToken', 'projectId'];
 
