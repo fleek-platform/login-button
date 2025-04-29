@@ -7,6 +7,7 @@ import { gridTemplateColumns } from "./.tailwind/gridLayout";
 
 export default {
   mode: "jit",
+  important: ".login-button",
   presets: [tailwindCustomConfig],
   content: ["./src/**/*.{ts,tsx}"],
   theme: {

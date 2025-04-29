@@ -7,6 +7,7 @@ import { Button } from './Button';
 import { RiRobot2Line } from 'react-icons/ri';
 import { cn } from '../utils/cn';
 import { type ReactElement, cloneElement } from 'react';
+import { getDefined } from '../defined';
 
 export type Product = {
   name: string;
@@ -22,7 +23,7 @@ const products: Product[] = [
     icon: <RiRobot2Line />,
   },
   {
-    name: 'Apps',
+    name: 'Dashboard',
     description: 'Hosting and storage solutions',
     icon: <IoBrowsers />,
   },
@@ -32,7 +33,21 @@ export type ProductDropdownProps = {
   onClick: (product: Product) => void;
 };
 
-export const ProductDropdown = ({ onClick }: ProductDropdownProps) => {
+export const ProductDropdown = () => {
+  const onClick = (product: Product) => {
+    let url = '#';
+    
+    if (product.name === 'Agents') {
+      url = getDefined('PUBLIC_APP_AGENTS_URL');
+    } else if (product.name === 'Dashboard') {
+      url = getDefined('PUBLIC_APP_HOSTING_URL');
+    } else {
+      console.error('Unknown product!');
+    }
+
+    window.location.href = url;
+  };
+
   return (
     <Dropdown.Root>
       <DropdownMenuTrigger asChild>
