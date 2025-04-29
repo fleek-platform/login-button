@@ -109,7 +109,7 @@
 
 .modal form .typography-button__content {
   height: 2.5em;
-  justify-content: center;
+  justify-content: center;  
 }
 
 @media (max-width: 640px) {

@@ -4,8 +4,11 @@ import {
   Content as BaseContent,
   type DropdownMenuContentProps,
   type DropdownMenuItemProps,
+  Root as DropDownRoot,
 } from '@radix-ui/react-dropdown-menu';
 import { cn } from '../utils/cn';
+
+const Root = DropDownRoot;
 
 export const Content: React.FC<DropdownMenuContentProps> = ({ children, className, ...props }) => {
   return (
@@ -37,4 +40,10 @@ export const Item: React.FC<DropdownMenuItemProps> = ({ children, className, ...
       {children}
     </BaseItem>
   );
+};
+
+export const Dropdown = {
+  Root,
+  Content,
+  Item,
 };
