@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.10.2
+
+### Patch Changes
+
+- 764a572: Adds reusable component AuthButton off-loading most of the logic, also includes an option for dropdown version
+
 ## 2.10.1
 
 ### Patch Changes
