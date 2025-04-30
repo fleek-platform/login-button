@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.11.0
+
+### Minor Changes
+
+- b1d4cb6: Remove selected state on click
+
 ## 2.10.2
 
 ### Patch Changes
