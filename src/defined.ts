@@ -1,11 +1,15 @@
 export type Defined = {
   PUBLIC_GRAPHQL_API_URL?: string;
   PUBLIC_DYNAMIC_ENVIRONMENT_ID?: string;
+  PUBLIC_APP_HOSTING_URL?: string;
+  PUBLIC_APP_AGENTS_URL?: string;
 };
 
 export const defined: Defined = {
   PUBLIC_GRAPHQL_API_URL: process.env.PUBLIC_GRAPHQL_API_URL,
   PUBLIC_DYNAMIC_ENVIRONMENT_ID: process.env.PUBLIC_DYNAMIC_ENVIRONMENT_ID,
+  PUBLIC_APP_HOSTING_URL: process.env.PUBLIC_APP_HOSTING_URL,
+  PUBLIC_APP_AGENTS_URL: process.env.PUBLIC_APP_AGENTS_URL,
 };
 
 export const getDefined = (key: keyof typeof defined): string => {
@@ -20,4 +24,10 @@ export const getDefined = (key: keyof typeof defined): string => {
   }
 
   return value;
+};
+
+// Use to override `defined`
+export const setDefined = (settings: Partial<Defined>) => {
+  const override = { ...defined, ...settings };
+  Object.assign(defined, override);
 };

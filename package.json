@@ -19,10 +19,13 @@
     ".": {
       "import": "./dist/bundle.js",
       "types": "./dist/index.d.ts"
+    },
+    "./styles": {
+      "import": "./dist/styles/main.min.css"
     }
   },
   "scripts": {
-    "build": "pnpm clean:dist && pnpm exec bun build.ts && pnpm run transpile",
+    "build": "pnpm clean:dist && pnpm exec bun build.ts && pnpm run transpile && pnpm tailwind:build",
     "changeset:add": "pnpm exec changeset",
     "changeset:status": "pnpm exec changeset status",
     "changeset:version": "pnpm exec changeset version",
@@ -35,6 +38,7 @@
     "generate:local_package": "pnpm build && .scripts/generate_npm_package",
     "lint": "pnpm exec biome lint --write --no-errors-on-unmatched ./src",
     "lint:check": "pnpm exec biome lint ./src",
+    "tailwind:build": "pnpm exec tailwindcss -i ./src/styles/globals.css -c tailwind.config.mjs -o dist/styles/main.min.css --minify",
     "transpile": "pnpm exec tsc -p tsconfig.json",
     "prepare": "husky"
   },
@@ -42,11 +46,19 @@
     "@dynamic-labs/ethereum": "4.14.0",
     "@dynamic-labs/sdk-react-core": "4.14.0",
     "@fleek-platform/utils-token": "^0.2.2",
+    "@radix-ui/react-dropdown-menu": "^2.1.6",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
     "@types/lodash-es": "^4.17.12",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
     "lodash-es": "^4.17.21",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-icons": "^5.5.0",
+    "tailwind-merge": "^3.0.2",
+    "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "^1.0.7",
     "use-debounce": "^10.0.4",
     "viem": "^2.21.55",
     "zustand": "^5.0.3"

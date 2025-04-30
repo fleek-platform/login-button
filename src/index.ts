@@ -10,3 +10,8 @@ export { cookies } from './utils/cookies';
 
 export type { AuthStore } from './store/authStore';
 export type { ConfigStore } from './store/configStore';
+export { AuthButton } from './components/AuthButton';
+
+export { ProductDropdown, type Product } from './ui/ProductDropdown';
+
+export { setDefined } from './defined';

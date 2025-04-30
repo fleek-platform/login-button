@@ -14,12 +14,11 @@ import { generateUserSessionDetails, me, project } from '../api/graphql-client';
 import { type TriggerLoginModal, type TriggerLogout, useAuthStore, type ReinitializeSdk, type UserProfile } from '../store/authStore';
 import { cookies } from '../utils/cookies';
 import type { LoginProviderChildrenProps } from './LoginProvider';
-import { clearUserSessionKeys, isTouchDevice } from '../utils/browser';
 import { decodeAccessToken, truncateMiddle, isTokenExpired } from '../utils/token';
-import cssOverrides from '../css/index.css';
+import { clearUserSessionKeys, isTouchDevice } from '../utils/browser';
 import { hasLocalStorageItems } from '../utils/store';
-import { debounce } from 'lodash-es';
 import { useDebouncedCallback } from 'use-debounce';
+import cssOverrides from '../styles/dynamicOverrides.css';
 
 type HasDataCommonError = {
   error: {
@@ -46,9 +45,7 @@ const DynamicUtils = ({
   onLogout,
   setReinitializeSdk,
 }: DynamicUtilsProps) => {
-  const {
-    updateAccessTokenByProjectId,
-  } = useAuthStore();
+  const { updateAccessTokenByProjectId } = useAuthStore();
 
   const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
   const reinitializeSdk = useReinitialize();
@@ -106,15 +103,12 @@ const DynamicUtils = ({
     if (!accessToken) return;
 
     const check = async () => {
-      const { exp, projectId } = decodeAccessToken(accessToken); 
+      const { exp, projectId } = decodeAccessToken(accessToken);
       // TODO: The expiration Offset is used for debugging
       // can be removed in the future
-      const expirationOffset = cookies.get('expirationOffset')
-      const computedExpiration =
-        expirationOffset
-        ? exp - Number(expirationOffset)
-        : exp;
-        
+      const expirationOffset = cookies.get('expirationOffset');
+      const computedExpiration = expirationOffset ? exp - Number(expirationOffset) : exp;
+
       const hasExpiredToken = isTokenExpired(computedExpiration);
 
       if (hasExpiredToken) {
@@ -137,7 +131,7 @@ const DynamicUtils = ({
     };
 
     check();
-  }, [accessToken]);
+  }, [accessToken, graphqlApiUrl, onLogout, updateAccessTokenByProjectId]);
 
   return null;
 };
@@ -299,7 +293,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
 
   const onAuthInit = () => setAuthenticating(true);
 
-  // The following to mitigate an issue reported in ticket 
+  // The following to mitigate an issue reported in ticket
   // https://linear.app/fleekxyz/issue/PLAT-2777
   // e.g. on wallet signup can't type email.
   // The following is a temporary solution
@@ -315,7 +309,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     }
 
     typeof triggerLoginModal === 'function' && triggerLoginModal(true);
-  }
+  };
 
   // TODO: Remove useCallback to inspect re-triggers
   const onAuthSuccess = useCallback(
@@ -410,7 +404,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
       />
       {/* Warning: The following is a quick solution for https://linear.app/fleekxyz/issue/PLAT-2777; It's not a long term solution; See customLogin() patched implementation */}
       <div className="hidden">
-        <DynamicWidget variant='modal' />
+        <DynamicWidget variant="modal" />
       </div>
       {children({
         accessToken,

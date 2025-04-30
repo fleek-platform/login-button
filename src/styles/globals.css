@@ -1,0 +1,20 @@
+@import "./typography.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Font antialising */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    font-size: 62.5%;
+    color-scheme: dark;
+  }
+
+  body {
+    font-feature-settings: "ss01" 1;
+  }
+}
