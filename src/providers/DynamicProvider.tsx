@@ -131,7 +131,7 @@ const DynamicUtils = ({
     };
 
     check();
-  }, [accessToken]);
+  }, [accessToken, graphqlApiUrl, onLogout, updateAccessTokenByProjectId]);
 
   return null;
 };
