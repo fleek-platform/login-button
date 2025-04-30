@@ -8,8 +8,7 @@ const textVariants = cva('font-elz-plex-sans', {
       title: 'text-balance text-[3.6rem] font-semibold text-elz-neutral-12',
       description: 'text-[1.6rem] font-medium text-elz-neutral-11',
       subtitle: 'text-[1.6rem] text-elz-neutral-12 font-semibold',
-      feature:
-        'text-[1.2rem] font-medium uppercase tracking-[0.256rem] text-elz-neutral-11',
+      feature: 'text-[1.2rem] font-medium uppercase tracking-[0.256rem] text-elz-neutral-11',
       primary: 'text-elz-neutral-12',
       secondary: 'text-elz-neutral-11',
     },
@@ -35,16 +34,7 @@ const textVariants = cva('font-elz-plex-sans', {
   },
 });
 
-export const validTextElement = [
-  'p',
-  'span',
-  'h1',
-  'h2',
-  'h3',
-  'h4',
-  'h5',
-  'h6',
-] as const;
+export const validTextElement = ['p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
 
 type ValidTextElement = (typeof validTextElement)[number];
 

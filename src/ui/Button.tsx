@@ -9,16 +9,11 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        neutral:
-          'text-elz-neutral-11 bg-elz-neutral-3 hover:bg-elz-neutral-4 active:bg-elz-neutral-5 focus-visible:ring-elz-neutral-8',
-        accent:
-          'text-elz-accent-11 bg-elz-accent-3 hover:bg-elz-accent-4 active:bg-elz-accent-5 focus-visible:ring-elz-accent-8',
-        success:
-          'text-elz-success-11 bg-elz-success-3 hover:bg-elz-success-4 active:bg-elz-success-5 focus-visible:ring-elz-success-8',
-        warning:
-          'text-elz-warning-11 bg-elz-warning-3 hover:bg-elz-warning-4 active:bg-elz-warning-5 focus-visible:ring-elz-warning-8',
-        danger:
-          'text-elz-danger-11 bg-elz-danger-3 hover:bg-elz-danger-4 active:bg-elz-danger-5 focus-visible:ring-elz-danger-8',
+        neutral: 'text-elz-neutral-11 bg-elz-neutral-3 hover:bg-elz-neutral-4 active:bg-elz-neutral-5 focus-visible:ring-elz-neutral-8',
+        accent: 'text-elz-accent-11 bg-elz-accent-3 hover:bg-elz-accent-4 active:bg-elz-accent-5 focus-visible:ring-elz-accent-8',
+        success: 'text-elz-success-11 bg-elz-success-3 hover:bg-elz-success-4 active:bg-elz-success-5 focus-visible:ring-elz-success-8',
+        warning: 'text-elz-warning-11 bg-elz-warning-3 hover:bg-elz-warning-4 active:bg-elz-warning-5 focus-visible:ring-elz-warning-8',
+        danger: 'text-elz-danger-11 bg-elz-danger-3 hover:bg-elz-danger-4 active:bg-elz-danger-5 focus-visible:ring-elz-danger-8',
         ghost:
           'text-elz-neutral-11 bg-transparent hover:bg-elz-neutral-4 active:bg-elz-neutral-5 disabled:bg-transparent focus-visible:ring-elz-neutral-8',
         'ghost-bordered':
@@ -52,25 +47,8 @@ export type ButtonProps = PropsWithChildren &
     onClick?: (e?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-export const Button = forwardRef<
-  HTMLButtonElement | HTMLAnchorElement,
-  ButtonProps
->(
-  (
-    {
-      id,
-      children,
-      href,
-      target,
-      rel,
-      onClick,
-      variant,
-      size,
-      className,
-      ...props
-    },
-    ref,
-  ) => {
+export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
+  ({ id, children, href, target, rel, onClick, variant, size, className, ...props }, ref) => {
     if (href)
       return (
         <Link

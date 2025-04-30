@@ -34,15 +34,15 @@ export type ProductDropdownProps = {
 };
 
 export const ProductDropdown = ({
-  defaultSelectedProductName
+  defaultSelectedProductName,
 }: {
-  defaultSelectedProductName?: string
+  defaultSelectedProductName?: string;
 }) => {
   const [selectedProduct, setSelecterdProduct] = useState(defaultSelectedProductName);
-  
+
   const onClick = (product: Product) => {
     let url = '#';
-    
+
     if (product.name === 'Agents') {
       url = getDefined('PUBLIC_APP_AGENTS_URL');
     } else if (product.name === 'Dashboard') {
@@ -63,10 +63,7 @@ export const ProductDropdown = ({
           <IoApps />
         </Button>
       </DropdownMenuTrigger>
-      <Dropdown.Content
-        className="w-fit space-y-8 p-12 bg-elz-neutral-0"
-        align="end"
-      >
+      <Dropdown.Content className="w-fit space-y-8 p-12 bg-elz-neutral-0" align="end">
         {products.map((product) => {
           return (
             <ProductDropdownItem
@@ -88,11 +85,7 @@ type ProductDropdownItemProps = {
   onClick: () => void;
 };
 
-const ProductDropdownItem = ({
-  product,
-  isActive = false,
-  onClick,
-}: ProductDropdownItemProps) => {
+const ProductDropdownItem = ({ product, isActive = false, onClick }: ProductDropdownItemProps) => {
   const Icon = () => {
     const { className, ...props } = product.icon.props;
     return cloneElement(product.icon, {
@@ -110,12 +103,7 @@ const ProductDropdownItem = ({
       disabled={isActive}
       onClick={onClick}
     >
-      <Box
-        className={cn(
-          'size-38 grid place-content-center bg-elz-neutral-2 rounded-5',
-          isActive && 'bg-elz-accent-3 text-elz-accent-11',
-        )}
-      >
+      <Box className={cn('size-38 grid place-content-center bg-elz-neutral-2 rounded-5', isActive && 'bg-elz-accent-3 text-elz-accent-11')}>
         <Icon />
       </Box>
       <Box>
