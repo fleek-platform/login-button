@@ -53,6 +53,8 @@ jobs:
         env:
           PUBLIC_GRAPHQL_API_URL: ${{ vars.PUBLIC_GRAPHQL_API_URL }}
           PUBLIC_DYNAMIC_ENVIRONMENT_ID: ${{ vars.PUBLIC_DYNAMIC_ENVIRONMENT_ID }}
+          PUBLIC_APP_HOSTING_URL: ${{ vars.PUBLIC_APP_HOSTING_URL }}
+          PUBLIC_APP_AGENTS_URL: ${{ vars.PUBLIC_APP_AGENTS_URL }}
         run: |
           pnpm build
 
