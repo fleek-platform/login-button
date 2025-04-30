@@ -6,7 +6,7 @@ import { IoApps, IoBrowsers } from 'react-icons/io5';
 import { Button } from './Button';
 import { RiRobot2Line } from 'react-icons/ri';
 import { cn } from '../utils/cn';
-import { type ReactElement, cloneElement } from 'react';
+import { type ReactElement, cloneElement, useState } from 'react';
 import { getDefined } from '../defined';
 
 export type Product = {
@@ -33,7 +33,13 @@ export type ProductDropdownProps = {
   onClick: (product: Product) => void;
 };
 
-export const ProductDropdown = () => {
+export const ProductDropdown = ({
+  defaultSelectedProductName
+}: {
+  defaultSelectedProductName?: string
+}) => {
+  const [selectedProduct, setSelecterdProduct] = useState(defaultSelectedProductName);
+  
   const onClick = (product: Product) => {
     let url = '#';
     
@@ -44,6 +50,8 @@ export const ProductDropdown = () => {
     } else {
       console.error('Unknown product!');
     }
+
+    setSelecterdProduct(product.name);
 
     window.location.href = url;
   };
@@ -64,7 +72,7 @@ export const ProductDropdown = () => {
             <ProductDropdownItem
               key={product.name}
               product={product}
-              isActive={product.name === 'Agents'}
+              isActive={product.name === selectedProduct}
               onClick={() => onClick(product)}
             />
           );
@@ -96,7 +104,7 @@ const ProductDropdownItem = ({
     <Dropdown.Item
       key={product.name}
       className={cn(
-        'flex flex-row items-center gap-10 justify-between py-6',
+        'flex flex-row items-center gap-10 justify-between py-6 hover:bg-elz-neutral-1',
         isActive && 'bg-elz-neutral-1 pointer-events-none',
       )}
       disabled={isActive}
