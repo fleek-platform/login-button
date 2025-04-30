@@ -18,6 +18,8 @@ jobs:
     env:
       PUBLIC_GRAPHQL_API_URL: 'dry.run'
       PUBLIC_DYNAMIC_ENVIRONMENT_ID: 'dry.run'
+      PUBLIC_APP_HOSTING_URL: 'dry.run'
+      PUBLIC_APP_AGENTS_URL: 'dry.run'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
