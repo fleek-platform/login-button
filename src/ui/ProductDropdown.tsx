@@ -38,7 +38,7 @@ export const ProductDropdown = ({
 }: {
   defaultSelectedProductName?: string;
 }) => {
-  const [selectedProduct, setSelecterdProduct] = useState(defaultSelectedProductName);
+  const [selectedProduct] = useState(defaultSelectedProductName);
 
   const onClick = (product: Product) => {
     let url = '#';
@@ -50,8 +50,6 @@ export const ProductDropdown = ({
     } else {
       console.error('Unknown product!');
     }
-
-    setSelecterdProduct(product.name);
 
     window.location.href = url;
   };
