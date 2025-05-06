@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.15.0
+
+### Minor Changes
+
+- a77e8ae: Is logged in setter now considers the access token
+
 ## 2.14.0
 
 ### Minor Changes
