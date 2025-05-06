@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.12.1
+
+### Patch Changes
+
+- 00004b3: Reinitialize SDK on tab switch
+
 ## 2.12.0
 
 ### Minor Changes
