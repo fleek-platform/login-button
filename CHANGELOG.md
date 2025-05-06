@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.15.1
+
+### Patch Changes
+
+- 4d8880b: Factor is logging in when setting is logged in
+
 ## 2.15.0
 
 ### Minor Changes
