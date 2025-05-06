@@ -54,8 +54,10 @@ const DynamicUtils = ({
   const isLoggedIn = useIsLoggedIn();
 
   useEffect(() => {
+    if (!accessToken) return;
+    
     setIsLoggedIn(isLoggedIn);
-  }, [isLoggedIn]);
+  }, [accessToken, isLoggedIn])
 
   useDynamicEvents('authFlowOpen', async () => {
     setAuthModalOpen(true);
