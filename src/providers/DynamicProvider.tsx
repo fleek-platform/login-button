@@ -55,7 +55,7 @@ const DynamicUtils = ({
 
   useEffect(() => {
     setIsLoggedIn(isLoggedIn);
-  }, [isLoggedIn])
+  }, [isLoggedIn]);
 
   useDynamicEvents('authFlowOpen', async () => {
     setAuthModalOpen(true);
@@ -200,8 +200,7 @@ const validateUserSession = async ({
     if (hasMatchingTokens) {
       const hasMeResult = await me(graphqlApiUrl, cookieAccessToken);
 
-      const hasNetworkError =
-        (!hasMeResult.success && (hasMeResult as HasDataCommonError)?.error?.type === 'NETWORK_ERROR');
+      const hasNetworkError = !hasMeResult.success && (hasMeResult as HasDataCommonError)?.error?.type === 'NETWORK_ERROR';
 
       if (hasNetworkError) return false;
 
@@ -368,7 +367,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         setIsLoading(false);
       }
     },
-    [graphqlApiUrl, setAuthToken, setAccessToken,  setUserProfile, setIsNewUser, onAuthenticationSuccess, setAuthenticating],
+    [graphqlApiUrl, setAuthToken, setAccessToken, setUserProfile, setIsNewUser, onAuthenticationSuccess, setAuthenticating],
   );
 
   // Support cross application user session
