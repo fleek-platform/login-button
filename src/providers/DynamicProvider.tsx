@@ -55,7 +55,9 @@ const DynamicUtils = ({
     setIsLoggedIn(isLoggedIn);
   }, [isLoggedIn])
 
-  const validateUserSessionDebonced = useDebouncedCallback(() => {
+  const validateUserSessionDebounced = useDebouncedCallback(() => {
+    typeof reinitializeSdk === 'function' && reinitializeSdk();
+
     // Validates the user session sometime in the future.
     // If found faulty, it should clear the user session
     // e.g. user session clear/logout by dashboard.
@@ -96,12 +98,12 @@ const DynamicUtils = ({
 
   useEffect(() => {
     // TODO: Is visibilitychange supported on all major browsers? Test against `focus`
-    document.addEventListener('visibilitychange', validateUserSessionDebonced);
+    document.addEventListener('visibilitychange', validateUserSessionDebounced);
 
     return () => {
-      document.removeEventListener('visibilitychange', validateUserSessionDebonced);
+      document.removeEventListener('visibilitychange', validateUserSessionDebounced);
     };
-  }, [validateUserSessionDebonced]);
+  }, [validateUserSessionDebounced]);
 
   useEffect(() => {
     if (!accessToken) return;
