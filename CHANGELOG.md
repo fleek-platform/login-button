@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.12.0
+
+### Minor Changes
+
+- d6c96f1: Assess login state from dynamic hook
+
 ## 2.11.0
 
 ### Minor Changes
