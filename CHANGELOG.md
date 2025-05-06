@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.13.0
+
+### Minor Changes
+
+- 5c73a22: Prevent reseting SDK if auth modal open
+
 ## 2.12.1
 
 ### Patch Changes
