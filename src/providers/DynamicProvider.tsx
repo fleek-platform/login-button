@@ -199,9 +199,13 @@ const validateUserSession = async ({
 
     if (hasMatchingTokens) {
       const hasMeResult = await me(graphqlApiUrl, cookieAccessToken);
-      const hasMe = !!hasMeResult.success;
 
-      if (!hasMe) throw Error('Invalid user access token result!');
+      const hasNetworkError =
+        (!hasMeResult.success && (hasMeResult as HasDataCommonError)?.error?.type === 'NETWORK_ERROR');
+
+      if (hasNetworkError) return false;
+
+      if (!hasMeResult.success) throw Error('Invalid user access token result!');
 
       return true;
     }
