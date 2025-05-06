@@ -9,6 +9,7 @@ import {
   useReinitialize,
   getAuthToken,
   DynamicWidget,
+  useIsLoggedIn,
 } from '@dynamic-labs/sdk-react-core';
 import { generateUserSessionDetails, me, project } from '../api/graphql-client';
 import { type TriggerLoginModal, type TriggerLogout, useAuthStore, type ReinitializeSdk, type UserProfile } from '../store/authStore';
@@ -32,7 +33,6 @@ type DynamicUtilsProps = {
   graphqlApiUrl: string;
   accessToken: string;
   authenticating: boolean;
-  onLogout: () => void;
   setReinitializeSdk: (callback: ReinitializeSdk) => void;
 };
 
@@ -42,14 +42,18 @@ const DynamicUtils = ({
   graphqlApiUrl,
   accessToken,
   authenticating,
-  onLogout,
   setReinitializeSdk,
 }: DynamicUtilsProps) => {
-  const { updateAccessTokenByProjectId } = useAuthStore();
+  const { updateAccessTokenByProjectId, setIsLoggedIn } = useAuthStore();
 
   const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
   const reinitializeSdk = useReinitialize();
   const localStorageAuthToken = getAuthToken();
+  const isLoggedIn = useIsLoggedIn();
+
+  useEffect(() => {
+    setIsLoggedIn(isLoggedIn);
+  }, [isLoggedIn])
 
   const validateUserSessionDebonced = useDebouncedCallback(() => {
     // Validates the user session sometime in the future.
@@ -68,7 +72,7 @@ const DynamicUtils = ({
       localStorageAuthToken,
       graphqlApiUrl,
       reinitializeSdk,
-      onAuthenticationFailure: () => onLogout(),
+      onAuthenticationFailure: () => handleLogOut(),
     });
   }, 400);
 
@@ -124,14 +128,14 @@ const DynamicUtils = ({
       if (hasNetworkError) return false;
 
       if (hasExpiredToken || !hasMe) {
-        onLogout();
+        handleLogOut();
 
         return;
       }
     };
 
     check();
-  }, [accessToken, graphqlApiUrl, onLogout, updateAccessTokenByProjectId]);
+  }, [accessToken, graphqlApiUrl, handleLogOut, updateAccessTokenByProjectId]);
 
   return null;
 };
@@ -257,7 +261,6 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     setTriggerLoginModal,
     setTriggerLogout,
     triggerLogout,
-    setIsLoggedIn,
     setReinitializeSdk,
     reinitializeSdk,
     setAuthenticating,
@@ -279,7 +282,6 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
     // that should also match these requirements
     // Clear critical stores
     clearUserSessionKeys();
-    setIsLoggedIn(false);
 
     typeof reinitializeSdk === 'function' && reinitializeSdk();
 
@@ -335,7 +337,6 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         const userProfile: UserProfile = { ...user, avatar: result.data?.user.avatar, username: result.data?.user.username };
         setUserProfile(userProfile);
         setAccessToken(result.data.accessToken);
-        setIsLoggedIn(true);
         setAuthenticating(false);
 
         typeof onAuthenticationSuccess === 'function' && onAuthenticationSuccess();
@@ -347,7 +348,7 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         setIsLoading(false);
       }
     },
-    [graphqlApiUrl, setAuthToken, setAccessToken, setIsLoggedIn, setUserProfile, setIsNewUser, onAuthenticationSuccess, setAuthenticating],
+    [graphqlApiUrl, setAuthToken, setAccessToken,  setUserProfile, setIsNewUser, onAuthenticationSuccess, setAuthenticating],
   );
 
   // Support cross application user session
@@ -370,11 +371,10 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
       decodeAccessToken(accessToken);
       setAuthToken(authToken);
       setAccessToken(accessToken);
-      setIsLoggedIn(true);
     } catch (_err) {
       console.warn('A user access token was found to be invalid!');
     }
-  }, [setAuthToken, setAccessToken, setIsLoggedIn]);
+  }, [setAuthToken, setAccessToken]);
 
   const settings = {
     environmentId: dynamicEnvironmentId,
@@ -399,7 +399,6 @@ export const DynamicProvider: FC<DynamicProviderProps> = ({ children, graphqlApi
         graphqlApiUrl={graphqlApiUrl}
         onTriggerLoginModal={setTriggerLoginModal}
         onTriggerLogout={setTriggerLogout}
-        onLogout={onLogout}
         setReinitializeSdk={setReinitializeSdk}
       />
       {/* Warning: The following is a quick solution for https://linear.app/fleekxyz/issue/PLAT-2777; It's not a long term solution; See customLogin() patched implementation */}
