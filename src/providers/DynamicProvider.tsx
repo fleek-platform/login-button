@@ -10,6 +10,7 @@ import {
   getAuthToken,
   DynamicWidget,
   useIsLoggedIn,
+  useDynamicEvents,
 } from '@dynamic-labs/sdk-react-core';
 import { generateUserSessionDetails, me, project } from '../api/graphql-client';
 import { type TriggerLoginModal, type TriggerLogout, useAuthStore, type ReinitializeSdk, type UserProfile } from '../store/authStore';
@@ -44,6 +45,7 @@ const DynamicUtils = ({
   authenticating,
   setReinitializeSdk,
 }: DynamicUtilsProps) => {
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const { updateAccessTokenByProjectId, setIsLoggedIn } = useAuthStore();
 
   const { sdkHasLoaded, setShowAuthFlow, handleLogOut } = useDynamicContext();
@@ -55,8 +57,20 @@ const DynamicUtils = ({
     setIsLoggedIn(isLoggedIn);
   }, [isLoggedIn])
 
+  useDynamicEvents('authFlowOpen', async () => {
+    setAuthModalOpen(true);
+  });
+
+  useDynamicEvents('authFlowClose', async () => {
+    setAuthModalOpen(false);
+  });
+
+  useDynamicEvents('authFlowCancelled', async () => {
+    setAuthModalOpen(false);
+  });
+
   const validateUserSessionDebounced = useDebouncedCallback(() => {
-    typeof reinitializeSdk === 'function' && reinitializeSdk();
+    !authModalOpen && typeof reinitializeSdk === 'function' && reinitializeSdk();
 
     // Validates the user session sometime in the future.
     // If found faulty, it should clear the user session
