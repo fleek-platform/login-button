@@ -1,5 +1,11 @@
 # @fleek-platform/login-button
 
+## 2.16.0
+
+### Minor Changes
+
+- f3df1fc: Set cookies under hostname and not top-level domain
+
 ## 2.15.1
 
 ### Patch Changes
