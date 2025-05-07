@@ -1,6 +1,4 @@
-// TODO: We don't need server-side, neither "next" libraries
-// Replace by vanilla version or other light option
-import { getTopLevelDomain } from '../utils/hostname';
+import { getHostname } from '../utils/hostname';
 import { isClient } from '../utils/browser';
 
 type CookieOptions = {
@@ -15,7 +13,7 @@ type CookieOptions = {
 // Refers to the application hostname
 // during runtime
 // TODO: Might want to get this as a prop instead
-const domain = isClient ? getTopLevelDomain(window.location.href) : '';
+const domain = isClient ? getHostname(window.location.href) : '';
 
 const defaultOptions: CookieOptions = {
   domain,

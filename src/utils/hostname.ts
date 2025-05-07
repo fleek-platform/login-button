@@ -16,3 +16,13 @@ export const getTopLevelDomain = (url: string) => {
     throw Error('Oops! Failed to parse the URL');
   }
 };
+
+export const getDomain = (url: string) => {
+  if (url.includes('.workers.dev')) {
+    return window.location.hostname;
+  }
+
+  return getTopLevelDomain(url);
+}
+
+export const getHostname = (url: string) => window.location.hostname;
