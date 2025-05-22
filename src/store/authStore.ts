@@ -30,7 +30,7 @@ export interface AuthStore {
   triggerLoginModal?: TriggerLoginModal;
   triggerLogout?: TriggerLogout;
   reinitializeSdk?: ReinitializeSdk;
-  setAccessToken: (value: string) => void;
+  setAccessToken: (value: string) => Promise<void>;
   setAuthToken: (value: string) => void;
   setIsLoggingIn: (isLoggingIn: boolean) => void;
   setIsLoggedIn: (isLoggedIn: boolean) => void;
@@ -71,19 +71,66 @@ export const initialState: AuthState = {
   userProfile: undefined,
 };
 
+// Initialize state with dynamic_authentication_token if present
+const token = localStorage.getItem('dynamic_authentication_token') || '';
+const { projectId: initialProjectId = '' } = token ? decodeAccessToken(token) : {};
+
 export const useAuthStore = create<AuthStore>()((set, get) => ({
   ...initialState,
-  setAccessToken: (accessToken: string) => {
+  accessToken: token,
+  projectId: initialProjectId,
+  isLoggedIn: !!token,
+  setAccessToken: async (accessToken: string) => {
     const { projectId } = decodeAccessToken(accessToken);
 
     set({
       accessToken,
       projectId,
       isLoggingIn: false,
+      isLoggedIn: true,
     });
-
     cookies.set('accessToken', accessToken);
     cookies.set('projectId', projectId);
+
+    // Fetch user profile after setting accessToken
+    try {
+      const { graphqlApiUrl } = useConfigStore.getState();
+      if (!graphqlApiUrl) {
+        throw new Error('GraphQL API URL is required to fetch user profile');
+      }
+      const response = await fetch(graphqlApiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          query: `
+            query Me {
+              me {
+                userId
+                username
+                email
+                avatar
+              }
+            }
+          `,
+        }),
+      });
+      const data = await response.json();
+      if (data.errors) {
+        throw new Error(data.errors[0]?.message || 'Failed to fetch user profile');
+      }
+      const userProfile = data?.data?.me;
+      if (userProfile) {
+        set({ userProfile });
+      } else {
+        throw new Error('User profile data not found');
+      }
+    } catch (err) {
+      console.error('Failed to fetch user profile:', err);
+      set({ userProfile: undefined });
+    }
   },
   setAuthToken: (authToken: string) => {
     set({ authToken });
@@ -127,7 +174,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
 
       if (decodedProjectId !== projectId) throw Error('Found a project mismatch');
 
-      setAccessToken(accessToken);
+      await setAccessToken(accessToken);
     } catch (err) {
       console.error('Failed to update access token:', err);
 

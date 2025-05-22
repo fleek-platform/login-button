@@ -23,6 +23,6 @@ export const getDomain = (url: string) => {
   }
 
   return getTopLevelDomain(url);
-}
+};
 
 export const getHostname = (url: string) => window.location.hostname;
